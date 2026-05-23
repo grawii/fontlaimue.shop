@@ -11,63 +11,69 @@
 </head>
 <body>
 
-    <header class="main-header sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-sm">
-        <div class="flex items-center gap-3">
-            <img id="shopProfile" src="" alt="Shop" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
-            <h1 id="shopName" class="font-bold text-lg text-main">Loading...</h1>
-        </div>
-        <div class="flex items-center gap-4">
-            <button onclick="toggleAdminModal(true)" class="text-xl text-sub"><i class="fa-solid fa-user-gear"></i></button>
-            <button onclick="openCartPage()" class="relative text-xl text-main">
-                <i class="fa-solid fa-basket-shopping"></i>
-                <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
-            </button>
-        </div>
-    </header>
-
-    <main id="mainPage" class="pb-24">
-        <section class="px-4 py-6">
-            <div class="hero-bg rounded-[30px] p-6 flex flex-col justify-center items-start min-h-[180px] relative overflow-hidden">
-                <span class="bg-white/80 text-[10px] font-bold px-3 py-1 rounded-full text-[#8D9B6A] mb-2 uppercase">New Arrival</span>
-                <h2 class="text-2xl font-black text-main mb-3 leading-tight">ไอเทมน่ารัก<br>สไตล์ DekDec</h2>
-                <button onclick="scrollToProducts()" class="btn-main text-white px-5 py-2 rounded-full text-sm font-medium shadow-md">ช้อปเลย</button>
-            </div>
-        </section>
-
-        <div class="mx-4 mb-6 py-2 bg-white/50 rounded-full border border-dashed border-main overflow-hidden whitespace-nowrap shadow-sm">
-            <div class="inline-block animate-marquee">
-                <span id="marqueeDisplay" class="text-[11px] font-bold text-main px-4"></span>
-                <span id="marqueeDisplay2" class="text-[11px] font-bold text-main px-4"></span>
-            </div>
-        </div>
-
-        <section class="px-4 mb-4"><div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="categoriesContainer"></div></section>
+    <div class="app-container">
         
-        <section id="productsSection" class="px-4 mb-8">
-            <h3 class="text-lg font-bold text-main mb-4">สินค้าทั้งหมด</h3>
-            <div class="grid grid-cols-2 gap-3" id="productsContainer"></div>
-        </section>
-    </main>
+        <header class="main-header sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+                <img id="shopProfile" src="" alt="Shop" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
+                <h1 id="shopName" class="font-bold text-lg text-main">Loading...</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminModal(true)" class="text-xl text-sub"><i class="fa-solid fa-user-gear"></i></button>
+                <button onclick="openCartPage()" class="relative text-xl text-main">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                </button>
+            </div>
+        </header>
 
-    <main id="productDetailPage" class="hidden fixed inset-0 z-50 bg-white overflow-y-auto max-w-[480px] mx-auto"></main>
+        <main id="mainPage" class="page-section pb-24">
+            <section class="px-4 py-6">
+                <div class="hero-bg rounded-[30px] p-6 flex flex-col justify-center items-start min-h-[180px] relative overflow-hidden">
+                    <span class="bg-white/80 text-[10px] font-bold px-3 py-1 rounded-full text-[#8D9B6A] mb-2 uppercase">New Arrival</span>
+                    <h2 class="text-2xl font-black text-main mb-3 leading-tight">ไอเทมน่ารัก<br>สไตล์ DekDec</h2>
+                    <button onclick="scrollToProducts()" class="btn-main text-white px-5 py-2 rounded-full text-sm font-medium shadow-md">ช้อปเลย</button>
+                </div>
+            </section>
 
-    <main id="cartPage" class="hidden fixed inset-0 z-50 bg-white overflow-y-auto max-w-[480px] mx-auto pb-24">
-        <div class="sticky top-0 bg-white px-4 py-4 flex items-center gap-3 border-b z-10">
-            <button onclick="closeCartPage()" class="text-xl p-1"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="text-xl font-bold">ตะกร้าสินค้า</h2>
-        </div>
-        <div id="cartItemsContainer" class="p-4 space-y-3"></div>
-        <div id="receiptSummary" class="px-4 mb-6"></div>
-    </main>
+            <div class="mx-4 mb-6 py-2 bg-white/50 rounded-full border border-dashed border-main overflow-hidden whitespace-nowrap shadow-sm">
+                <div class="inline-block animate-marquee">
+                    <span id="marqueeDisplay" class="text-[11px] font-bold text-main px-4"></span>
+                    <span id="marqueeDisplay2" class="text-[11px] font-bold text-main px-4"></span>
+                </div>
+            </div>
 
-    <main id="receiptPage" class="hidden fixed inset-0 z-[60] bg-gray-50 overflow-y-auto max-w-[480px] mx-auto pb-24"></main>
+            <section class="px-4 mb-4"><div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="categoriesContainer"></div></section>
+            
+            <section id="productsSection" class="px-4 mb-8">
+                <h3 class="text-lg font-bold text-main mb-4">สินค้าทั้งหมด</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="productsContainer"></div>
+            </section>
+        </main>
+
+        <main id="productDetailPage" class="page-section hidden fixed inset-0 z-50 bg-white overflow-y-auto w-full max-w-[768px] mx-auto shadow-2xl"></main>
+
+        <main id="cartPage" class="page-section hidden fixed inset-0 z-50 bg-white overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
+            <div class="sticky top-0 bg-white px-4 py-4 flex items-center gap-3 border-b z-10">
+                <button onclick="closeCartPage()" class="text-xl p-1"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-xl font-bold">ตะกร้าสินค้า</h2>
+            </div>
+            <div id="cartItemsContainer" class="p-4 space-y-3"></div>
+            <div id="receiptSummary" class="px-4 mb-6"></div>
+        </main>
+
+        <main id="receiptPage" class="page-section hidden fixed inset-0 z-[60] bg-gray-50 overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl"></main>
+
+        <div id="adminDashboard" class="page-section hidden fixed inset-0 bg-white z-[90] overflow-y-auto px-4 py-6 w-full max-w-[768px] mx-auto shadow-2xl"></div>
+
+    </div>
 
     <div id="loginModal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-6 hidden">
         <div class="bg-white w-full max-w-[300px] rounded-[40px] p-8 shadow-2xl text-center animate-pop">
             <h3 class="text-lg font-bold text-main mb-6">Admin Login 🐰</h3>
             <input type="password" id="adminPasswordInput" class="w-full px-4 py-4 border-2 border-gray-100 rounded-2xl text-center mb-4 text-sm outline-none" placeholder="รหัสผ่าน">
             <button onclick="checkAdminPassword()" class="w-full bg-[#8D9B6A] text-white py-4 rounded-2xl font-bold mb-4 shadow-lg">เข้าสู่ระบบ</button>
-            <button onclick="toggleAdminModal(false)" class="text-gray-400 text-sm">ยกเลิก</button>
+            <button onclick="toggleAdminModal(false)" class="text-gray-400 text-sm font-bold">ยกเลิก</button>
         </div>
     </div>
 
@@ -80,8 +86,6 @@
             </div>
         </div>
     </div>
-
-    <div id="adminDashboard" class="fixed inset-0 bg-white z-[90] overflow-y-auto hidden px-4 py-6 max-w-[480px] mx-auto"></div>
 
     <script src="database.js"></script>
     <script src="script.js"></script>
