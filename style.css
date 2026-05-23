@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg-color: #E8DFE0;
+    --card-color: #FFFFFF;
+    --btn-color: #8D9B6A;
+    --txt-main-color: #8F5B34;
+    --txt-sub-color: #8A9EA7;
+    --border-color: #DAB692;
+}
+
+* { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body { background-color: var(--bg-color); color: var(--txt-main-color); max-width: 480px; margin: 0 auto; min-height: 100vh; }
+
+.main-header { background: var(--card-color); border-bottom: 1px solid var(--border-color); }
+.card-bg { background: var(--card-color); border: 1px solid var(--border-color); }
+.btn-main { background: var(--btn-color); color: white; }
+.text-main { color: var(--txt-main-color); }
+.text-sub { color: var(--txt-sub-color); }
+
+.hero-bg { background: linear-gradient(135deg, var(--border-color) 0%, var(--bg-color) 100%); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+.animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ฟังก์ชันใหม่: Animation ข้อความเลื่อน */
+.animate-marquee {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 15s linear infinite;
+}
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.page-btn {
+    width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;
+    border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid var(--border-color);
+    background: white; cursor: pointer;
+}
+.page-btn.active { background: var(--btn-color); color: white; border-color: var(--btn-color); }
+
+.receipt-card { background: white; border: 2px dashed var(--border-color); border-radius: 20px; position: relative; }
