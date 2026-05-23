@@ -11,7 +11,29 @@
 
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-body { background-color: var(--bg-color); color: var(--txt-main-color); max-width: 480px; margin: 0 auto; min-height: 100vh; }
+body {
+    background-color: var(--bg-color);
+    color: var(--txt-main-color);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* ปรับเปลี่ยน Wrapper หลักให้ยืดหยุ่นและพอดีกับอุปกรณ์ทุกขนาด */
+.app-container {
+    width: 100%;
+    max-width: 1200px; /* ขยายขนาดใหญ่สุดรองรับ PC / Laptop */
+    margin: 0 auto;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    position: relative;
+}
+
+/* ระบบจัดการ Layer หน้าไม่ให้ซ้อนทับกัน */
+.page-section {
+    position: relative;
+    width: 100%;
+}
 
 .main-header { background: var(--card-color); border-bottom: 1px solid var(--border-color); }
 .card-bg { background: var(--card-color); border: 1px solid var(--border-color); }
@@ -25,7 +47,7 @@ body { background-color: var(--bg-color); color: var(--txt-main-color); max-widt
 .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* ฟังก์ชันใหม่: Animation ข้อความเลื่อน */
+/* Animation ข้อความเลื่อนวิ่งแบบต่อเนื่อง */
 .animate-marquee {
     display: inline-block;
     white-space: nowrap;
@@ -44,3 +66,15 @@ body { background-color: var(--bg-color); color: var(--txt-main-color); max-widt
 .page-btn.active { background: var(--btn-color); color: white; border-color: var(--btn-color); }
 
 .receipt-card { background: white; border: 2px dashed var(--border-color); border-radius: 20px; position: relative; }
+
+/* ตอบโจทย์ iPad / Tablet และหน้าจอขนาดกลาง */
+@media (min-width: 640px) {
+    .hero-bg { min-h: 220px; padding: 2rem; }
+    .hero-bg h2 { font-size: 2rem; }
+}
+
+/* ตอบโจทย์ Laptop และหน้าจอ PC ขนาดใหญ่ */
+@media (min-width: 1024px) {
+    .app-container { padding: 0 20px; }
+    .main-header { border-radius: 0 0 20px 20px; }
+}
