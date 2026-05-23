@@ -5,14 +5,14 @@ let currentAdminPage = 1;
 let adminFilterCat = "ทั้งหมด";
 let cart = JSON.parse(localStorage.getItem('temp_cart')) || [];
 let editingPresetIdx = null;
-let originalThemeBeforePreset = null; // เก็บสีเดิมก่อนกดดูพรีเซ็ต
+let originalThemeBeforePreset = null; // เก็บค่าสีเดิมก่อนกดทดลองเปลี่ยนพรีเซ็ตสี
 
 function init() {
     const cfg = db.getConfig();
     document.getElementById('shopName').innerText = cfg.shopName;
     document.getElementById('shopProfile').src = cfg.shopProfile;
     
-    // ฟังก์ชันใหม่: แสดงข้อความเลื่อน
+    // แสดงผลข้อความวิ่งแบนเนอร์ในหน้าแรก
     const marqueeMsg = cfg.marqueeText || "";
     document.getElementById('marqueeDisplay').innerText = marqueeMsg;
     document.getElementById('marqueeDisplay2').innerText = marqueeMsg;
@@ -23,7 +23,7 @@ function init() {
     updateCartCount();
 }
 
-/* --- ฟังก์ชันใหม่: Custom Confirm (ปุ่มยกเลิกซ้าย ตกลงขวา) --- */
+/* --- ระบบ Custom Confirm ย้ายปุ่มยกเลิกอยู่ซ้าย ตกลงอยู่ขวา --- */
 function myConfirm(msg, onOk) {
     const modal = document.getElementById('customConfirm');
     document.getElementById('confirmMsg').innerText = msg;
@@ -83,27 +83,34 @@ function updateCartCount() {
 
 function openProductDetail(idx) {
     const p = db.products[idx]; const detail = document.getElementById('productDetailPage');
+    // ซ่อนหน้าแรกเพื่อป้องกันการแสดงผลทับซ้อนกัน
+    document.getElementById('mainPage').classList.add('hidden');
     detail.classList.remove('hidden');
     detail.innerHTML = `
         <div class="sticky top-0 bg-white/90 px-4 py-4 flex items-center justify-between border-b z-50">
             <button onclick="closeProductDetail()"><i class="fa-solid fa-chevron-left"></i> ย้อนกลับ</button>
             <span class="font-bold text-main">รายละเอียด</span><div class="w-8"></div>
         </div>
-        <img src="${p.img}" class="w-full aspect-square object-cover">
-        <div class="p-6 pb-32">
-            <h1 class="text-xl font-bold text-main">${p.name}</h1>
-            <div class="text-2xl font-black text-main mt-2">฿${p.price-p.discount}</div>
-            <p class="text-sm text-gray-500 mt-4 leading-relaxed">${p.desc || 'ไม่มีรายละเอียดสินค้า'}</p>
+        <div class="max-w-[500px] mx-auto">
+            <img src="${p.img}" class="w-full aspect-square object-cover sm:rounded-b-[30px]">
+            <div class="p-6 pb-32">
+                <h1 class="text-xl font-bold text-main">${p.name}</h1>
+                <div class="text-2xl font-black text-main mt-2">฿${p.price-p.discount}</div>
+                <p class="text-sm text-gray-500 mt-4 leading-relaxed">${p.desc || 'ไม่มีรายละเอียดสินค้า'}</p>
+            </div>
         </div>
-        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t flex gap-3 max-w-[480px] mx-auto z-50">
+        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t flex gap-3 max-w-[768px] mx-auto z-50">
             <button onclick="addToCartDirect(${idx}); closeProductDetail();" class="flex-1 py-4 btn-main rounded-xl font-bold">เพิ่มลงตะกร้า</button>
         </div>`;
 }
 
-function closeProductDetail() { document.getElementById('productDetailPage').classList.add('hidden'); }
+function closeProductDetail() { 
+    document.getElementById('productDetailPage').classList.add('hidden'); 
+    document.getElementById('mainPage').classList.remove('hidden');
+}
 
 /* ==========================================
-   3. THEME & PRESET MANAGEMENT
+   3. THEME & PRESET MANAGEMENT (อัปเกรดความปลอดภัย)
    ========================================== */
 function updateColor(k, v) { db.config.theme[k] = v; applyTheme(); }
 
@@ -133,14 +140,15 @@ function renderPresets() {
             <button onclick="applyPreset(${i})" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full" style="background:${p.btn}"></span> ${p.name}
             </button>
-            <button onclick="prepareEditPreset(${i})" class="bg-blue-50 text-blue-500 px-2 py-2 border-l border-main text-[10px]"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="renamePreset(${i})" class="bg-green-50 text-green-600 px-2 py-2 border-l border-main text-[10px]" title="เปลี่ยนชื่อ"><i class="fa-solid fa-tag"></i></button>
+            <button onclick="prepareEditPreset(${i})" class="bg-blue-50 text-blue-500 px-2 py-2 border-l border-main text-[10px]" title="แก้ไขสี"><i class="fa-solid fa-pen"></i></button>
             <button onclick="removePreset(${i})" class="bg-red-50 text-red-500 px-2 py-2 border-l border-main text-[10px] font-bold">×</button>
         </div>`).join('');
 
-    // ฟังก์ชันใหม่: ปุ่มย้อนกลับสีเดิม
+    // ปุ่มคืนค่าสีเดิม (ย้อนกลับโดยไม่กดบันทึกพรีเซ็ต)
     const backBtn = originalThemeBeforePreset ? `
-        <button onclick="revertTheme()" class="flex-shrink-0 bg-gray-200 text-gray-600 px-3 py-2 rounded-xl text-[10px] font-bold">
-            <i class="fa-solid fa-rotate-left"></i> ย้อนกลับสีเดิม
+        <button onclick="revertTheme()" class="flex-shrink-0 bg-red-500 text-white px-3 py-2 rounded-xl text-[10px] font-bold shadow-sm mr-1">
+            <i class="fa-solid fa-xmark"></i> ยกเลิกการเลือกสี
         </button>
     ` : '';
 
@@ -161,7 +169,7 @@ function applyPreset(i) {
 function revertTheme() {
     if (originalThemeBeforePreset) {
         db.config.theme = JSON.parse(JSON.stringify(originalThemeBeforePreset));
-        originalThemeBeforePreset = null;
+        originalThemeBeforePreset = null; // คืนค่าความพร้อม
         applyTheme();
         db.saveConfig(db.config);
         renderAdminDashboard();
@@ -171,7 +179,23 @@ function revertTheme() {
 function prepareEditPreset(i) {
     editingPresetIdx = i; 
     const p = db.config.presets[i];
-    alert(`โหมดแก้ไข: ${p.name} เลือกสีใหม่แล้วกดปุ่มบันทึกพรีเซ็ต`);
+    alert(`เข้าสู่โหมดแก้ไขสีของพรีเซ็ต: "${p.name}" กรุณาเลือกเปลี่ยนโทนสีด้านบนตามต้องการ แล้วกดปุ่มยืนยันบันทึกทับได้เลยค่ะ`);
+    renderAdminDashboard();
+}
+
+function renamePreset(i) {
+    const oldName = db.config.presets[i].name;
+    const newName = prompt("แก้ไขชื่อพรีเซ็ตสี:", oldName);
+    if(newName && newName.trim() !== "") {
+        db.config.presets[i].name = newName.trim();
+        db.saveConfig(db.config);
+        renderAdminDashboard();
+    }
+}
+
+function cancelEditPresetMode() {
+    editingPresetIdx = null;
+    alert("ยกเลิกโหมดการแก้ไขพรีเซ็ตแล้ว");
     renderAdminDashboard();
 }
 
@@ -190,7 +214,9 @@ function toggleAdminModal(s) { document.getElementById('loginModal').classList.t
 function checkAdminPassword() { if(document.getElementById('adminPasswordInput').value === db.config.adminPass) { toggleAdminModal(false); renderAdminDashboard(); } else alert("รหัสผ่านไม่ถูกต้อง!"); }
 
 function renderAdminDashboard() {
-    const dash = document.getElementById('adminDashboard'); dash.classList.remove('hidden');
+    const dash = document.getElementById('adminDashboard'); 
+    document.getElementById('mainPage').classList.add('hidden'); // ซ่อนเพื่อกันการทับซ้อน
+    dash.classList.remove('hidden');
     const cfg = db.config; const t = cfg.theme; const tax = db.getTaxonomy();
 
     dash.innerHTML = `
@@ -201,7 +227,7 @@ function renderAdminDashboard() {
             <input type="text" id="cfgShopName" value="${cfg.shopName}" class="w-full p-3 border rounded-xl mb-2" placeholder="ชื่อร้าน">
             <input type="text" id="cfgShopProfile" value="${cfg.shopProfile}" class="w-full p-3 border rounded-xl mb-2" placeholder="URL รูปโปรไฟล์">
             
-            <label class="block mb-1 text-[9px] font-bold text-gray-400">ข้อความเลื่อนหน้าเว็บ</label>
+            <label class="block mb-1 text-[9px] font-bold text-gray-400 uppercase tracking-wider">ข้อความเลื่อนวิ่งบนหน้าเว็บแรก</label>
             <textarea id="cfgMarqueeText" class="w-full p-3 border rounded-xl mb-2 h-16">${cfg.marqueeText || ""}</textarea>
             
             <input type="password" id="cfgAdminPass" value="${cfg.adminPass}" class="w-full p-3 border rounded-xl mb-3" placeholder="รหัสผ่าน Admin">
@@ -210,12 +236,15 @@ function renderAdminDashboard() {
 
         <div class="bg-gray-50 p-4 rounded-3xl mb-6 border border-gray-200">
             <h3 class="font-bold text-xs mb-3 uppercase text-main">2. ปรับแต่งโทนสี & พรีเซ็ต</h3>
-            <div class="grid grid-cols-2 gap-2 text-[10px] mb-4">
-                ${Object.keys(t).map(k => `<div>${k}: <div class="flex gap-1"><input type="color" oninput="updateColor('${k}', this.value); this.nextElementSibling.value=this.value" value="${t[k]}" class="w-8 h-8 rounded border-0"><input type="text" value="${t[k]}" class="w-full border rounded px-1 text-[8px]"></div></div>`).join('')}
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] mb-4">
+                ${Object.keys(t).map(k => `<div>${k}: <div class="flex gap-1"><input type="color" oninput="updateColor('${k}', this.value); this.nextElementSibling.value=this.value" value="${t[k]}" class="w-8 h-8 rounded border-0 cursor-pointer"><input type="text" value="${t[k]}" class="w-full border rounded px-1 text-[8px]"></div></div>`).join('')}
             </div>
-            <button id="savePresetBtn" onclick="savePreset()" class="w-full py-3 btn-main rounded-xl text-xs font-bold mb-3 shadow-sm">
-                ${editingPresetIdx !== null ? '<i class="fa-solid fa-check"></i> บันทึกการแก้ไขพรีเซ็ต' : 'บันทึกพรีเซ็ตสีใหม่'}
-            </button>
+            <div class="flex gap-2 mb-3">
+                <button id="savePresetBtn" onclick="savePreset()" class="flex-1 py-3 btn-main rounded-xl text-xs font-bold shadow-sm">
+                    ${editingPresetIdx !== null ? '<i class="fa-solid fa-check"></i> ยืนยันบันทึกทับ' : 'บันทึกพรีเซ็ตสีใหม่'}
+                </button>
+                ${editingPresetIdx !== null ? `<button onclick="cancelEditPresetMode()" class="bg-gray-300 text-gray-700 px-4 rounded-xl text-xs font-bold">ยกเลิก</button>` : ''}
+            </div>
             <div id="presetList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
         </div>
 
@@ -223,9 +252,9 @@ function renderAdminDashboard() {
             <h3 class="font-bold mb-3 uppercase text-main">3. เพิ่ม / แก้ไขสินค้า</h3>
             <input type="text" id="admName" placeholder="ชื่อสินค้า *" class="w-full p-3 border rounded-xl mb-2">
             <div class="flex gap-2 mb-2"><input type="number" id="admPrice" placeholder="ราคาเต็ม" class="w-full p-3 border rounded-xl"><input type="number" id="admDisc" placeholder="ส่วนลด (บาท)" class="w-full p-3 border rounded-xl"></div>
-            <select id="admCat" class="w-full p-3 border rounded-xl mb-2">${tax.categories.map(c=>`<option>${c}</option>`).join('')}</select>
-            <select id="admSub" class="w-full p-3 border rounded-xl mb-2">${tax.subCategories.map(c=>`<option>${c}</option>`).join('')}</select>
-            <select id="admBrand" class="w-full p-3 border rounded-xl mb-2">${tax.brands.map(c=>`<option>${c}</option>`).join('')}</select>
+            <select id="admCat" class="w-full p-3 border rounded-xl mb-2">${tax.categories.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+            <select id="admSub" class="w-full p-3 border rounded-xl mb-2">${tax.subCategories.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+            <select id="admBrand" class="w-full p-3 border rounded-xl mb-2">${tax.brands.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
             <input type="text" id="admImg" placeholder="URL รูป" class="w-full p-3 border rounded-xl mb-2"><textarea id="admDesc" placeholder="รายละเอียด" class="w-full p-3 border rounded-xl h-16 mb-2"></textarea>
             <div class="flex gap-4 p-2 bg-gray-50 rounded-xl mb-3"><label><input type="checkbox" id="admFeat"> แนะนำ</label><label><input type="checkbox" id="admLimit"> จำกัด 1 ชิ้น</label></div>
             <button onclick="saveProductAdmin()" class="w-full py-3 btn-main rounded-xl font-bold shadow-lg">บันทึกสินค้าลงคลัง</button>
@@ -250,11 +279,22 @@ function saveShopInfo() {
     db.config.shopName = document.getElementById('cfgShopName').value;
     db.config.shopProfile = document.getElementById('cfgShopProfile').value;
     db.config.adminPass = document.getElementById('cfgAdminPass').value;
-    // ใหม่: ข้อความเลื่อน
     db.config.marqueeText = document.getElementById('cfgMarqueeText').value;
     db.saveConfig(db.config); 
     alert("บันทึกการตั้งค่าแล้ว! ✨"); 
     init();
+}
+
+/* ฟังก์ชันสลับเปลี่ยนตำแหน่งรายการสินค้า (▲/▼) นำกลับมาให้แล้ว */
+function moveProduct(idx, d) { 
+    const p = db.products; 
+    const t = idx + d; 
+    if(t >= 0 && t < p.length) { 
+        [p[idx], p[t]] = [p[t], p[idx]]; 
+        db.saveProducts(p); 
+        renderAdminProductList(); 
+        renderStore('ทั้งหมด');
+    } 
 }
 
 function renderAdminProductList() {
@@ -264,6 +304,7 @@ function renderAdminProductList() {
     cont.innerHTML = items.map((p) => {
         const idx = db.products.indexOf(p);
         return `<div class="flex items-center gap-3 p-2 bg-gray-50 rounded-2xl border border-gray-100 text-[10px]">
+            <div class="flex flex-col"><button onclick="moveProduct(${idx},-1)" class="text-gray-400 hover:text-main font-bold">▲</button><button onclick="moveProduct(${idx},1)" class="text-gray-400 hover:text-main font-bold">▼</button></div>
             <img src="${p.img}" class="w-9 h-9 rounded object-cover border"><div class="flex-1 font-bold truncate text-main">${p.name}</div>
             <button onclick="editProduct(${idx})" class="text-blue-500 font-bold">แก้ไข</button><button onclick="deleteProduct(${idx})" class="text-red-400 font-bold">ลบ</button></div>`;
     }).join('');
@@ -290,10 +331,11 @@ function editProduct(idx) {
 function finalizeOrder() {
     const hasFontOrDeco = cart.some(i => i.category === "ฟอนต์" || i.category === "ของตกแต่ง");
     const hasGroup = cart.some(i => i.category === "รวมกลุ่ม");
-    document.getElementById('cartPage').classList.add('hidden'); const rec = document.getElementById('receiptPage'); rec.classList.remove('hidden');
+    document.getElementById('cartPage').classList.add('hidden'); 
+    const rec = document.getElementById('receiptPage'); rec.classList.remove('hidden');
     let total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
-    rec.innerHTML = `<div class="p-6">
-        <div class="receipt-card p-6 shadow-sm mb-6 border-main text-main"><h2 class="text-center font-bold mb-4 text-lg">ใบเสร็จสั่งซื้อ</h2><div class="space-y-2 text-[11px] border-b border-dashed border-gray-200 pb-4 mb-4">
+    rec.innerHTML = `<div class="p-6 max-w-[500px] mx-auto">
+        <div class="receipt-card p-6 shadow-sm mb-6 border-main bg-white text-main"><h2 class="text-center font-bold mb-4 text-lg">ใบเสร็จสั่งซื้อ</h2><div class="space-y-2 text-[11px] border-b border-dashed border-gray-200 pb-4 mb-4">
         ${cart.map(i => `<div class="flex justify-between"><span>${i.name} x${i.qty}</span><span class="font-bold">฿${(i.price-i.discount)*i.qty}</span></div>`).join('')}</div>
         <div class="flex justify-between font-black text-lg text-main"><span>รวมทั้งสิ้น</span><span>฿${total}</span></div></div>
         <div class="bg-white p-6 rounded-3xl shadow-sm mb-6 space-y-4 border border-gray-100">
