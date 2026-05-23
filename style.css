@@ -19,17 +19,15 @@ body {
     min-height: 100vh;
 }
 
-/* ปรับเปลี่ยน Wrapper หลักให้ยืดหยุ่นและพอดีกับอุปกรณ์ทุกขนาด */
 .app-container {
     width: 100%;
-    max-width: 1200px; /* ขยายขนาดใหญ่สุดรองรับ PC / Laptop */
+    max-width: 1200px;
     margin: 0 auto;
     min-height: 100vh;
     background-color: var(--bg-color);
     position: relative;
 }
 
-/* ระบบจัดการ Layer หน้าไม่ให้ซ้อนทับกัน */
 .page-section {
     position: relative;
     width: 100%;
@@ -40,6 +38,7 @@ body {
 .btn-main { background: var(--btn-color); color: white; }
 .text-main { color: var(--txt-main-color); }
 .text-sub { color: var(--txt-sub-color); }
+.border-main { border-color: var(--border-color); }
 
 .hero-bg { background: linear-gradient(135deg, var(--border-color) 0%, var(--bg-color) 100%); }
 .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -47,7 +46,6 @@ body {
 .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* Animation ข้อความเลื่อนวิ่งแบบต่อเนื่อง */
 .animate-marquee {
     display: inline-block;
     white-space: nowrap;
@@ -67,13 +65,11 @@ body {
 
 .receipt-card { background: white; border: 2px dashed var(--border-color); border-radius: 20px; position: relative; }
 
-/* ตอบโจทย์ iPad / Tablet และหน้าจอขนาดกลาง */
 @media (min-width: 640px) {
-    .hero-bg { min-h: 220px; padding: 2rem; }
+    .hero-bg { min-height: 220px; padding: 2rem; }
     .hero-bg h2 { font-size: 2rem; }
 }
 
-/* ตอบโจทย์ Laptop และหน้าจอ PC ขนาดใหญ่ */
 @media (min-width: 1024px) {
     .app-container { padding: 0 20px; }
     .main-header { border-radius: 0 0 20px 20px; }
