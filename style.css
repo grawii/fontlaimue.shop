@@ -1,76 +1,108 @@
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --bg-color: #E8DFE0;
+    --bg-color: #F8F9FA;
     --card-color: #FFFFFF;
-    --btn-color: #8D9B6A;
-    --txt-main-color: #8F5B34;
-    --txt-sub-color: #8A9EA7;
-    --border-color: #DAB692;
+    --btn-color: #102A43; /* ปรับโทนสีกรมท่าเข้มหรูหราอิงตามปุ่มในภาพตัวอย่าง */
+    --txt-main-color: #102A43;
+    --txt-sub-color: #627D98;
+    --border-color: #E4E7EB;
 }
 
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
-    background-color: var(--bg-color);
+    background-color: #F1F3F5;
     color: var(--txt-main-color);
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     min-height: 100vh;
 }
 
 .app-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 768px; /* บีบขนาดความกว้างหน้าสไตล์แอปพลิเคชันเว็บโมเดิร์นแบบในภาพ */
     margin: 0 auto;
     min-height: 100vh;
-    background-color: var(--bg-color);
+    background-color: var(--card-color);
     position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.03);
 }
 
 .page-section {
     position: relative;
     width: 100%;
+    min-height: calc(100vh - 120px);
 }
 
-.main-header { background: var(--card-color); border-bottom: 1px solid var(--border-color); }
-.card-bg { background: var(--card-color); border: 1px solid var(--border-color); }
 .btn-main { background: var(--btn-color); color: white; }
 .text-main { color: var(--txt-main-color); }
 .text-sub { color: var(--txt-sub-color); }
 .border-main { border-color: var(--border-color); }
 
-.hero-bg { background: linear-gradient(135deg, var(--border-color) 0%, var(--bg-color) 100%); }
-.no-scrollbar::-webkit-scrollbar { display: none; }
+/* สไตล์การ์ดสินค้าแบบคลีน มินิมอล โค้งมนสวยงามตามรูปภาพ */
+.product-card {
+    background: #FFFFFF;
+    border: 1px solid #E4E7EB;
+    border-radius: 20px;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
 
-.animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-@keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
+/* แถบเลื่อนแบนเนอร์ข้อความวิ่งความเร็วเสถียร */
 .animate-marquee {
     display: inline-block;
     white-space: nowrap;
-    animation: marquee 15s linear infinite;
+    animation: marquee 20s linear infinite;
 }
 @keyframes marquee {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
 }
 
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
 .page-btn {
-    width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;
-    border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid var(--border-color);
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; font-size: 11px; font-weight: 600; border: 1px solid var(--border-color);
     background: white; cursor: pointer;
 }
 .page-btn.active { background: var(--btn-color); color: white; border-color: var(--btn-color); }
 
-.receipt-card { background: white; border: 2px dashed var(--border-color); border-radius: 20px; position: relative; }
-
-@media (min-width: 640px) {
-    .hero-bg { min-height: 220px; padding: 2rem; }
-    .hero-bg h2 { font-size: 2rem; }
+/* หน้าต่างรีวิวและรับสมัครตัวแทนคลาสสิกโค้งมนตามแบบภาพตัวอย่าง */
+.custom-panel-card {
+    background: white;
+    border: 1px solid #E4E7EB;
+    border-radius: 24px;
+    padding: 20px;
 }
 
-@media (min-width: 1024px) {
-    .app-container { padding: 0 20px; }
-    .main-header { border-radius: 0 0 20px 20px; }
+/* ดีไซน์แถบล่างแบบใหม่ */
+#floatingBottomNav {
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 12px 40px rgba(16, 42, 67, 0.08);
+}
+
+/* ปรับแต่งปุ่มตะกร้าตรงกลางให้เป็นทรงสี่เหลี่ยมมุมโค้งมน (Squircle) อิงตามสไตล์ไอคอน iOS ไม่ให้ซ้ำใคร */
+#floatingBottomNav .btn-main {
+    border-radius: 18px;
+    background: var(--btn-color);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#floatingBottomNav .btn-main:hover {
+    transform: translate-y(-18px) scale(1.05);
+}
+
+/* ปรับเอฟเฟกต์เวลาเปลี่ยนหน้าให้ปุ่มอื่นดูนิ่มนวล */
+#floatingBottomNav button {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+#floatingBottomNav button:active {
+    transform: scale(0.92);
 }
