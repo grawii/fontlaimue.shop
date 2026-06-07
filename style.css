@@ -18,14 +18,31 @@ body {
     min-height: 100vh;
 }
 
+/* 🌟 ระบบ Responsive ขยายพื้นที่เมื่อเปิดบน iPad, โน้ตบุ๊ก และ PC */
 .app-container {
     width: 100%;
-    max-width: 768px;
+    max-width: 100%;
     margin: 0 auto;
     min-height: 100vh;
     background-color: var(--card-color);
     position: relative;
-    box-shadow: 0 0 30px rgba(0,0,0,0.03);
+    box-shadow: 0 0 30px rgba(0,0,0,0.02);
+    transition: max-width 0.3s ease;
+}
+
+@media (min-width: 640px) {
+    .app-container {
+        max-width: 640px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .app-container {
+        max-width: 768px;
+    }
+    #productsContainer {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
 }
 
 .page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); }
@@ -34,7 +51,6 @@ body {
 .text-sub { color: var(--txt-sub-color); }
 .border-main { border-color: var(--border-color); }
 
-/* สไตล์การ์ดสินค้ามินิมอล */
 .product-card {
     background: #FFFFFF;
     border: 1px solid #E4E7EB;
@@ -44,7 +60,6 @@ body {
 }
 .product-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
 
-/* สไลด์ข้อความวิ่งวิ่งแบนเนอร์ */
 .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; }
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
@@ -61,7 +76,6 @@ body {
 
 .custom-panel-card { background: white; border: 1px solid #E4E7EB; border-radius: 24px; padding: 20px; }
 
-/* ปรับดีไซน์กรอบอันกลางของแถบล่างลอยตัวให้กลายเป็นวงกลมสมบูรณ์ */
 #floatingBottomNav .btn-main {
     border-radius: 50% !important; 
     background: var(--btn-color);
@@ -70,7 +84,6 @@ body {
 }
 #floatingBottomNav .btn-main:hover { transform: translateY(-18px) scale(1.05); }
 
-/* กล่องพิกเซลการ์ดเลือกหน้าหมวดหมู่รวมสินค้า */
 .category-select-card {
     background: white;
     border: 1px solid #E4E7EB;
@@ -81,7 +94,7 @@ body {
     cursor: pointer;
 }
 .category-select-card:hover { border-color: var(--btn-color); background: #F8F9FA; }
-/* แอนิเมชันสั่นกระดิ่งแบบนุ่มนวล */
+
 .animate-bounce-slow {
     animation: bell-ring 3s ease-in-out infinite;
 }
@@ -92,7 +105,6 @@ body {
     50% { transform: rotate(0); }
 }
 
-/* 🌟 สไตล์สำหรับการควบคุมสไลด์การ์ดโปรโมชั่น ซ้าย-ขวา */
 #promoCarouselContainer {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -101,6 +113,14 @@ body {
 .promo-slide-card {
     scroll-snap-align: start;
     flex-shrink: 0;
-    width: 100%; /* บังคับให้การ์ดโปรโมชั่นแสดงผลเต็มพื้นที่ทีละ 1 ใบ */
+    width: 100%;
     transition: all 0.3s ease;
+}
+
+.animate-fadeIn {
+    animation: fIn 0.25s ease-out forwards;
+}
+@keyframes fIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
