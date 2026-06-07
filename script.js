@@ -28,9 +28,13 @@ function init() {
     if(document.getElementById('shopName')) document.getElementById('shopName').innerText = cfg.shopName;
     if(document.getElementById('shopProfile')) document.getElementById('shopProfile').src = cfg.shopProfile;
     
+    // 📢 ดึงข้อความแบนเนอร์และบังคับเริ่มวิ่งใหม่
     const marqueeMsg = cfg.marqueeText || "";
     if(document.getElementById('marqueeDisplay')) document.getElementById('marqueeDisplay').innerText = marqueeMsg;
     if(document.getElementById('marqueeDisplay2')) document.getElementById('marqueeDisplay2').innerText = marqueeMsg;
+    
+    // กระตุ้นแอนิเมชันแบนเนอร์ให้ทำงานซ้ำป้องกันการค้าง
+    restartMarqueeAnimation();
 
     if(document.getElementById('bankNoDisplay')) document.getElementById('bankNoDisplay').innerText = `เลขบัญชีร้าน: ${cfg.paymentNo}`;
     if(document.getElementById('bankQRDisplay')) document.getElementById('bankQRDisplay').src = cfg.paymentQR;
@@ -43,6 +47,21 @@ function init() {
     renderStore(); 
     updateCartCount();
     updateCreditDisplay();
+}
+
+// 🪄 ฟังก์ชันช่วยรีเซ็ตให้แบนเนอร์วิ่งตลอดเวลาไม่หยุดนิ่ง
+function restartMarqueeAnimation() {
+    const m1 = document.getElementById('marqueeDisplay');
+    const m2 = document.getElementById('marqueeDisplay2');
+    if (m1 && m2) {
+        m1.style.animation = 'none';
+        m2.style.animation = 'none';
+        //ใช้ Line Offset บังคับให้เบราว์เซอร์ล้างสถานะสไตล์เดิม
+        m1.offsetHeight; 
+        m2.offsetHeight;
+        m1.style.animation = 'marquee 25s linear infinite';
+        m2.style.animation = 'marquee2 25s linear infinite';
+    }
 }
 
 function updateCreditDisplay() {
@@ -72,6 +91,7 @@ function updateCreditDisplay() {
 function backToStoreHome() {
     storeFilterCat = 'ทั้งหมด'; storeFilterStyle = 'ทั้งหมด';
     renderCategoryFilter(); renderStore(); hideAllPages(); showMainLayout();
+    restartMarqueeAnimation(); // วิ่งใหม่เมื่อกลับมาหน้าหลัก
 }
 
 function myConfirm(msg, onOk) {
@@ -141,7 +161,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (ซ่อมสีปุ่มล็อกอินหลังบ้านแท็บแอดมินตามพรีเซ็ตจริง)
+   3. UNIFIED LOGIN CONTROLLER (ปรับปุ่มสีแอดมินเท่าเทียมลูกค้า 100%)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -170,7 +190,6 @@ function switchUnifiedTab(type) {
             if(userSubmitBtn) {
                 userSubmitBtn.innerText = "ลงชื่อเข้าใช้งาน";
                 userSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md";
-                // 🔥 บังคับดึงสีหลักจากพรีเซ็ตเดียวกันกับปุ่มลูกค้า
                 userSubmitBtn.style.backgroundColor = "var(--th-primary)";
                 userSubmitBtn.style.color = "var(--th-btn-text-color)";
             }
@@ -183,7 +202,7 @@ function switchUnifiedTab(type) {
             if(adminSubmitBtn) {
                 adminSubmitBtn.innerText = "เข้าสู่ระบบผู้ดูแลระบบ";
                 adminSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md";
-                // 🔥 แก้ไขจุดนี้: บังคับใช้สีเดียวกับปุ่มลูกค้าตามพรีเซ็ตที่เลือกทันที ไม่เป็นสีขาวแล้ว
+                // 🔐 บังคับดึงค่าตัวแปรสีกระบอกเดียวกับลูกค้า ไม่เป็นสีขาวโดดแยกแน่นอนครับ
                 adminSubmitBtn.style.backgroundColor = "var(--th-primary)";
                 adminSubmitBtn.style.color = "var(--th-btn-text-color)";
             }
@@ -192,7 +211,12 @@ function switchUnifiedTab(type) {
 }
 function toggleRegisterMode() {
     isRegisterMode = !isRegisterMode;
-    if(document.getElementById('mainUserAuthBtn')) document.getElementById('mainUserAuthBtn').innerText = isRegisterMode ? "ยืนยันการสมัครสมาชิก" : "ลงชื่อเข้าใช้งาน";
+    if(document.getElementById('mainUserAuthBtn')) {
+        const btn = document.getElementById('mainUserAuthBtn');
+        btn.innerText = isRegisterMode ? "ยืนยันการสมัครสมาชิก" : "ลงชื่อเข้าใช้งาน";
+        btn.style.backgroundColor = "var(--th-primary)";
+        btn.style.color = "var(--th-btn-text-color)";
+    }
     if(document.getElementById('toggleRegBtn')) document.getElementById('toggleRegBtn').innerText = isRegisterMode ? "มีบัญชีอยู่แล้ว? สลับกลับไปเข้าสู่ระบบ" : "ยังไม่มีบัญชี? สมัครสมาชิกใหม่ที่นี่";
 }
 function processUserAuth() {
@@ -335,7 +359,7 @@ function openEditReviewModal(reviewId) {
 }
 
 /* ==========================================
-   6. ADMIN DASHBOARD & ADVANCED CONTROLS (ล้างสีเทาเข้มออก ให้เป็นขาว/เทาอ่อนตามใจคุณเกด)
+   6. ADMIN DASHBOARD & ADVANCED CONTROLS
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) {
@@ -719,7 +743,7 @@ function showMainLayout() {
     if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.remove('hidden');
     if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.remove('hidden');
 }
-function closeSubPage(pageId) { if(document.getElementById(pageId)) document.getElementById(pageId).classList.add('hidden'); showMainLayout(); }
+function closeSubPage(pageId) { if(document.getElementById(pageId)) document.getElementById(pageId).classList.add('hidden'); showMainLayout(); restartMarqueeAnimation(); }
 function goToUserSubPage(section) {
     const dropdown = document.getElementById('userDropdownMenu'); if (dropdown) { dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0"; }
     if (section === 'topup') {
