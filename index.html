@@ -13,7 +13,6 @@
 
     <div class="app-container theme-bg-card text-main">
         
-        <!-- TOP BAR: แถบค้นหาและไอคอนควบคุม -->
         <div id="topSearchBar" class="px-4 pt-4 pb-3 flex gap-2 items-center bg-transparent sticky top-0 z-50">
             <button onclick="openPromotionModal()" class="w-10 h-10 theme-bg-btn rounded-full flex items-center justify-center text-sm shadow-sm flex-shrink-0 transition-transform active:scale-90 relative">
                 <i class="fa-solid fa-bell animate-bounce-slow text-btn-inside"></i>
@@ -35,8 +34,7 @@
             </button>
         </div>
 
-        <!-- HEADER SHOP PROFILE (กรอบการ์ดสี่เหลี่ยมมุมโค้งขนาดใหญ่ปานกลาง) -->
-        <div class="w-full max-w-[560px] mx-auto px-4 pb-3">
+        <div id="mainHeader" class="w-full max-w-[560px] mx-auto px-4 pb-3">
             <div class="theme-bg-card border border-main rounded-3xl shadow-sm overflow-hidden transition-all duration-300">
                 
                 <div id="userHeaderCard" onclick="toggleUserDropdown()" class="p-4 flex items-center justify-between cursor-pointer select-none transition-colors hover:opacity-90">
@@ -53,7 +51,6 @@
                     </div>
                 </div>
 
-                <!-- แผงสไลด์ลิ้นชักเมนูด้านล่าง -->
                 <div id="userDropdownMenu" class="max-h-0 opacity-0 overflow-hidden border-t border-main bg-transparent transition-all duration-300 flex text-xs">
                     <button onclick="goToUserSubPage('topup')" class="flex-1 py-3.5 font-bold text-main hover:bg-gray-50/50 active:bg-gray-100 flex items-center justify-center gap-1.5 transition-colors border-r border-main">
                         <span class="text-base font-normal text-sub">+</span> เติมเครดิต
@@ -66,9 +63,7 @@
             </div>
         </div>
 
-        <!-- MAIN STORE PAGE -->
         <main id="mainPage" class="page-section pb-32">
-            <!-- แบนเนอร์ข้อความวิ่ง ปรับสีพื้นหลังและสีข้อความแยกสัดส่วน -->
             <div class="mx-4 mt-4 py-2.5 theme-bg-marquee border border-main rounded-[25px] overflow-hidden whitespace-nowrap shadow-sm">
                 <div class="inline-block animate-marquee">
                     <span id="marqueeDisplay" class="text-[11px] font-medium text-marquee px-4"></span>
@@ -76,20 +71,17 @@
                 </div>
             </div>
 
-            <!-- หมวดหมู่ฟิลเตอร์หน้าร้าน -->
             <section class="px-4 pt-4 space-y-3">
                 <div>
                     <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar" id="categoriesContainer"></div>
                 </div>
             </section>
             
-            <!-- ตู้คอนเทนเนอร์รายการการ์ดสินค้า -->
             <section id="productsSection" class="px-4 pt-4">
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="productsContainer"></div>
             </section>
         </main>
 
-        <!-- FLOATING BOTTOM BAR NAVIGATION -->
         <nav id="floatingBottomNav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[380px] theme-bg-card h-16 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.08)] z-40 flex items-center justify-between px-2 border border-main">
             <button onclick="openAllCategoriesPage()" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-main transition-transform active:scale-95">
                 <i class="fa-solid fa-cubes text-base"></i>
@@ -109,7 +101,6 @@
             </button>
         </nav>
 
-        <!-- SUB PAGES CONTROLLER -->
         <main id="productDetailPage" class="page-section hidden fixed inset-0 z-50 theme-bg-card overflow-y-auto w-full max-w-[768px] mx-auto shadow-2xl pb-24"></main>
         
         <main id="cartPage" class="page-section hidden fixed inset-0 z-50 theme-bg-app overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
@@ -124,7 +115,6 @@
 
         <main id="receiptPage" class="page-section hidden fixed inset-0 z-[60] theme-bg-app overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl"></main>
         
-        <!-- หน้าแก้ไขข้อมูลส่วนตัว (แยกจากหน้าเติมเงินชัดเจน) -->
         <main id="userMenuPage" class="page-section hidden fixed inset-0 z-50 theme-bg-app overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
             <div class="sticky top-0 theme-bg-card px-4 py-4 flex items-center justify-between border-b border-main z-10 shadow-sm">
                 <button onclick="closeSubPage('userMenuPage')" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
@@ -157,7 +147,6 @@
             </div>
         </main>
 
-        <!-- หน้าต่างแจ้งเติมเงินเครดิต (หน้าเดี่ยวแยกขาด 100%) -->
         <main id="topupPage" class="page-section hidden fixed inset-0 z-50 theme-bg-app overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
             <div class="sticky top-0 theme-bg-card px-4 py-4 flex items-center justify-between border-b border-main z-10 shadow-sm">
                 <button onclick="closeSubPage('topupPage')" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
@@ -210,7 +199,6 @@
             </div>
         </main>
 
-        <!-- หน้ารีวิวร้านค้า (ปรับระบบคัดกรองดาว และสไตล์แบบสมบูรณ์) -->
         <main id="reviewPage" class="page-section hidden fixed inset-0 z-50 theme-bg-app overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
             <div class="sticky top-0 theme-bg-card px-4 py-4 flex items-center border-b border-main z-10 shadow-sm justify-between">
                 <button onclick="closeSubPage('reviewPage')" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
@@ -218,25 +206,22 @@
                 <button onclick="openNewReviewModal()" class="theme-bg-btn text-btn-inside px-3 py-1.5 rounded-full text-[10px] font-bold shadow-sm">เขียนรีวิว</button>
             </div>
             
-            <!-- แผงจัดหมวดหมู่กรองดาวรีวิว พร้อมระบบจำนวนนับนับยอดสะสม -->
             <div class="p-4 bg-white border-b border-main sticky top-[53px] z-20 overflow-x-auto flex gap-1.5 no-scrollbar">
-                <button onclick="filterReviewsByStar('all')" id="starBtn-all" class="review-star-filter-btn active px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all">ทั้งหมด (<span id="count-all">0</span>)</button>
-                <button onclick="filterReviewsByStar(5)" id="starBtn-5" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border bg-gray-50 text-gray-600 transition-all">5 ดาว (<span id="count-5">0</span>)</button>
-                <button onclick="filterReviewsByStar(4)" id="starBtn-4" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border bg-gray-50 text-gray-600 transition-all">4 ดาว (<span id="count-4">0</span>)</button>
-                <button onclick="filterReviewsByStar(3)" id="starBtn-3" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border bg-gray-50 text-gray-600 transition-all">3 ดาว (<span id="count-3">0</span>)</button>
-                <button onclick="filterReviewsByStar(2)" id="starBtn-2" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border bg-gray-50 text-gray-600 transition-all">2 ดาว (<span id="count-2">0</span>)</button>
-                <button onclick="filterReviewsByStar(1)" id="starBtn-1" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border bg-gray-50 text-gray-600 transition-all">1 ดาว (<span id="count-1">0</span>)</button>
+                <button onclick="filterReviewsByStar('all')" id="starBtn-all" class="review-star-filter-btn active px-3 py-1.5 rounded-full text-[10px] font-bold border border-main transition-all">ทั้งหมด (<span id="count-all">0</span>)</button>
+                <button onclick="filterReviewsByStar(5)" id="starBtn-5" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border border-main bg-gray-50 text-gray-600 transition-all">5 ดาว (<span id="count-5">0</span>)</button>
+                <button onclick="filterReviewsByStar(4)" id="starBtn-4" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border border-main bg-gray-50 text-gray-600 transition-all">4 ดาว (<span id="count-4">0</span>)</button>
+                <button onclick="filterReviewsByStar(3)" id="starBtn-3" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border border-main bg-gray-50 text-gray-600 transition-all">3 ดาว (<span id="count-3">0</span>)</button>
+                <button onclick="filterReviewsByStar(2)" id="starBtn-2" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border border-main bg-gray-50 text-gray-600 transition-all">2 ดาว (<span id="count-2">0</span>)</button>
+                <button onclick="filterReviewsByStar(1)" id="starBtn-1" class="review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border border-main bg-gray-50 text-gray-600 transition-all">1 ดาว (<span id="count-1">0</span>)</button>
             </div>
 
             <div class="p-4 space-y-3" id="reviewsContainer"></div>
         </main>
 
-        <!-- แผงควบคุมระบบแอดมินหลังบ้าน -->
         <div id="adminDashboard" class="page-section hidden fixed inset-0 bg-white z-[90] overflow-y-auto px-4 py-6 w-full max-w-[768px] mx-auto shadow-2xl"></div>
 
     </div>
 
-    <!-- โนติสป๊อปอัพเขียนรีวิวแบบระบุคะแนนดาว -->
     <div id="newReviewModal" class="fixed inset-0 bg-black/50 z-[110] flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-[340px] rounded-[30px] p-6 shadow-2xl border animate-pop space-y-4 text-xs">
             <h3 class="font-bold text-sm text-center text-gray-700">✍️ ร่วมแชร์ความรู้สึกลงรีวิว</h3>
@@ -265,7 +250,6 @@
         </div>
     </div>
 
-    <!-- โปรโมชั่นป๊อปอัพ -->
     <div id="promotionModal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-[360px] rounded-[30px] pt-6 pb-4 px-2 shadow-2xl border relative animate-pop">
             <button onclick="closePromotionModal()" class="absolute -top-3 -right-3 w-8 h-8 bg-main text-white rounded-full flex items-center justify-center shadow-md z-10 font-bold">×</button>
@@ -277,7 +261,6 @@
         </div>
     </div>
 
-    <!-- ล็อกอินแบบรวมศูนย์ -->
     <div id="unifiedAuthModal" class="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-6 hidden">
         <div class="bg-white w-full max-w-[340px] rounded-[30px] p-6 shadow-2xl border animate-pop">
             <div class="flex border-b mb-5 text-xs font-bold text-center">
@@ -299,7 +282,6 @@
         </div>
     </div>
 
-    <!-- กล่องแจ้งเตือนยืนยัน -->
     <div id="customConfirm" class="fixed inset-0 bg-black/40 z-[200] flex items-center justify-center p-6 hidden">
         <div class="bg-white w-full max-w-[300px] rounded-[25px] p-6 shadow-2xl animate-pop text-center">
             <p id="confirmMsg" class="text-xs font-semibold text-gray-600 mb-6 leading-relaxed"></p>
