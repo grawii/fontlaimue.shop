@@ -1,17 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* ระบบโทนสีผูกผันครบวงจรผ่าน CSS Variables */
+/* 🌟 ระบบโทนสีผูกผันกับระบบฐานข้อมูล แตกแขนง 16 ตัวแปร ป้องกันการดึงสีกระทบกัน */
 :root {
-    --bgApp-color: #F8F9FA;
-    --bgCard-color: #FFFFFF;
-    --bgInput-color: #F1F3F5;
-    --bgMarquee-color: #FFFFFF;
-    --bgBtn-color: #102A43;
-    --txtMain-color: #102A43;
-    --txtSub-color: #627D98;
-    --txtMarquee-color: #102A43;
-    --txtBtnInside-color: #FFFFFF;
-    --borderColor-color: #E4E7EB;
+    --bgApp-color: #202430;
+    --bgCard-color: #282d3c;
+    --bgProductCard-color: #1d212c;
+    --bgInput-color: #343b4f;
+    --bgMarquee-color: #282d3c;
+    --bgBtn-color: #7082a6;
+    --bgCatBtnNormal-color: #343b4f;
+    --bgCatBtnActive-color: #94b3ff;
+    
+    --txtMain-color: #ffffff;
+    --txtSub-color: #9ea8be;
+    --txtProductName-color: #ffffff;
+    --txtMarquee-color: #94b3ff;
+    --txtBtnInside-color: #ffffff;
+    --txtCatNormal-color: #9ea8be;
+    --txtCatActive-color: #1a1d24;
+    
+    --borderColor-color: #3a4358;
 }
 
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -21,19 +29,22 @@ body {
     min-height: 100vh;
 }
 
+/* แมปเปอร์คลาสสะท้อนสีของ CSS Variables โดยตรง */
 .theme-bg-app { background-color: var(--bgApp-color) !important; }
 .theme-bg-card { background-color: var(--bgCard-color) !important; }
+.theme-bg-product-card { background-color: var(--bgProductCard-color) !important; }
 .theme-bg-input { background-color: var(--bgInput-color) !important; }
 .theme-bg-marquee { background-color: var(--bgMarquee-color) !important; }
 .theme-bg-btn { background-color: var(--bgBtn-color) !important; }
 
 .text-main { color: var(--txtMain-color) !important; }
 .text-sub { color: var(--txtSub-color) !important; }
+.theme-txt-product-name { color: var(--txtProductName-color) !important; }
 .text-marquee { color: var(--txtMarquee-color) !important; }
 .text-btn-inside { color: var(--txtBtnInside-color) !important; }
 .border-main { border-color: var(--borderColor-color) !important; }
 
-/* โครงสร้าง Responsive ยืดขยายเหมาะกับทุกอุปกรณ์ */
+/* โครงสร้างคอนเทนเนอร์ ปรับปรุง Layout ไม่ให้แถบเมนูซ้อนทับ */
 .app-container {
     width: 100%;
     max-width: 100%;
@@ -55,23 +66,24 @@ body {
 
 .page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); background-color: transparent; }
 
+/* ตัวการ์ดสินค้า ดีไซน์มุมมนหรูหราทรงกลมปานกลางสอดรับกับรูปภาพต้นฉบับ */
 .product-card {
-    border-radius: 20px;
-    padding: 10px;
-    transition: all 0.2s ease;
+    border-radius: 24px;
+    padding: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.product-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+.product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
 
-.animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; }
+.animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 22s linear infinite; }
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-@keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes pop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .page-btn {
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    border-radius: 8px; font-size: 11px; font-weight: 600; border: 1px solid var(--borderColor-color);
+    border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--borderColor-color);
     background: white; cursor: pointer;
 }
 
@@ -87,3 +99,12 @@ body {
 
 #promoCarouselContainer { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
 .promo-slide-card { scroll-snap-align: start; flex-shrink: 0; width: 100%; transition: all 0.3s ease; }
+
+.category-select-card {
+    padding: 20px;
+    border-radius: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.category-select-card:hover { transform: scale(1.02); }
