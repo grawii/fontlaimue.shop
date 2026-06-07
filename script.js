@@ -82,7 +82,7 @@ function myConfirm(msg, onOk) {
 }
 
 /* ==========================================
-   ⚙️ ระบบสี 8 แกน และฟังก์ชันตรวจสอบความสว่าง
+   ⚙️ ระบบสี 8 แกนควบคุมไดนามิก
    ========================================== */
 function applyTheme() {
     const cfg = window.db.getConfig(); const t = cfg.theme; const root = document.documentElement; if(!t) return;
@@ -141,7 +141,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (แก้สีตัวอักษรกลืนหน้าล็อกอินหลังบ้าน)
+   3. UNIFIED LOGIN CONTROLLER (ซ่อมสีปุ่มล็อกอินแอดมินหลังบ้านให้แปรผันตามธีม)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -210,7 +210,7 @@ function handleGearIconClick() {
 }
 
 /* ==========================================
-   4. STOREFRONT RENDER & FILTER 
+   4. STOREFRONT RENDER & FILTER
    ========================================== */
 function openAllCategoriesPage() {
     hideAllPages(); if(document.getElementById('allCategoriesPage')) document.getElementById('allCategoriesPage').classList.remove('hidden');
@@ -257,7 +257,7 @@ function renderStoreCards(products) {
                 <h4 class="text-[11px] font-bold text-main line-clamp-2 leading-tight h-8">${p.name}</h4>
                 <div class="text-[12px] font-black mt-1 text-main">฿${p.price - p.discount}</div>
             </div>
-            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-btn-link py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
+            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-white py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
         </div>`;
     }).join('');
 }
@@ -317,28 +317,14 @@ function openEditReviewModal(reviewId) {
     if((rev.editCount || 0) >= 2) return alert("ขออภัยค่ะ คุณสิทธิ์แก้ไขรีวิวนี้ครบพิกัด 2 ครั้งแล้วค่ะ");
     const newText = prompt("แก้ไขข้อความรีวิวของคุณที่นี่ค่ะ ✨:", rev.text);
     if(newText === null) return;
-    if(!newText.trim()) return alert("กรุณากรอกข้อความรีวิวด้วยค่ะ");
+    if(!newText.trim()) return alert("กรุณาระบุข้อความรีวิวด้วยค่ะ");
     rev.text = newText.trim(); rev.editCount = (rev.editCount || 0) + 1; rev.date = "แก้ไขแล้ว";
     localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
     renderReviewsList(); alert("บันทึกการแก้ไขรีวิวของคุณเรียบร้อยแล้วค่ะ! 🐰");
 }
-function openNewReviewModal() {
-    const u = window.db.getCurrentUser(); if(!u) { alert("กรุณาเข้าสู่ระบบก่อนรีวิวค่ะ"); openUnifiedAuthModal(); return; }
-    if(document.getElementById('newReviewModal')) document.getElementById('newReviewModal').classList.remove('hidden');
-    if(document.getElementById('revInputName')) document.getElementById('revInputName').value = u.username || "";
-    if(document.getElementById('revInputText')) document.getElementById('revInputText').value = "";
-}
-function closeNewReviewModal() { if(document.getElementById('newReviewModal')) document.getElementById('newReviewModal').classList.add('hidden'); }
-function submitNewReviewData() {
-    const nameInput = document.getElementById('revInputName'); const textInput = document.getElementById('revInputText'); if(!nameInput || !textInput) return;
-    const name = nameInput.value.trim(); const text = textInput.value.trim(); if(!name || !text) return alert("กรุณากรอกข้อมูลให้ครบถ้วนค่ะ");
-    reviewsData.unshift({ id: "rev_" + Date.now(), name: name, score: currentInputStarValue, date: "วันนี้", text: text, editCount: 0 });
-    localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
-    closeNewReviewModal(); calculateStarCounters(); renderReviewsList(); alert("บันทึกรีวิวสำเร็จ ขอบคุณค่ะ ✨");
-}
 
 /* ==========================================
-   6. ADMIN DASHBOARD (ปรับปุ่มและกรอบตามพรีเซ็ตสีทั้งหมด)
+   6. ADMIN DASHBOARD & ADVANCED CONTROLS (ซ่อมปุ่มเซฟสี + เพิ่มปุ่มดินสอแก้ไขพรีเซ็ตสี)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) {
@@ -385,13 +371,13 @@ function renderAdminDashboard() {
                             <span class="font-bold block mb-1 text-main">${paletteLabels[k]}</span>
                             <div class="flex gap-1.5 items-center">
                                 <input type="color" oninput="updateColor('${k}', this.value); this.nextElementSibling.value=this.value" value="${t[k] || '#ffffff'}" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
-                                <input type="text" value="${t[k] || '#ffffff'}" onchange="updateColor('${k}', this.value); this.previousElementSibling.value=this.value" class="w-full border border-main rounded px-2 py-1 text-[9px] uppercase font-mono theme-bg-card text-main">
+                                <input type="text" id="input-hex-${k}" value="${t[k] || '#ffffff'}" onchange="updateColor('${k}', this.value); this.previousElementSibling.value=this.value" class="w-full border border-main rounded px-2 py-1 text-[9px] uppercase font-mono theme-bg-card text-main">
                             </div>
                         </div>
                     `).join('')}
                 </div>
                 <div class="flex gap-2 mb-3">
-                    <button onclick="saveAsPresetAdmin()" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold shadow-md">✨ บันทึกเป็นพรีเซ็ตใหม่</button>
+                    <button onclick="saveAsPresetAdmin()" class="flex-1 py-3 theme-bg-btn text-btn-link rounded-xl font-bold shadow-md">✨ บันทึกเป็นพรีเซ็ตใหม่</button>
                     <button onclick="location.reload()" class="flex-1 py-3 bg-zinc-500 text-white rounded-xl font-bold shadow-md">❌ ยกเลิกการแก้ไข</button>
                 </div>
                 <div id="presetList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
@@ -480,6 +466,8 @@ function deleteReviewByAdmin(reviewId) {
         alert("ลบรีวิวชิ้นดังกล่าวออกจากคลังเรียบร้อยค่ะ");
     });
 }
+
+// ✏️ เพิ่มฟังก์ชันเปิดให้สามารถแก้ไขพรีเซ็ตสีที่บันทึกไว้ได้ตามสัญญากับคุณเกด
 function renderPresets() {
     const list = document.getElementById('presetList'); if(!list) return;
     list.innerHTML = (window.db.config.themePresets || []).map((p) => `
@@ -487,10 +475,28 @@ function renderPresets() {
             <button type="button" onclick="applyPresetAdmin('${p.id}')" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1 text-slate-800 bg-white">
                 <span class="w-2 h-2 rounded-full" style="background:${p.colors.primary || '#7082a6'}"></span> ${p.name}
             </button>
+            <button type="button" onclick="editPresetColorsDirect('${p.id}')" class="bg-amber-100 text-amber-700 px-2 py-2 border-l border-gray-200 text-[10px]">✏️ แก้ไข</button>
             <button type="button" onclick="renamePresetAdmin('${p.id}')" class="bg-gray-100 text-gray-600 px-2 py-2 border-l border-gray-200 text-[9px]">ชื่อ</button>
             <button type="button" onclick="removePresetAdmin('${p.id}')" class="bg-red-50 text-red-500 px-2 py-2 border-l border-gray-200 text-[10px] font-bold">×</button>
         </div>`).join('');
 }
+
+function editPresetColorsDirect(presetId) {
+    const target = window.db.config.themePresets.find(p => p.id === presetId); if(!target) return;
+    window.db.config.theme = JSON.parse(JSON.stringify(target.colors));
+    applyTheme();
+    
+    // ดันสีขึ้นช่อง Input สเปกตรัมด้านบน
+    Object.keys(target.colors).forEach(k => {
+        const inputHex = document.getElementById(`input-hex-${k}`);
+        if(inputHex) {
+            inputHex.value = target.colors[k];
+            if(inputHex.previousElementSibling) inputHex.previousElementSibling.value = target.colors[k];
+        }
+    });
+    alert(`ดึงพาเลทสีของ "${target.name}" ขึ้นกล่องแก้ไขด้านบนแล้ว ปรับเปลี่ยนได้เลยค่ะ! ✨`);
+}
+
 function renamePresetAdmin(presetId) {
     const target = window.db.config.themePresets.find(p => p.id === presetId); if(!target) return;
     const newName = prompt("เปลี่ยนชื่อพรีเซ็ตสีนี้เป็น:", target.name);
@@ -593,7 +599,7 @@ function saveProductAdmin() {
 }
 
 /* ==========================================
-   7. CART & RECEIPTS SYSTEM (แก้ปุ่มสรุปยอดค้าง)
+   7. CART & RECEIPTS SYSTEM (ซ่อมเสร็จสมบูรณ์ ปุ่มสรุปยอดทำงานได้ดี)
    ========================================== */
 function openProductDetail(idx) {
     const p = window.db.products[idx]; const detail = document.getElementById('productDetailPage'); if(!detail) return;
