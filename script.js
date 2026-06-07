@@ -11,9 +11,13 @@ let originalThemeBeforePreset = null;
 let currentHistoryTab = "order";
 let currentAuthTab = "user"; 
 let isRegisterMode = false;
+let currentReviewStarFilter = "all";
+let currentInputStarValue = 5;
 
 let reviewsData = JSON.parse(localStorage.getItem('web_reviews')) || [
-    { name: "คุณเอิร์น", score: 5, date: "14 พ.ค. 2567", text: "ฟอนต์สวยงาม ใช้งานง่าย ทางร้านบริการดีมากครับ" }
+    { name: "คุณเอิร์น", score: 5, date: "14 พ.ค. 2567", text: "ฟอนต์สวยงาม ใช้งานง่าย ทางร้านบริการดีมากครับ" },
+    { name: "คุณนัท", score: 4, date: "15 พ.ค. 2567", text: "น่ารักมากค่ะ จัดส่งไวมาก" },
+    { name: "คุณมิว", score: 5, date: "20 พ.ค. 2567", text: "ชอบฟอนต์ DekDec มากกกก เส้นมินิมอลถูกใจสายตกแต่ง" }
 ];
 
 window.onload = function() {
@@ -62,7 +66,7 @@ function updateCreditDisplay() {
         fields.forEach(f => f.innerText = u.credit);
     } else {
         userArea.innerHTML = `
-            <button onclick="openUnifiedAuthModal()" class="bg-[var(--btn-color)] text-white px-3 py-1.5 rounded-xl text-[10px] font-bold shadow-sm transition-all active:scale-95">
+            <button onclick="openUnifiedAuthModal()" class="theme-bg-btn text-btn-inside px-3 py-1.5 rounded-xl text-[10px] font-bold shadow-sm transition-all active:scale-95">
                 ลงชื่อเข้าใช้
             </button>
         `;
@@ -85,9 +89,17 @@ function myConfirm(msg, onOk) {
     document.getElementById('confirmCancel').onclick = () => { modal.classList.add('hidden'); };
 }
 
+/* ==========================================
+   ฟังก์ชันปรับแต่งธีมครอบคลุมทุกส่วนจริงของเว็บไซต์
+   ========================================== */
 function applyTheme() {
     const t = window.db.config.theme; const root = document.documentElement; if(!t) return;
-    ['bg', 'card', 'btn', 'textMain', 'textSub', 'border'].forEach(k => { if(t[k]) root.style.setProperty(`--${k}-color`, t[k]); });
+    // ปลดล็อกตัวแปรแมปปิ้งสีให้แปรผันครบทุกองค์ประกอบ
+    const keys = ['bgApp', 'bgCard', 'bgInput', 'bgMarquee', 'bgBtn', 'txtMain', 'txtSub', 'txtMarquee', 'txtBtnInside', 'borderColor'];
+    keys.forEach(k => { 
+        if(t[k]) root.style.setProperty(`--${k}-color`, t[k]); 
+    });
+    renderCategoryFilter(); // บังคับวาดสีกระดุมหมวดหมู่ใหม่ตามธีม
 }
 
 /* ==========================================
@@ -99,14 +111,14 @@ function openPromotionModal() {
     if(!container) return;
     
     if(!cfg.promotions || cfg.promotions.length === 0) {
-        container.innerHTML = `<div class="text-center py-10 text-gray-400 w-full text-xs">ขณะนี้ยังไม่มีโปรโมชั่นจัดขึ้นค่ะ</div>`;
+        container.innerHTML = `<div class="text-center py-10 text-sub w-full text-xs">ขณะนี้ยังไม่มีโปรโมชั่นจัดขึ้นค่ะ</div>`;
     } else {
         container.innerHTML = cfg.promotions.map(p => `
             <div class="promo-slide-card text-center space-y-3">
                 <h4 class="text-xs font-bold text-main line-clamp-1 px-2">${p.title}</h4>
-                <img src="${p.img}" class="w-full rounded-2xl aspect-[4/3] object-cover border shadow-inner">
+                <img src="${p.img}" class="w-full rounded-2xl aspect-[4/3] object-cover border border-main shadow-inner">
                 <button onclick="linkToPromoProducts('${p.brandLink}')" class="w-[90%] mx-auto py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-[10px] shadow-sm flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-basket-shopping"></i> 🛒 ดูสินค้าโปรโมชั่นเครือ ${p.brandLink}
+                    <i class="fa-solid fa-basket-shopping"></i> ดูสินค้าโปรโมชั่นเครือ ${p.brandLink}
                 </button>
             </div>
         `).join('');
@@ -158,7 +170,6 @@ function switchUnifiedTab(type) {
 function handleGearIconClick() {
     const u = window.db.getCurrentUser();
     if (u) {
-        // ล็อกอินค้างไว้แล้ว -> ทะลุเข้าหน้าแก้ไขข้อมูลส่วนตัวเลย ไม่ต้องล็อกอินใหม่
         goToUserSubPage('editProfile');
     } else {
         openUnifiedAuthModal();
@@ -238,7 +249,7 @@ document.addEventListener('change', function(e) {
 });
 
 /* ==========================================
-   4. SLIP VERIFICATION API (ระบบตรวจสอบสลิปอัตโนมัติ)
+   4. SLIP VERIFICATION API
    ========================================== */
 function verifySlipWithAPI() {
     const amountInput = document.getElementById('topupPageAmount').value.trim();
@@ -319,7 +330,7 @@ function openAllCategoriesPage() {
     document.getElementById('allCategoriesPage').classList.remove('hidden');
     const tax = window.db.getTaxonomy();
     document.getElementById('allCategoriesGrid').innerHTML = tax.categories.map(c => `
-        <div onclick="selectCategoryFromGrid('${c}')" class="category-select-card shadow-sm bg-white">
+        <div onclick="selectCategoryFromGrid('${c}')" class="category-select-card shadow-sm theme-bg-card border border-main">
             <div class="text-main text-lg mb-2"><i class="fa-solid fa-folder text-amber-400"></i></div>
             <div class="font-bold text-main text-xs">${c}</div>
         </div>`).join('');
@@ -329,10 +340,23 @@ function searchProducts(keyword) { const filtered = window.db.getProducts().filt
 
 function filterStyle(styleName) {
     storeFilterStyle = styleName;
-    const btns = document.querySelectorAll('.style-btn');
-    btns.forEach(b => { b.className = b.innerText === styleName ? "style-btn active px-4 py-1.5 rounded-full text-[11px] font-medium border btn-main text-white" : "style-btn px-4 py-1.5 rounded-full text-[11px] font-medium border bg-white text-gray-600"; });
     renderStore();
 }
+
+/* 🌟 แก้ไขบั๊กปุ่มหมวดหมู่ให้เปลี่ยนสีตามค่าที่เลือกจริง (Fix image_683b2a.png) */
+function renderCategoryFilter() {
+    const cont = document.getElementById('categoriesContainer'); const tax = window.db.getTaxonomy(); if(!cont) return;
+    
+    let allActive = storeFilterCat === 'ทั้งหมด' ? 'theme-bg-btn text-btn-inside' : 'theme-bg-input text-main';
+    let html = `<button onclick="storeFilterCat='ทั้งหมด'; renderCategoryFilter(); renderStore();" class="px-4 py-1.5 rounded-full text-[11px] font-bold border border-main whitespace-nowrap shadow-sm transition-all ${allActive}">คลังทั้งหมด</button>`;
+    
+    tax.categories.forEach(c => {
+        let currentActive = storeFilterCat === c ? 'theme-bg-btn text-btn-inside font-bold' : 'theme-bg-input text-main';
+        html += `<button onclick="storeFilterCat='${c}'; renderCategoryFilter(); renderStore();" class="px-4 py-1.5 rounded-full text-[11px] font-medium border border-main whitespace-nowrap shadow-sm transition-all ${currentActive}">${c}</button>`;
+    });
+    cont.innerHTML = html;
+}
+
 function renderStore() {
     let list = window.db.getProducts();
     if(storeFilterCat !== "ทั้งหมด") list = list.filter(p => p.category === storeFilterCat);
@@ -341,18 +365,18 @@ function renderStore() {
 }
 function renderStoreCards(products) {
     const cont = document.getElementById('productsContainer'); if(!cont) return;
-    if(products.length === 0) { cont.innerHTML = `<p class="col-span-2 text-center py-10 text-gray-400 text-xs">ไม่พบรายการสินค้า</p>`; return; }
+    if(products.length === 0) { cont.innerHTML = `<p class="col-span-2 text-center py-10 text-sub text-xs">ไม่พบรายการสินค้า</p>`; return; }
     cont.innerHTML = products.map((p) => {
         const realIdx = window.db.products.findIndex(item => item.name === p.name);
         return `
-        <div class="product-card flex flex-col justify-between h-full bg-white border">
+        <div class="product-card flex flex-col justify-between h-full theme-bg-card border border-main">
             <div onclick="openProductDetail(${realIdx})" class="cursor-pointer">
-                <img src="${p.img}" class="w-full aspect-square object-cover rounded-xl mb-2.5">
-                <span class="text-[9px] text-gray-400 font-medium block mb-0.5"><i class="fa-solid fa-folder-open mr-1"></i>${p.category}</span>
+                <img src="${p.img}" class="w-full aspect-square object-cover rounded-xl mb-2.5 border border-main">
+                <span class="text-[9px] text-sub font-medium block mb-0.5"><i class="fa-solid fa-folder-open mr-1"></i>${p.category}</span>
                 <h4 class="text-[11px] font-bold text-main line-clamp-2 leading-tight h-8">${p.name}</h4>
                 <div class="text-[12px] font-black mt-1 text-main">฿${p.price - p.discount}</div>
             </div>
-            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 btn-main py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-transform">➕ ใส่ตะกร้า</button>
+            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-btn-inside py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
         </div>`;
     }).join('');
 }
@@ -364,25 +388,25 @@ function openProductDetail(idx) {
     const p = window.db.products[idx]; const detail = document.getElementById('productDetailPage'); if(!detail) return;
     hideAllPages(); detail.classList.remove('hidden');
     detail.innerHTML = `
-        <div class="sticky top-0 bg-white px-4 py-4 flex items-center justify-between border-b z-10 shadow-sm">
+        <div class="sticky top-0 theme-bg-card px-4 py-4 flex items-center justify-between border-b border-main z-10 shadow-sm">
             <button onclick="closeProductDetail()" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
             <span class="font-bold text-main text-sm">รายละเอียดสินค้า</span>
             <div class="w-4"></div>
         </div>
         <div class="p-4 space-y-4 max-w-[520px] mx-auto text-xs">
-            <img src="${p.img}" class="w-full rounded-2xl border shadow-sm">
+            <img src="${p.img}" class="w-full rounded-2xl border border-main shadow-sm">
             <div class="flex justify-between items-start">
-                <div><h1 class="text-base font-bold text-main">${p.name}</h1><span class="inline-block mt-1 text-[10px] bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full">สินค้าพร้อมส่ง</span></div>
+                <div><h1 class="text-base font-bold text-main">${p.name}</h1><span class="inline-block mt-1 text-[10px] theme-bg-input text-sub px-2.5 py-0.5 rounded-full">สินค้าพร้อมส่ง</span></div>
                 <div class="text-right"><span class="text-lg font-black text-main">฿${p.price-p.discount}</span></div>
             </div>
-            <div class="custom-panel-card"><p class="font-bold text-main mb-3">แอปพลิเคชันที่รองรับ</p>
-                <div class="space-y-2 text-gray-600"><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Good notes</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Canva</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Procreate</label></div>
+            <div class="custom-panel-card theme-bg-card border border-main"><p class="font-bold text-main mb-3">แอปพลิเคชันที่รองรับ</p>
+                <div class="space-y-2 text-sub"><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Good notes</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Canva</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Procreate</label></div>
             </div>
-            <div class="custom-panel-card"><p class="font-bold text-main mb-1.5">รายละเอียดเพิ่มเติม</p><p class="text-gray-500 leading-relaxed">${p.desc || 'สินค้าพรีเมียมลิขสิทธิ์แท้จากทางร้าน'}</p></div>
+            <div class="custom-panel-card theme-bg-card border border-main"><p class="font-bold text-main mb-1.5">รายละเอียดเพิ่มเติม</p><p class="text-sub leading-relaxed">${p.desc || 'สินค้าพรีเมียมลิขสิทธิ์แท้จากทางร้าน'}</p></div>
         </div>
-        <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t flex gap-3 max-w-[768px] mx-auto z-50 shadow-lg">
+        <div class="fixed bottom-0 left-0 right-0 p-4 theme-bg-card border-t border-main flex gap-3 max-w-[768px] mx-auto z-50 shadow-lg">
             <button onclick="addToCartDirect(${idx}); closeProductDetail();" class="flex-1 py-3.5 border border-main text-main rounded-xl font-bold text-xs bg-white">เพิ่มลงตะกร้า</button>
-            <button onclick="buyNowDirect(${idx})" class="flex-1 py-3.5 btn-main text-white rounded-xl font-bold text-xs shadow-md">ซื้อทันที</button>
+            <button onclick="buyNowDirect(${idx})" class="flex-1 py-3.5 theme-bg-btn text-btn-inside rounded-xl font-bold text-xs shadow-md">ซื้อทันที</button>
         </div>`;
 }
 function buyNowDirect(idx) { addToCartDirect(idx); closeProductDetail(); openCartPage(); }
@@ -399,17 +423,119 @@ function updateCartCount() {
     if(el) { el.innerText = total; el.classList.toggle('hidden', total === 0); }
     localStorage.setItem('temp_cart', JSON.stringify(cart));
 }
-function openReviewPage() { hideAllPages(); document.getElementById('reviewPage').classList.remove('hidden'); renderReviewsList(); }
-function renderReviewsList() {
-    document.getElementById('reviewsContainer').innerHTML = reviewsData.map(r => `
-        <div class="custom-panel-card text-xs space-y-2 shadow-sm bg-white">
-            <div class="flex justify-between items-center"><span class="font-bold text-main">${r.name}</span><span class="text-yellow-400 font-bold">${'★'.repeat(5)}</span></div>
-            <p class="text-gray-600 font-medium">${r.text}</p>
-        </div>`).join('');
+
+/* ==========================================
+   ระบบรีวิวร้านค้าแบบจัดหมวดหมู่ดาว & สไตล์ Callout
+   ========================================== */
+function openReviewPage() { 
+    hideAllPages(); 
+    document.getElementById('reviewPage').classList.remove('hidden'); 
+    currentReviewStarFilter = "all";
+    calculateStarCounters();
+    renderReviewsList(); 
 }
-function addNewReviewPrompt() {
-    const name = prompt("ระบุชื่อของคุณ:"); const text = prompt("พิมพ์ข้อความรีวิว:");
-    if(name && text) { reviewsData.unshift({ name: name, score: 5, date: "วันนี้", text: text }); localStorage.setItem('web_reviews', JSON.stringify(reviewsData)); renderReviewsList(); }
+
+// คำนวณเลขจำนวนยอดสะสมในแต่ละหมวดหมู่ดาว
+function calculateStarCounters() {
+    if(document.getElementById('count-all')) document.getElementById('count-all').innerText = reviewsData.length;
+    for(let step=1; step<=5; step++) {
+        let totalStar = reviewsData.filter(r => Number(r.score) === step).length;
+        if(document.getElementById(`count-${step}`)) document.getElementById(`count-${step}`).innerText = totalStar;
+    }
+}
+
+function filterReviewsByStar(starType) {
+    currentReviewStarFilter = starType;
+    const buttons = document.querySelectorAll('.review-star-filter-btn');
+    buttons.forEach(b => {
+        if(b.id === `starBtn-${starType}`) {
+            b.className = "review-star-filter-btn active px-3 py-1.5 rounded-full text-[10px] font-bold border border-main theme-bg-btn text-btn-inside transition-all";
+        } else {
+            b.className = "review-star-filter-btn px-3 py-1.5 rounded-full text-[10px] font-medium border border-main theme-bg-input text-main transition-all";
+        }
+    });
+    renderReviewsList();
+}
+
+function renderReviewsList() {
+    let outputList = reviewsData;
+    if(currentReviewStarFilter !== "all") {
+        outputList = reviewsData.filter(r => Number(r.score) === Number(currentReviewStarFilter));
+    }
+    
+    const container = document.getElementById('reviewsContainer');
+    if(outputList.length === 0) {
+        container.innerHTML = `<p class="text-center py-10 text-sub text-xs">ยังไม่มีรายการรีวิวในหมวดหมู่นี้</p>`;
+        return;
+    }
+    
+    // วาดกล่องข้อความสไตล์ Alert Box/Callout Box มีเส้นแถบหนาแยกฝั่งซ้ายตามความพึงพอใจ
+    container.innerHTML = outputList.map(r => {
+        let borderLeftColor = r.score >= 4 ? 'border-l-amber-400' : 'border-l-gray-400';
+        return `
+        <div class="theme-bg-card border border-main border-l-4 ${borderLeftColor} p-4 rounded-xl text-xs space-y-1.5 shadow-sm">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-main text-[11px]">👤 ${r.name} <span class="text-[9px] font-normal text-sub ml-1">${r.date || 'เมื่อสักครู่'}</span></span>
+                <span class="text-yellow-400 font-bold text-[10px]">${'★'.repeat(r.score)}${'☆'.repeat(5-r.score)}</span>
+            </div>
+            <p class="text-sub leading-relaxed font-medium">${r.text}</p>
+        </div>`;
+    }).join('');
+}
+
+function openNewReviewModal() {
+    // 🌟 เช็คสิทธิ์ความปลอดภัย: ต้องล็อกอินและมียอดซื้อสินค้าจริงเท่านั้นจึงจะตั้งฟอร์มได้
+    const u = window.db.getCurrentUser();
+    if(!u) {
+        alert("ขออภัยค่ะ คุณต้องเข้าสู่ระบบสมาชิกก่อนเปิดสิทธิ์ให้คะแนนรีวิวร้านค้า");
+        openUnifiedAuthModal();
+        return;
+    }
+    if(!u.orderHistory || u.orderHistory.length === 0) {
+        alert("🔒 สิทธิ์เฉพาะลูกค้าที่มียอดสั่งซื้อสำเร็จแล้วเท่านั้น จึงจะสามารถเพิ่มรีวิวร้านค้าได้ค่ะ");
+        return;
+    }
+    
+    document.getElementById('newReviewModal').classList.remove('hidden');
+    setStarRatingInput(5); // ค่าเริ่มต้น 5 ดาว
+    document.getElementById('revInputName').value = u.username || "";
+    document.getElementById('revInputText').value = "";
+}
+
+function closeNewReviewModal() {
+    document.getElementById('newReviewModal').classList.add('hidden');
+}
+
+function setStarRatingInput(score) {
+    currentInputStarValue = score;
+    const stars = document.querySelectorAll('#starRatingSelectZone i');
+    stars.forEach(s => {
+        let v = Number(s.getAttribute('data-val'));
+        if(v <= score) {
+            s.className = "fa-solid fa-star cursor-pointer text-yellow-400 transition-colors";
+        } else {
+            s.className = "fa-solid fa-star cursor-pointer text-gray-200 transition-colors";
+        }
+    });
+}
+
+function submitNewReviewData() {
+    const name = document.getElementById('revInputName').value.trim();
+    const text = document.getElementById('revInputText').value.trim();
+    if(!name || !text) return alert("กรุณากรอกข้อมูลส่วนประกอบให้ครบถ้วนค่ะ");
+    
+    reviewsData.unshift({
+        name: name,
+        score: currentInputStarValue,
+        date: "วันนี้",
+        text: text
+    });
+    
+    localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
+    closeNewReviewModal();
+    calculateStarCounters();
+    renderReviewsList();
+    alert("บันทึกส่งรีวิวของคุณสำเร็จเรียบร้อยแล้ว ขอบคุณมากค่ะ 🐰✨");
 }
 
 /* ==========================================
@@ -422,23 +548,23 @@ function openUserMenuPage() {
 }
 function switchHistoryTab(tab) {
     currentHistoryTab = tab;
-    document.getElementById('tabOrderBtn').className = tab === 'order' ? 'py-2.5 rounded-xl font-bold text-xs bg-white border border-main text-main' : 'py-2.5 rounded-xl font-bold text-xs bg-gray-100 text-gray-400';
-    document.getElementById('tabTopupBtn').className = tab === 'topup' ? 'py-2.5 rounded-xl font-bold text-xs bg-white border border-main text-main' : 'py-2.5 rounded-xl font-bold text-xs bg-gray-100 text-gray-400';
+    document.getElementById('tabOrderBtn').className = tab === 'order' ? 'py-2.5 rounded-xl font-bold text-xs bg-white border border-main text-main' : 'py-2.5 rounded-xl font-bold text-xs bg-gray-100 text-gray-400 border border-transparent';
+    document.getElementById('tabTopupBtn').className = tab === 'topup' ? 'py-2.5 rounded-xl font-bold text-xs bg-white border border-main text-main' : 'py-2.5 rounded-xl font-bold text-xs bg-gray-100 text-gray-400 border border-transparent';
     renderHistoryLogs();
 }
 function renderHistoryLogs() {
     const cont = document.getElementById('historyLogsContainer'); const u = window.db.getCurrentUser(); if(!cont || !u) return;
     if(currentHistoryTab === 'order') {
-        if(!u.orderHistory || u.orderHistory.length === 0) { cont.innerHTML = `<p class="text-center text-gray-400 py-6 text-xs">ไม่มีประวัติการสั่งซื้อสินค้า</p>`; return; }
+        if(!u.orderHistory || u.orderHistory.length === 0) { cont.innerHTML = `<p class="text-center text-sub py-6 text-xs">ไม่มีประวัติการสั่งซื้อสินค้า</p>`; return; }
         cont.innerHTML = u.orderHistory.map(h => `<div class="bg-white p-3 rounded-2xl border text-[11px] shadow-sm"><div class="flex justify-between text-gray-400"><span>📅 ${h.date}</span><span class="font-bold text-main">฿${h.total}</span></div><div class="font-semibold mt-1 text-gray-700">${h.items}</div></div>`).join('');
     } else {
-        if(!u.topupHistory || u.topupHistory.length === 0) { cont.innerHTML = `<p class="text-center text-gray-400 py-6 text-xs">ไม่มีประวัติการเติมเครดิตค้างอยู่</p>`; return; }
+        if(!u.topupHistory || u.topupHistory.length === 0) { cont.innerHTML = `<p class="text-center text-sub py-6 text-xs">ไม่มีประวัติการเติมเครดิตค้างอยู่</p>`; return; }
         cont.innerHTML = u.topupHistory.map(h => `<div class="bg-white p-3 rounded-2xl border text-[11px] shadow-sm flex justify-between items-center"><div><p>📅 ${h.date}</p><p class="text-[9px] text-orange-400">${h.status}</p></div><div class="font-black text-main">+฿${h.amount}</div></div>`).join('');
     }
 }
 
 /* ==========================================
-   8. ADMIN BACKEND DASHBOARD
+   8. ADMIN BACKEND DASHBOARD (อัปเกรดระบบพรีเซ็ตแมปเปลี่ยนสี)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) { closeUnifiedAuthModal(); document.getElementById('adminPasswordInput').value = ""; renderAdminDashboard(); } else alert("รหัสผ่านไม่ถูกต้อง!"); 
@@ -454,6 +580,20 @@ function renderAdminDashboard() {
             <button onclick="removePromotionAdmin(${i})" class="text-red-500 font-bold px-2">ลบ</button>
         </div>`).join('');
 
+    // นิยามคลังจานสีเปลี่ยนได้ทุกสัดส่วนพื้นหลังรวมข้อความภายใน
+    const configPaletteLabels = {
+        bgApp: "🎨 พื้นหลังเว็บไซต์หลัก",
+        bgCard: "📦 พื้นหลังตัวการ์ด/กล่องข้อความ",
+        bgInput: "🔍 พื้นหลังกล่องพิมพ์/ช่องรับค่า",
+        bgMarquee: "🎀 พื้นหลังแบนเนอร์ข้อความวิ่ง",
+        bgBtn: "🛒 พื้นหลังปุ่มหลัก (ปุ่มตะกร้า/ปุ่มยืนยัน)",
+        txtMain: "✏️ สีข้อความหัวข้อหลัก",
+        txtSub: "✏️ สีข้อความรายละเอียดซับใน",
+        txtMarquee: "✏️ สีข้อความวิ่งบนแบนเนอร์",
+        txtBtnInside: "✏️ สีข้อความ/ไอคอนข้างในปุ่มหลัก",
+        borderColor: "🧼 สีเส้นขอบกรอบโครงสร้าง"
+    };
+
     dash.innerHTML = `
         <div class="flex justify-between items-center mb-6"><h2 class="font-bold text-main text-base uppercase">Admin Controls</h2><button onclick="location.reload()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md">Log out</button></div>
         <div class="space-y-6 pb-24 text-xs">
@@ -466,33 +606,23 @@ function renderAdminDashboard() {
                 <input type="password" id="cfgAdminPass" value="${cfg.adminPass}" class="w-full p-3 border rounded-xl mb-3">
                 <button onclick="saveShopInfo()" class="w-full py-3 btn-main rounded-xl font-bold">บันทึกข้อมูลหลัก</button>
             </div>
-            
-            <div class="bg-amber-50/60 p-4 rounded-3xl border border-amber-200">
-                <h3 class="font-bold text-xs mb-3 text-amber-900 uppercase"><i class="fa-solid fa-rectangle-ad mr-1"></i> 1.5 จัดการการ์ดโปรโมชั่น (ไอคอนกระดิ่ง)</h3>
-                <div class="space-y-2 mb-4">
-                    <input type="text" id="addPromoTitle" placeholder="ระบุข้อความ/ชื่อโปรโมชั่น *" class="w-full p-2.5 bg-white border rounded-xl">
-                    <input type="text" id="addPromoImg" placeholder="URL ลิงก์รูปภาพโปรโมชั่น (4:3)" class="w-full p-2.5 bg-white border rounded-xl">
-                    <div class="flex items-center gap-2">
-                        <label class="text-[10px] font-bold text-gray-500 whitespace-nowrap">ผูกลิงก์ไปเครือ:</label>
-                        <select id="addPromoBrand" class="w-full p-2 bg-white border rounded-xl">
-                            ${tax.brands.map(b => `<option value="${b}">${b}</option>`).join('')}
-                        </select>
-                    </div>
-                    <button onclick="addPromotionAdmin()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-sm">➕ เพิ่มการ์ดโปรโมชั่นใหม่</button>
-                </div>
-                <div class="space-y-1.5 border-t border-amber-200 pt-3">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">รายการโปรโมชั่นปัจจุบันที่มีในระบบ:</p>
-                    ${promoListHtml || '<p class="text-center text-gray-400 py-2">ไม่มีโปรโมชั่นเปิดใช้งาน</p>'}
-                </div>
-            </div>
 
+            <!-- กล่องปรับสีเวอร์ชันปลดล็อกทุกตำแหน่งของระบบ -->
             <div class="bg-gray-50 p-4 rounded-3xl border">
-                <h3 class="font-bold text-xs mb-3 text-main">2. ปรับแต่งโทนสี & พรีเซ็ตสี</h3>
-                <div class="grid grid-cols-2 gap-2 text-[10px] mb-4">
-                    ${Object.keys(t).map(k => `<div>${k}: <div class="flex gap-1"><input type="color" oninput="updateColor('${k}', this.value); this.nextElementSibling.value=this.value" value="${t[k]}" class="w-8 h-8 rounded border-0 cursor-pointer"><input type="text" value="${t[k]}" class="w-full border rounded px-1 text-[8px]"></div></div>`).join('')}
+                <h3 class="font-bold text-xs mb-3 text-main">2. ปรับแต่งสีระบบเชิงลึก (เปลี่ยนได้ทุกส่วนของร้านค้า)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] mb-4">
+                    ${Object.keys(configPaletteLabels).map(k => `
+                        <div class="bg-white p-2 rounded-xl border border-gray-100 shadow-sm">
+                            <span class="font-bold block mb-1 text-gray-600">${configPaletteLabels[k]}</span>
+                            <div class="flex gap-1.5 items-center">
+                                <input type="color" oninput="updateColor('${k}', this.value); this.nextElementSibling.value=this.value" value="${t[k] || '#ffffff'}" class="w-8 h-8 rounded border-0 cursor-pointer">
+                                <input type="text" value="${t[k] || '#ffffff'}" onchange="updateColor('${k}', this.value); this.previousElementSibling.value=this.value" class="w-full border rounded px-2 py-1 text-[9px] uppercase font-mono">
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
                 <div class="flex gap-2 mb-3">
-                    <button id="savePresetBtn" onclick="savePreset()" class="flex-1 py-3 btn-main rounded-xl font-bold">${editingPresetIdx !== null ? 'ยืนยันบันทึกพรีเซ็ตสีทับ' : 'บันทึกพรีเซ็ตสีใหม่'}</button>
+                    <button id="savePresetBtn" onclick="savePreset()" class="flex-1 py-3 btn-main rounded-xl font-bold text-white">${editingPresetIdx !== null ? 'ยืนยันบันทึกพรีเซ็ตสีทับ' : 'บันทึกพรีเซ็ตสีใหม่'}</button>
                     ${editingPresetIdx !== null ? `<button onclick="cancelEditPresetMode()" class="bg-gray-200 text-gray-600 px-4 rounded-xl font-bold">ยกเลิก</button>` : ''}
                 </div>
                 <div id="presetList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
@@ -513,51 +643,45 @@ function renderAdminDashboard() {
                 <div class="flex gap-4 p-2 bg-gray-50 rounded-xl mb-3"><label><input type="checkbox" id="admFeat"> แนะนำ</label><label><input type="checkbox" id="admLimit"> จำกัด 1 ชิ้น</label></div>
                 <button onclick="saveProductAdmin()" class="w-full py-3 btn-main rounded-xl font-bold">บันทึกสินค้าลงคลัง</button>
             </div>
-            <div class="bg-gray-50 p-4 rounded-3xl border">
-                <h3 class="font-bold text-xs mb-3 text-main">4. จัดการหมวดหมู่ป้ายคลังสินค้า & แบรนด์</h3>
-                ${['Categories', 'SubCategories', 'Brands'].map(k => `
-                    <div class="mb-3"><label class="text-[10px] font-bold text-gray-400 uppercase">${k}</label>
-                        <div class="flex flex-wrap gap-1 mt-1">
-                            ${tax[k.charAt(0).toLowerCase() + k.slice(1)].map((v, i) => `<span class="bg-white px-2.5 py-1.5 rounded-xl border border-main font-semibold text-main">${v} <button onclick="removeTax('${k}', ${i})" class="text-red-400 font-bold ml-1">×</button></span>`).join('')}
-                            <button onclick="addTax('${k}')" class="bg-white w-7 h-7 rounded-xl border border-dashed font-bold text-gray-400 flex items-center justify-center text-sm">+</button>
-                        </div>
-                    </div>`).join('')}
-            </div>
-            <div class="bg-white border border-main rounded-3xl p-4 shadow-sm">
-                <h3 class="font-bold text-xs mb-3 text-main">5. คลังสินค้าทั้งหมด (กด ▲/▼ เพื่อสลับคิวจัดอันดับ)</h3>
-                <div id="adminProductList" class="space-y-2"></div><div id="pagination" class="flex justify-center gap-1.5 mt-6"></div>
-            </div>
         </div>`;
     renderAdminProductList(); renderPresets();
 }
 
-function addPromotionAdmin() {
-    const title = document.getElementById('addPromoTitle').value.trim();
-    let img = document.getElementById('addPromoImg').value.trim();
-    const brandLink = document.getElementById('addPromoBrand').value;
-    
-    if(title === "") return alert("กรุณาระบุข้อความโปรโมชั่นด้วยค่ะ");
-    if(img === "") img = "https://picsum.photos/400/300?random=" + Math.floor(Math.random()*100);
-    
-    if(!window.db.config.promotions) window.db.config.promotions = [];
-    window.db.config.promotions.push({ title, img, brandLink });
-    window.db.saveConfig(window.db.config);
-    alert("เพิ่มการ์ดโปรโมชั่นเรียบร้อยแล้วค่ะ! 🎉");
-    renderAdminDashboard();
-    
-    const promoCount = window.db.config.promotions.length;
-    if(document.getElementById('promoBadgeCount')) document.getElementById('promoBadgeCount').innerText = promoCount;
+function savePreset() { 
+    const currentTheme = JSON.parse(JSON.stringify(window.db.config.theme));
+    if (editingPresetIdx !== null) {
+        const target = window.db.config.presets[editingPresetIdx];
+        myConfirm(`บันทึกสีทับพรีเซ็ต "${target.name}" ใช่หรือไม่?`, () => {
+            window.db.config.presets[editingPresetIdx] = { name: target.name, ...currentTheme };
+            window.db.saveConfig(window.db.config); editingPresetIdx = null; originalThemeBeforePreset = null; renderAdminDashboard();
+            alert("อัปเดตพรีเซ็ตสีเรียบร้อยแล้วค่ะ ✨");
+        });
+    } else {
+        const n = prompt("ตั้งชื่อพรีเซ็ตสี:"); if(n) { if(!window.db.config.presets) window.db.config.presets=[]; window.db.config.presets.push({name:n, ...currentTheme}); window.db.saveConfig(window.db.config); renderAdminDashboard(); }
+    }
 }
-
-function removePromotionAdmin(i) {
-    myConfirm("คุณต้องการลบการ์ดโปรโมชั่นนี้ใช่ไหม?", () => {
-        window.db.config.promotions.splice(i, 1);
-        window.db.saveConfig(window.db.config);
-        renderAdminDashboard();
-        const promoCount = window.db.config.promotions.length;
-        if(document.getElementById('promoBadgeCount')) document.getElementById('promoBadgeCount').innerText = promoCount;
-    });
+function renderPresets() {
+    const list = document.getElementById('presetList'); if(!list) return;
+    const presetsHtml = (window.db.config.presets || []).map((p, i) => `
+        <div class="flex items-center bg-white border rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+            <button onclick="applyPreset(${i})" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1 text-main"><span class="w-2 h-2 rounded-full" style="background:${p.bgBtn || '#102A43'}"></span> ${p.name}</button>
+            <button onclick="renamePreset(${i})" class="bg-green-50 text-green-600 px-2 py-2 border-l text-[10px]"><i class="fa-solid fa-tag"></i></button>
+            <button onclick="prepareEditPreset(${i})" class="bg-blue-50 text-blue-500 px-2 py-2 border-l text-[10px]"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="removePreset(${i})" class="bg-red-50 text-red-500 px-2 py-2 border-l text-[10px] font-bold">×</button>
+        </div>`).join('');
+    const backBtn = originalThemeBeforePreset ? `<button onclick="revertTheme()" class="flex-shrink-0 bg-red-500 text-white px-3 py-2 rounded-xl text-[10px] font-bold shadow-sm mr-1.5"><i class="fa-solid fa-xmark"></i> Cancel Color</button>` : '';
+    list.innerHTML = backBtn + presetsHtml;
 }
+function applyPreset(i) { 
+    if (!originalThemeBeforePreset) { originalThemeBeforePreset = JSON.parse(JSON.stringify(window.db.config.theme)); }
+    const p = window.db.config.presets[i]; Object.keys(window.db.config.theme).forEach(k => { if(p[k]) window.db.config.theme[k] = p[k]; }); 
+    applyTheme(); window.db.saveConfig(window.db.config); renderAdminDashboard(); 
+}
+function revertTheme() { if (originalThemeBeforePreset) { window.db.config.theme = JSON.parse(JSON.stringify(originalThemeBeforePreset)); originalThemeBeforePreset = null; applyTheme(); window.db.config.theme = JSON.parse(JSON.stringify(window.db.config.theme)); window.db.saveConfig(window.db.config); renderAdminDashboard(); } }
+function prepareEditPreset(i) { editingPresetIdx = i; alert("เข้าสู่โหมดปรับสีพรีเซ็ต เลือกสีใหม่แล้วกดปุ่มยืนยันบันทึกทับค่ะ"); renderAdminDashboard(); }
+function cancelEditPresetMode() { editingPresetIdx = null; renderAdminDashboard(); }
+function renamePreset(i) { const n = prompt("ระบุชื่อใหม่สำหรับพรีเซ็ตสีนี้:", window.db.config.presets[i].name); if(n && n.trim() !== "") { window.db.config.presets[i].name = n.trim(); window.db.saveConfig(window.db.config); renderAdminDashboard(); } }
+function removePreset(i) { myConfirm("ต้องการลบพรีเซ็ตสีนี้ใช่ไหม?", () => { window.db.config.presets.splice(i, 1); window.db.saveConfig(window.db.config); renderAdminDashboard(); }); }
 
 function saveShopInfo() {
     window.db.config.shopName = document.getElementById('cfgShopName').value; window.db.config.shopProfile = document.getElementById('cfgShopProfile').value;
@@ -590,47 +714,6 @@ function saveProductAdmin() {
     if(!p.name || !p.price) return alert("กรุณาระบุชื่อและราคา");
     window.db.products.unshift(p); window.db.saveProducts(window.db.products); renderAdminDashboard();
 }
-function addTax(k) { const v = prompt(`เพิ่มป้ายรายการใน ${k}:`); if(v) { window.db.taxonomy[k.charAt(0).toLowerCase()+k.slice(1)].push(v); window.db.saveTaxonomy(window.db.taxonomy); renderAdminDashboard(); } }
-function removeTax(k, i) { myConfirm(`ลบรายการใน ${k}?`, () => { window.db.taxonomy[k.charAt(0).toLowerCase()+k.slice(1)].splice(i, 1); window.db.saveTaxonomy(window.db.taxonomy); renderAdminDashboard(); }); }
-
-/* ==========================================
-   9. THEME PRESETS ENGINE
-   ========================================== */
-function savePreset() { 
-    const currentTheme = JSON.parse(JSON.stringify(window.db.config.theme));
-    if (editingPresetIdx !== null) {
-        const target = window.db.config.presets[editingPresetIdx];
-        myConfirm(`บันทึกสีทับพรีเซ็ต "${target.name}" ใช่หรือไม่?`, () => {
-            window.db.config.presets[editingPresetIdx] = { name: target.name, ...currentTheme };
-            window.db.saveConfig(window.db.config); editingPresetIdx = null; originalThemeBeforePreset = null; renderAdminDashboard();
-            alert("อัปเดตพรีเซ็ตสีเรียบร้อยแล้วค่ะ ✨");
-        });
-    } else {
-        const n = prompt("ตั้งชื่อพรีเซ็ตสี:"); if(n) { if(!window.db.config.presets) window.db.config.presets=[]; window.db.config.presets.push({name:n, ...currentTheme}); window.db.saveConfig(window.db.config); renderAdminDashboard(); }
-    }
-}
-function renderPresets() {
-    const list = document.getElementById('presetList'); if(!list) return;
-    const presetsHtml = (window.db.config.presets || []).map((p, i) => `
-        <div class="flex items-center bg-white border rounded-xl overflow-hidden shadow-sm flex-shrink-0">
-            <button onclick="applyPreset(${i})" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1 text-main"><span class="w-2 h-2 rounded-full" style="background:${p.btn || '#102A43'}"></span> ${p.name}</button>
-            <button onclick="renamePreset(${i})" class="bg-green-50 text-green-600 px-2 py-2 border-l text-[10px]"><i class="fa-solid fa-tag"></i></button>
-            <button onclick="prepareEditPreset(${i})" class="bg-blue-50 text-blue-500 px-2 py-2 border-l text-[10px]"><i class="fa-solid fa-pen"></i></button>
-            <button onclick="removePreset(${i})" class="bg-red-50 text-red-500 px-2 py-2 border-l text-[10px] font-bold">×</button>
-        </div>`).join('');
-    const backBtn = originalThemeBeforePreset ? `<button onclick="revertTheme()" class="flex-shrink-0 bg-red-500 text-white px-3 py-2 rounded-xl text-[10px] font-bold shadow-sm mr-1.5"><i class="fa-solid fa-xmark"></i> Cancel Color</button>` : '';
-    list.innerHTML = backBtn + presetsHtml;
-}
-function applyPreset(i) { 
-    if (!originalThemeBeforePreset) { originalThemeBeforePreset = JSON.parse(JSON.stringify(window.db.config.theme)); }
-    const p = window.db.config.presets[i]; Object.keys(window.db.config.theme).forEach(k => { if(p[k]) window.db.config.theme[k] = p[k]; }); 
-    applyTheme(); window.db.saveConfig(window.db.config); renderAdminDashboard(); 
-}
-function revertTheme() { if (originalThemeBeforePreset) { window.db.config.theme = JSON.parse(JSON.stringify(originalThemeBeforePreset)); originalThemeBeforePreset = null; applyTheme(); window.db.config.theme = JSON.parse(JSON.stringify(window.db.config.theme)); window.db.saveConfig(window.db.config); renderAdminDashboard(); } }
-function prepareEditPreset(i) { editingPresetIdx = i; alert("เข้าสู่โหมดปรับสีพรีเซ็ต เลือกสีใหม่แล้วกดปุ่มยืนยันบันทึกทับค่ะ"); renderAdminDashboard(); }
-function cancelEditPresetMode() { editingPresetIdx = null; renderAdminDashboard(); }
-function renamePreset(i) { const n = prompt("ระบุชื่อใหม่สำหรับพรีเซ็ตสีนี้:", window.db.config.presets[i].name); if(n && n.trim() !== "") { window.db.config.presets[i].name = n.trim(); window.db.saveConfig(window.db.config); renderAdminDashboard(); } }
-function removePreset(i) { myConfirm("ต้องการลบพรีเซ็ตสีนี้ใช่ไหม?", () => { window.db.config.presets.splice(i, 1); window.db.saveConfig(window.db.config); renderAdminDashboard(); }); }
 
 /* ==========================================
    10. CART SYSTEM & CHECKOUT
@@ -638,21 +721,19 @@ function removePreset(i) { myConfirm("ต้องการลบพรีเซ
 function openCartPage() { 
     hideAllPages(); 
     document.getElementById('cartPage').classList.remove('hidden'); 
-    if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.remove('hidden');
-    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.remove('hidden');
     renderCart(); 
 }
 function renderCart() {
     const cont = document.getElementById('cartItemsContainer'); const summary = document.getElementById('receiptSummary'); if(!cont) return;
-    if(cart.length === 0) { cont.innerHTML = `<div class="text-center py-24 text-gray-400 text-xs"><i class="fa-solid fa-basket-shopping text-3xl mb-3 block"></i>ไม่มีสินค้าในตะกร้าของคุณ</div>`; if(summary) summary.innerHTML = ""; return; }
+    if(cart.length === 0) { cont.innerHTML = `<div class="text-center py-24 text-sub text-xs"><i class="fa-solid fa-basket-shopping text-3xl mb-3 block"></i>ไม่มีสินค้าในตะกร้าของคุณ</div>`; if(summary) summary.innerHTML = ""; return; }
     cont.innerHTML = cart.map((i, idx) => `
-        <div class="card-bg p-3 rounded-2xl flex gap-3 items-center border shadow-sm text-xs bg-white">
-            <img src="${i.img}" class="w-12 h-12 rounded-xl object-cover border"><div class="flex-1 font-bold text-main truncate">${i.name}</div>
-            <div class="flex items-center gap-1.5"><button onclick="updateQty(${idx},-1)" class="w-7 h-7 border rounded-lg bg-gray-50">-</button><span class="w-4 text-center font-bold">${i.qty}</span><button onclick="updateQty(${idx},1)" class="w-7 h-7 border rounded-lg bg-gray-50">+</button></div>
+        <div class="card-bg p-3 rounded-2xl flex gap-3 items-center border border-main shadow-sm text-xs theme-bg-card">
+            <img src="${i.img}" class="w-12 h-12 rounded-xl object-cover border border-main"><div class="flex-1 font-bold text-main truncate">${i.name}</div>
+            <div class="flex items-center gap-1.5"><button onclick="updateQty(${idx},-1)" class="w-7 h-7 border border-main rounded-lg theme-bg-input text-main">-</button><span class="w-4 text-center font-bold text-main">${i.qty}</span><button onclick="updateQty(${idx},1)" class="w-7 h-7 border border-main rounded-lg theme-bg-input text-main">+</button></div>
             <button onclick="removeCartItem(${idx})" class="text-red-400 px-1 font-bold text-base">×</button>
         </div>`).join('');
     const total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
-    if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full btn-main py-4 rounded-2xl font-bold text-xs shadow-xl">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
+    if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full theme-bg-btn text-btn-inside py-4 rounded-2xl font-bold text-xs shadow-xl">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
 }
 function updateQty(idx, d) { cart[idx].qty += d; if(cart[idx].qty <= 0) cart.splice(idx,1); updateCartCount(); renderCart(); }
 function removeCartItem(idx) { myConfirm("ลบสินค้าชิ้นนี้ออกจากตะกร้า?", () => { cart.splice(idx,1); updateCartCount(); renderCart(); }); }
@@ -663,23 +744,23 @@ function finalizeOrder() {
     hideAllPages(); const rec = document.getElementById('receiptPage'); rec.classList.remove('hidden');
     let total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0); const defaultEmail = u.email || "";
     rec.innerHTML = `<div class="p-4 max-w-[500px] mx-auto text-xs space-y-4">
-        <div class="receipt-card p-6 border-main bg-white text-main"><h2 class="text-center font-bold mb-4">ใบเสร็จชำระเงิน</h2><div class="space-y-2 text-[11px] border-b border-dashed pb-4 mb-4">
-        ${cart.map(i => `<div class="flex justify-between"><span>${i.name} x${i.qty}</span><span class="font-bold">฿${(i.price-i.discount)*i.qty}</span></div>`).join('')}</div>
+        <div class="receipt-card p-6 border border-main theme-bg-card text-main"><h2 class="text-center font-bold mb-4 text-main">ใบเสร็จชำระเงิน</h2><div class="space-y-2 text-[11px] border-b border-dashed border-main pb-4 mb-4 text-sub">
+        ${cart.map(i => `<div class="flex justify-between"><span>${i.name} x${i.qty}</span><span class="font-bold text-main">฿${(i.price-i.discount)*i.qty}</span></div>`).join('')}</div>
         <div class="flex justify-between font-black text-main"><span>ยอดรวมสุทธิ</span><span>฿${total}</span></div></div>
-        <div class="bg-white p-5 rounded-3xl border space-y-3">
+        <div class="theme-bg-card p-5 rounded-3xl border border-main space-y-3">
             <h3 class="font-bold text-main">ข้อมูลสำหรับรับสิทธิ์</h3>
-            ${hasFontOrDeco ? `<input type="email" id="cusEmail" value="${defaultEmail}" placeholder="ระบุ Gmail สำหรับร่วมสิทธิ์ไดร์ฟ *" class="w-full p-3 border rounded-xl outline-none">` : ''}
-            ${hasGroup ? `<input type="text" id="cusLine" placeholder="ระบุ LINE ID ผู้ซื้อ" class="w-full p-3 border rounded-xl outline-none">` : ''}
+            ${hasFontOrDeco ? `<input type="email" id="cusEmail" value="${defaultEmail}" placeholder="ระบุ Gmail สำหรับร่วมสิทธิ์ไดร์ฟ *" class="w-full p-3 border border-main rounded-xl outline-none theme-bg-input text-main">` : ''}
+            ${hasGroup ? `<input type="text" id="cusLine" placeholder="ระบุ LINE ID ผู้ซื้อ" class="w-full p-3 border border-main rounded-xl outline-none theme-bg-input text-main">` : ''}
         </div>
-        <div class="bg-white p-5 rounded-3xl text-center border">
+        <div class="theme-bg-card p-5 rounded-3xl text-center border border-main">
             <div class="flex gap-2 justify-center mb-4">
-                <button onclick="processOrderPayment('credit')" class="py-3 px-4 btn-main text-white font-bold rounded-xl flex-1">🪪 หักจากเครดิตสมาชิก</button>
-                <button onclick="processOrderPayment('transfer')" class="py-3 px-4 bg-gray-100 text-gray-600 font-bold rounded-xl flex-1">โอนเงินธนาคารปกติ</button>
+                <button onclick="processOrderPayment('credit')" class="py-3 px-4 theme-bg-btn text-btn-inside font-bold rounded-xl flex-1">🪪 หักจากเครดิตสมาชิก</button>
+                <button onclick="processOrderPayment('transfer')" class="py-3 px-4 theme-bg-input text-main border border-main font-bold rounded-xl flex-1">โอนเงินปกติ</button>
             </div>
             <p class="font-black text-main mb-3">เลขบัญชีร้าน: ${window.db.config.paymentNo}</p>
-            <div class="p-3 border border-dashed rounded-2xl bg-gray-50 max-w-[160px] mx-auto"><img src="${window.db.config.paymentQR}" class="w-full"></div>
+            <div class="p-3 border border-main rounded-2xl bg-white max-w-[160px] mx-auto"><img src="${window.db.config.paymentQR}" class="w-full"></div>
         </div>
-        <button onclick="location.reload()" class="w-full text-gray-400 font-bold text-center">กลับหน้าหลัก</button></div>`;
+        <button onclick="location.reload()" class="w-full text-sub font-bold text-center">กลับหน้าหลัก</button></div>`;
 }
 
 function processOrderPayment(method) {
@@ -705,7 +786,6 @@ function hideAllPages() {
 function showMainLayout() {
     document.getElementById('mainPage').classList.remove('hidden');
     if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.remove('hidden');
-    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.remove('hidden');
     if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.remove('hidden');
 }
 function closeSubPage(pageId) { 
@@ -713,11 +793,6 @@ function closeSubPage(pageId) {
     showMainLayout(); 
 }
 function updateColor(k, v) { window.db.config.theme[k] = v; applyTheme(); }
-function renderCategoryFilter() {
-    const cont = document.getElementById('categoriesContainer'); const tax = window.db.getTaxonomy(); if(!cont) return;
-    cont.innerHTML = `<button onclick="storeFilterCat='ทั้งหมด'; renderStore();" class="px-4 py-1.5 rounded-full text-[11px] font-bold border btn-main text-white">คลังทั้งหมด</button>` +
-        tax.categories.map(c => `<button onclick="storeFilterCat='${c}'; renderStore();" class="px-4 py-1.5 rounded-full text-[11px] font-medium border bg-white text-gray-600 whitespace-nowrap shadow-sm">${c}</button>`).join('');
-}
 
 function goToUserSubPage(section) {
     const dropdown = document.getElementById('userDropdownMenu');
