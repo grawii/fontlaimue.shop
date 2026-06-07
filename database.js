@@ -10,105 +10,51 @@
             googleAppsScriptUrl: "", 
             adminPass: "1234",
             
-            // 🪐 โทนสีเริ่มต้นเมื่อเปิดเว็บครั้งแรก (อิงตามโทนมืด Slate Grey ในภาพ user_14)
+            // 🪐 โทนสีเริ่มต้นอิงตามโทนมืด Slate Grey ในภาพ user_14_dark-mode-ui-for-apps.jpg
             theme: {
-                bgApp: "#202430",          /* พื้นหลังเว็บไซต์หลัก */
-                bgCard: "#282d3c",         /* พื้นหลังกล่องข้อความ/แผงทั่วไป */
-                bgProductCard: "#1d212c",  /* พื้นหลังตัวการ์ดสินค้าหน้าร้าน */
-                bgInput: "#343b4f",        /* พื้นหลังกล่องพิมพ์/ช่องรับค่า */
-                bgMarquee: "#282d3c",      /* พื้นหลังแบนเนอร์ข้อความวิ่ง */
-                bgBtn: "#7082a6",          /* พื้นหลังปุ่มหลัก (ปุ่มตะกร้า/ซื้อสินค้า) */
-                bgCatBtnNormal: "#343b4f",  /* พื้นหลังปุ่มหมวดหมู่ (ปกติ) */
-                bgCatBtnActive: "#94b3ff",  /* พื้นหลังปุ่มหมวดหมู่ (เมื่อเลือกอยู่) */
-                bgModal: "#282d3c",        /* พื้นหลังกล่องป็อปอัพ / Modal */
-                bgReviewNav: "#202430",    /* พื้นหลังแถบตัวเลือกดาวหน้ารีวิว */
-                
+                bgApp: "#202430",          /* สีพื้นหลังเว็บไซต์หลัก */
+                bgCard: "#282d3c",         /* สีพื้นหลังการ์ด / แผงทั่วไป / กล่องป็อปอัพ */
+                bgInput: "#343b4f",        /* สีพื้นหลังกล่องพิมพ์ / ช่องรับค่า */
+                bgBtn: "#7082a6",          /* สีพื้นหลังปุ่มหลัก */
                 txtMain: "#ffffff",         /* สีข้อความหัวข้อหลัก */
                 txtSub: "#9ea8be",          /* สีข้อความรายละเอียดซับใน */
-                txtProductName: "#ffffff",  /* สีชื่อตัวสินค้าบนการ์ด */
-                txtMarquee: "#94b3ff",      /* สีข้อความวิ่งบนแบนเนอร์ */
                 txtBtnInside: "#ffffff",    /* สีตัวหนังสือข้างในปุ่มหลัก */
-                txtCatNormal: "#9ea8be",    /* สีตัวหนังสือปุ่มหมวดหมู่ (ปกติ) */
-                txtCatActive: "#1a1d24",    /* สีตัวหนังสือปุ่มหมวดหมู่ (เมื่อเลือกอยู่) */
-                txtModalMain: "#ffffff",    /* สีข้อความหลักในกล่องป็อปอัพ/ป้ายกรอกข้อมูล */
-                txtModalSub: "#9ea8be",     /* สีข้อความรองในกล่องป็อปอัพ */
-                txtInputText: "#ffffff",    /* สีตัวอักษรเวลาพิมพ์ลงในกล่องข้อความ */
-                
                 borderColor: "#3a4358"      /* สีเส้นขอบกรอบโครงสร้าง */
             },
             
-            // 🎨 คลังพรีเซ็ตสำเร็จรูปถอดแบบจากรูปภาพ (สามารถเข้าแก้ไขต่อได้ทุกส่วนแยกขาด)
+            // 🎨 คลังพรีเซ็ตสำเร็จรูปคัดสรรตามโทนที่กำหนด ควบคุมง่ายผ่าน 8 แกนหลัก
             presets: [
                 {
                     name: "🪐 user_14 Dark Slate (โทนมืดตามรูป)",
                     bgApp: "#202430",
                     bgCard: "#282d3c",
-                    bgProductCard: "#1d212c",
                     bgInput: "#343b4f",
-                    bgMarquee: "#282d3c",
                     bgBtn: "#7082a6",
-                    bgCatBtnNormal: "#343b4f",
-                    bgCatBtnActive: "#94b3ff",
-                    bgModal: "#282d3c",
-                    bgReviewNav: "#202430",
                     txtMain: "#ffffff",
                     txtSub: "#9ea8be",
-                    txtProductName: "#ffffff",
-                    txtMarquee: "#94b3ff",
                     txtBtnInside: "#ffffff",
-                    txtCatNormal: "#9ea8be",
-                    txtCatActive: "#1a1d24",
-                    txtModalMain: "#ffffff",
-                    txtModalSub: "#9ea8be",
-                    txtInputText: "#ffffff",
                     borderColor: "#3a4358"
                 },
                 {
                     name: "☀️ user_14 Light Mode (โทนสว่างพาสเทล)",
                     bgApp: "#f0f2f5",
                     bgCard: "#ffffff",
-                    bgProductCard: "#ffffff",
                     bgInput: "#e4e6eb",
-                    bgMarquee: "#f7f9fa",
                     bgBtn: "#2d4373",
-                    bgCatBtnNormal: "#e4e6eb",
-                    bgCatBtnActive: "#2d4373",
-                    bgModal: "#ffffff",
-                    bgReviewNav: "#f0f2f5",
                     txtMain: "#1c1e21",
                     txtSub: "#606770",
-                    txtProductName: "#1c1e21",
-                    txtMarquee: "#2d4373",
                     txtBtnInside: "#ffffff",
-                    txtCatNormal: "#606770",
-                    txtCatActive: "#ffffff",
-                    txtModalMain: "#1c1e21",
-                    txtModalSub: "#606770",
-                    txtInputText: "#1c1e21",
                     borderColor: "#ced0d4"
                 },
                 {
-                    name: "🐰 น่ารักนมเย็น (Pink Pastel)",
+                    name: "🐰 ชมพูนมเย็น (Cute Pink)",
                     bgApp: "#fdf6f6",
                     bgCard: "#ffffff",
-                    bgProductCard: "#ffffff",
                     bgInput: "#fff0f2",
-                    bgMarquee: "#fff0f2",
                     bgBtn: "#ff8da1",
-                    bgCatBtnNormal: "#fff0f2",
-                    bgCatBtnActive: "#ff8da1",
-                    bgModal: "#ffffff",
-                    bgReviewNav: "#fdf6f6",
                     txtMain: "#613b43",
                     txtSub: "#a67c84",
-                    txtProductName: "#613b43",
-                    txtMarquee: "#ff6b84",
                     txtBtnInside: "#ffffff",
-                    txtCatNormal: "#a67c84",
-                    txtCatActive: "#ffffff",
-                    txtModalMain: "#613b43",
-                    txtModalSub: "#a67c84",
-                    txtInputText: "#613b43",
                     borderColor: "#ffd6dc"
                 }
             ],
