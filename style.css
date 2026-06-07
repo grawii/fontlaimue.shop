@@ -15,7 +15,6 @@
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; padding: 0; min-height: 100vh; }
 
-/* ยึดโครงสร้างสีกราฟิกตามพรีเซ็ตที่เปลี่ยนแปลงจริง */
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
@@ -34,7 +33,6 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: #333333 !important;
 }
 
-/* 📢 จัดตำแหน่งเลย์เอาท์แบนเนอร์และสั่งเล่น Animation */
 .marquee-container {
     display: flex;
     overflow: hidden;
@@ -46,7 +44,6 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     display: inline-block;
 }
 
-/* 🎥 คีย์เฟรมการเลื่อนวิ่งสลับฝั่งของข้อความตัววิ่งแบนเนอร์ร้านค้า */
 @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-100%); }
@@ -56,7 +53,6 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     100% { transform: translateX(0%); }
 }
 
-/* หน้ารีวิวสลัดสีแปลกปลอมออก */
 #reviewPage .bg-white,
 .review-filter-bar-wrapper,
 #reviewPage div[class*="bg-gray-"],
@@ -87,7 +83,6 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-text) !important;
 }
 
-/* สไตล์แท็บคุมสีใต้ขอบ */
 #tabAuthAdminBtn.border-main, #tabAuthUserBtn.border-main {
     border-bottom-color: var(--th-primary) !important;
 }
