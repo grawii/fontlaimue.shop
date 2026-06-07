@@ -83,6 +83,7 @@ function backToStoreHome() {
     showMainLayout();
 }
 
+// ระบบกล่องข้อความยืนยันสำหรับ UI เว็บแอปพลิเคชันแบบกลมกลืนตามรูปภาพยึดหลัก responsive
 function myConfirm(msg, onOk) {
     const modal = document.getElementById('customConfirm'); if(!modal) return;
     document.getElementById('confirmMsg').innerText = msg; modal.classList.remove('hidden');
@@ -91,11 +92,19 @@ function myConfirm(msg, onOk) {
 }
 
 /* ==========================================
-   ฟังก์ชันปรับแต่งธีมครอบคลุมทุกส่วนจริงของเว็บไซต์
+   ฟังก์ชันปรับแต่งธีมเวอร์ชันอัปเกรด (แยกขาดทุกอนู 100%)
    ========================================== */
 function applyTheme() {
     const t = window.db.config.theme; const root = document.documentElement; if(!t) return;
-    const keys = ['bgApp', 'bgCard', 'bgInput', 'bgMarquee', 'bgBtn', 'txtMain', 'txtSub', 'txtMarquee', 'txtBtnInside', 'borderColor'];
+    
+    const keys = [
+        'bgApp', 'bgCard', 'bgProductCard', 'bgInput', 'bgMarquee', 'bgBtn', 
+        'bgCatBtnNormal', 'bgCatBtnActive',
+        'txtMain', 'txtSub', 'txtProductName', 'txtMarquee', 'txtBtnInside', 
+        'txtCatNormal', 'txtCatActive',
+        'borderColor'
+    ];
+    
     keys.forEach(k => { 
         if(t[k]) root.style.setProperty(`--${k}-color`, t[k]); 
     });
@@ -159,7 +168,6 @@ function switchUnifiedTab(type) {
     if(type === 'user') {
         userBtn.className = "flex-1 pb-3 text-main border-b-2 border-main"; adminBtn.className = "flex-1 pb-3 text-gray-400 border-b-2 border-transparent";
         userForm.classList.remove('hidden'); adminForm.classList.add('hidden');
-        document.getElementById('authModalTitle').innerText = "เข้าสู่ระบบสมาชิก 🐰"; 
         if(document.getElementById('mainUserAuthBtn')) document.getElementById('mainUserAuthBtn').innerText = "ลงชื่อเข้าใช้งาน";
         if(document.getElementById('toggleRegBtn')) document.getElementById('toggleRegBtn').classList.remove('hidden');
     } else {
@@ -179,7 +187,6 @@ function handleGearIconClick() {
 
 function toggleRegisterMode() {
     isRegisterMode = !isRegisterMode;
-    document.getElementById('authModalTitle').innerText = isRegisterMode ? "สมัครสมาชิกใหม่ 🐰" : "เข้าสู่ระบบสมาชิก 🐰";
     document.getElementById('mainUserAuthBtn').innerText = isRegisterMode ? "ยืนยันการสมัครสมาชิก" : "ลงชื่อเข้าใช้งาน";
     document.getElementById('toggleRegBtn').innerText = isRegisterMode ? "มีบัญชีอยู่แล้ว? สลับกลับไปเข้าสู่ระบบ" : "ยังไม่มีบัญชี? สมัครสมาชิกใหม่ที่นี่";
 }
@@ -344,20 +351,19 @@ function filterStyle(styleName) {
     renderStore();
 }
 
-/* 🌟 แก้ไขให้ใช้สีที่เปลี่ยนจากระบบแอดมิน (CSS Variable) โดยไม่มีการฟิกส์คลาสทับ */
 function renderCategoryFilter() {
     const cont = document.getElementById('categoriesContainer'); const tax = window.db.getTaxonomy(); if(!cont) return;
     
     let allStyle = storeFilterCat === 'ทั้งหมด' 
-        ? 'style="background-color: var(--bgBtn-color); color: var(--txtBtnInside-color); border-color: var(--borderColor-color); font-weight: bold;"' 
-        : 'style="background-color: var(--bgInput-color); color: var(--txtMain-color); border-color: var(--borderColor-color);"';
+        ? 'style="background-color: var(--bgCatBtnActive-color); color: var(--txtCatActive-color); border-color: var(--borderColor-color); font-weight: bold;"' 
+        : 'style="background-color: var(--bgCatBtnNormal-color); color: var(--txtCatNormal-color); border-color: var(--borderColor-color);"';
         
     let html = `<button onclick="storeFilterCat='ทั้งหมด'; renderCategoryFilter(); renderStore();" ${allStyle} class="px-4 py-1.5 rounded-full text-[11px] border whitespace-nowrap shadow-sm transition-all">คลังทั้งหมด</button>`;
     
     tax.categories.forEach(c => {
         let currentStyle = storeFilterCat === c 
-            ? 'style="background-color: var(--bgBtn-color); color: var(--txtBtnInside-color); border-color: var(--borderColor-color); font-weight: bold;"' 
-            : 'style="background-color: var(--bgInput-color); color: var(--txtMain-color); border-color: var(--borderColor-color);"';
+            ? 'style="background-color: var(--bgCatBtnActive-color); color: var(--txtCatActive-color); border-color: var(--borderColor-color); font-weight: bold;"' 
+            : 'style="background-color: var(--bgCatBtnNormal-color); color: var(--txtCatNormal-color); border-color: var(--borderColor-color);"';
             
         html += `<button onclick="storeFilterCat='${c}'; renderCategoryFilter(); renderStore();" ${currentStyle} class="px-4 py-1.5 rounded-full text-[11px] border whitespace-nowrap shadow-sm transition-all">${c}</button>`;
     });
@@ -376,11 +382,11 @@ function renderStoreCards(products) {
     cont.innerHTML = products.map((p) => {
         const realIdx = window.db.products.findIndex(item => item.name === p.name);
         return `
-        <div class="product-card flex flex-col justify-between h-full theme-bg-card border border-main">
+        <div class="product-card flex flex-col justify-between h-full theme-bg-product-card border border-main">
             <div onclick="openProductDetail(${realIdx})" class="cursor-pointer">
                 <img src="${p.img}" class="w-full aspect-square object-cover rounded-xl mb-2.5 border border-main">
                 <span class="text-[9px] text-sub font-medium block mb-0.5"><i class="fa-solid fa-folder-open mr-1"></i>${p.category}</span>
-                <h4 class="text-[11px] font-bold text-main line-clamp-2 leading-tight h-8">${p.name}</h4>
+                <h4 class="text-[11px] font-bold theme-txt-product-name line-clamp-2 leading-tight h-8">${p.name}</h4>
                 <div class="text-[12px] font-black mt-1 text-main">฿${p.price - p.discount}</div>
             </div>
             <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-btn-inside py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
@@ -432,7 +438,7 @@ function updateCartCount() {
 }
 
 /* ==========================================
-   ระบบรีวิวร้านค้าแบบจัดหมวดหมู่ดาว
+   ระบบรีวิวร้านค้า
    ========================================== */
 function openReviewPage() { 
     hideAllPages(); 
@@ -568,7 +574,7 @@ function renderHistoryLogs() {
 }
 
 /* ==========================================
-   8. ADMIN BACKEND DASHBOARD
+   8. ADMIN BACKEND DASHBOARD (อัปเกรดช่องกรอกสี)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) { closeUnifiedAuthModal(); document.getElementById('adminPasswordInput').value = ""; renderAdminDashboard(); } else alert("รหัสผ่านไม่ถูกต้อง!"); 
@@ -584,16 +590,23 @@ function renderAdminDashboard() {
             <button onclick="removePromotionAdmin(${i})" class="text-red-500 font-bold px-2">ลบ</button>
         </div>`).join('');
 
+    // แตกจานสีแยกอิสระครบสูตรแกะรหัสสีสำเร็จรูปแบบเรียลไทม์
     const configPaletteLabels = {
         bgApp: "🎨 พื้นหลังเว็บไซต์หลัก",
-        bgCard: "📦 พื้นหลังตัวการ์ด/กล่องข้อความ",
+        bgCard: "📦 พื้นหลังกล่องข้อความ/แผงทั่วไป",
+        bgProductCard: "🛍️ พื้นหลังตัวการ์ดสินค้าหน้าร้าน",
         bgInput: "🔍 พื้นหลังกล่องพิมพ์/ช่องรับค่า",
         bgMarquee: "🎀 พื้นหลังแบนเนอร์ข้อความวิ่ง",
-        bgBtn: "🛒 พื้นหลังปุ่มหลัก (ปุ่มตะกร้า/ปุ่มยืนยัน)",
+        bgBtn: "🛒 พื้นหลังปุ่มหลัก (ปุ่มตะกร้า/ซื้อสินค้า)",
+        bgCatBtnNormal: "📁 พื้นหลังปุ่มหมวดหมู่ (ปกติ)",
+        bgCatBtnActive: "📁 พื้นหลังปุ่มหมวดหมู่ (เมื่อเลือกอยู่)",
         txtMain: "✏️ สีข้อความหัวข้อหลัก",
         txtSub: "✏️ สีข้อความรายละเอียดซับใน",
+        txtProductName: "✏️ สีชื่อตัวสินค้าบนการ์ด",
         txtMarquee: "✏️ สีข้อความวิ่งบนแบนเนอร์",
-        txtBtnInside: "✏️ สีข้อความ/ไอคอนข้างในปุ่มหลัก",
+        txtBtnInside: "✏️ สีตัวหนังสือข้างในปุ่มหลัก",
+        txtCatNormal: "✏️ สีตัวหนังสือปุ่มหมวดหมู่ (ปกติ)",
+        txtCatActive: "✏️ สีตัวหนังสือปุ่มหมวดหมู่ (เมื่อเลือกอยู่)",
         borderColor: "🧼 สีเส้นขอบกรอบโครงสร้าง"
     };
 
@@ -611,7 +624,7 @@ function renderAdminDashboard() {
             </div>
 
             <div class="bg-gray-50 p-4 rounded-3xl border">
-                <h3 class="font-bold text-xs mb-3 text-main">2. ปรับแต่งสีระบบเชิงลึก (เปลี่ยนได้ทุกส่วนของร้านค้า)</h3>
+                <h3 class="font-bold text-xs mb-3 text-main">2. ศูนย์ปรับแต่งโทนสีแยกส่วน (เปลี่ยนอิสระทุกจุดไม่พ่วงกัน)</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] mb-4">
                     ${Object.keys(configPaletteLabels).map(k => `
                         <div class="bg-white p-2 rounded-xl border border-gray-100 shadow-sm">
@@ -644,6 +657,12 @@ function renderAdminDashboard() {
                 </div>
                 <div class="flex gap-4 p-2 bg-gray-50 rounded-xl mb-3"><label><input type="checkbox" id="admFeat"> แนะนำ</label><label><input type="checkbox" id="admLimit"> จำกัด 1 ชิ้น</label></div>
                 <button onclick="saveProductAdmin()" class="w-full py-3 btn-main rounded-xl font-bold">บันทึกสินค้าลงคลัง</button>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-3xl border">
+                <h3 class="font-bold text-xs mb-3 text-main">4. รายการสินค้าปัจจุบันในระบบแอป</h3>
+                <div id="adminProductList" class="space-y-2"></div>
+                <div id="pagination" class="flex gap-1 justify-center mt-4"></div>
             </div>
         </div>`;
     renderAdminProductList(); renderPresets();
@@ -778,13 +797,12 @@ function processOrderPayment(method) {
 }
 
 /* ==========================================
-   11. LAYOUT CONTROLLER (🌟 แก้ไขบั๊กแถบเลื่อนซ้อนทับหน้าต่างย่อย)
+   11. LAYOUT CONTROLLER
    ========================================== */
 function hideAllPages() {
     ['mainPage', 'productDetailPage', 'cartPage', 'receiptPage', 'userMenuPage', 'topupPage', 'reviewPage', 'allCategoriesPage', 'adminDashboard'].forEach(id => {
         const el = document.getElementById(id); if(el) el.classList.add('hidden');
     });
-    // 🌟 ซ่อนหัวเว็บ แถบค้นหา และ แถบเมนูด้านล่างสุดด้วย เพื่อไม่ให้ซ้อนทับหน้าอื่น
     if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.add('hidden');
     if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.add('hidden');
     if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.add('hidden');
