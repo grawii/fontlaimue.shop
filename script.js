@@ -447,6 +447,7 @@ function checkAdminPassword() {
     } else alert("รหัสผ่านไม่ถูกต้อง!"); 
 }
 
+// 🪐 แก้ไขจุดบอดพื้นหลังแอดมินขาวโพลนในภาพ image_5b6dfd.png โดยการล้างคลาส bg-white และใส่โครงสร้างไดนามิกครอบแทน
 function renderAdminDashboard() {
     const dash = document.getElementById('adminDashboard'); if(!dash) return;
     hideAllPages(); dash.classList.remove('hidden');
@@ -459,6 +460,8 @@ function renderAdminDashboard() {
         secondary: "📁 สีปุ่มกดทั่วไป 2 (secondary)", accent: "🎀 สีปุ่มกดทั่วไป 3 (accent)"
     };
 
+    dash.className = "page-section p-4 theme-bg-app text-main min-h-screen overflow-y-auto animate-pop";
+
     dash.innerHTML = `
         <div class="flex justify-between items-center mb-6 theme-bg-card p-4 rounded-2xl border-main">
             <h2 class="font-bold text-main text-base uppercase">Admin Controls</h2>
@@ -466,6 +469,7 @@ function renderAdminDashboard() {
         </div>
         
         <div class="space-y-6 pb-24 text-xs">
+            <!-- 1. ข้อมูลร้านค้า -->
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold mb-3 text-main">1. ข้อมูลร้านค้า & ลิงก์ระบบไดร์ฟ</h3>
                 <input type="text" id="cfgShopName" value="${cfg.shopName}" class="w-full p-3 border border-main rounded-xl mb-2 text-main bg-transparent">
@@ -476,16 +480,17 @@ function renderAdminDashboard() {
                 <button onclick="saveShopInfo()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold shadow-sm">บันทึกข้อมูลหลัก</button>
             </div>
 
+            <!-- 2. ศูนย์โทนสีแกนหลัก -->
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-1">2. ศูนย์ปรับแต่งโทนสีแกนหลัก (เปลี่ยนปุ๊บ สลับโทนเนียนตาทุกจุด)</h3>
                 <p class="text-[10px] text-amber-500 font-bold mb-3">เมื่อแต่งสีเสร็จแล้ว ตั้งชื่อกดปุ่ม "บันทึกพรีเซ็ตสีใหม่" ได้เลยค่ะ 💖</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] mb-4">
                     ${Object.keys(paletteLabels).map(k => `
-                        <div class="bg-white/10 p-2 rounded-xl border border-main shadow-inner">
+                        <div class="bg-black/10 p-2 rounded-xl border border-main shadow-inner">
                             <span class="font-bold block mb-1 text-main">${paletteLabels[k]}</span>
                             <div class="flex gap-1.5 items-center">
                                 <input type="color" oninput="updateColor('${k}', this.value); this.nextElementSibling.value=this.value" value="${t[k] || '#ffffff'}" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
-                                <input type="text" value="${t[k] || '#ffffff'}" onchange="updateColor('${k}', this.value); this.previousElementSibling.value=this.value" class="w-full border border-main rounded px-2 py-1 text-[9px] uppercase font-mono bg-white text-slate-800">
+                                <input type="text" value="${t[k] || '#ffffff'}" onchange="updateColor('${k}', this.value); this.previousElementSibling.value=this.value" class="w-full border border-main rounded px-2 py-1 text-[9px] uppercase font-mono theme-bg-card text-main">
                             </div>
                         </div>
                     `).join('')}
@@ -494,6 +499,7 @@ function renderAdminDashboard() {
                 <div id="presetList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
             </div>
 
+            <!-- 3. ระบบจัดการโปรโมชั่น Slide -->
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-2">3. ระบบจัดการโปรโมชั่นสไลด์เดอร์</h3>
                 <div class="space-y-2 mb-3" id="adminPromoListZone"></div>
@@ -506,6 +512,7 @@ function renderAdminDashboard() {
                 </div>
             </div>
 
+            <!-- 4. จัดการหมวดหมู่สินค้า & แท็กแบรนด์คลังสินค้า -->
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-2">4. จัดการโครงสร้างแท็ก & หมวดหมู่</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -527,6 +534,7 @@ function renderAdminDashboard() {
                 </div>
             </div>
 
+            <!-- 5. เพิ่ม / แก้ไขสินค้า -->
             <div id="productFormPart" class="theme-bg-card border p-4 rounded-3xl border-main">
                 <h3 class="font-bold mb-3 text-main">5. เพิ่ม / แก้ไขสินค้า & สิทธิ์ใน Drive</h3>
                 <input type="text" id="admName" placeholder="ชื่อสินค้า *" class="w-full p-3 border border-main rounded-xl mb-2 text-main bg-transparent">
@@ -543,6 +551,7 @@ function renderAdminDashboard() {
                 <button onclick="saveProductAdmin()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold">บันทึกสินค้าลงคลัง</button>
             </div>
             
+            <!-- 6. รายการสินค้าปัจจุบัน -->
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-3">6. รายการสินค้าปัจจุบันในระบบแอป</h3>
                 <div id="adminProductList" class="space-y-2"></div>
@@ -592,9 +601,6 @@ function saveShopInfo() {
     window.db.saveConfig(window.db.config); alert("บันทึกเรียบร้อย! ✨"); init();
 }
 
-/* ==========================================
-   🛠️ ส่วนดักความปลอดภัย (Element Validation) ป้องกันโค้ดแครชค้าง
-   ========================================== */
 function renderAdminPromoList() {
     const zone = document.getElementById('adminPromoListZone'); if(!zone) return;
     const promos = window.db.config.promotions || [];
@@ -694,7 +700,7 @@ function saveProductAdmin() {
         autoDriveShare: document.getElementById('admDriveShare') ? document.getElementById('admDriveShare').checked : false, 
         googleDriveFolderId: document.getElementById('admDriveFolderId') ? document.getElementById('admDriveFolderId').value : "" 
     };
-    if(!p.name || !p.price) return alert("กรุณาระบุชื่อและราคา");
+    if(!p.name || !p.price) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
     window.db.products.unshift(p); window.db.saveProducts(window.db.products); renderAdminDashboard(); renderStore();
 }
 
@@ -729,7 +735,7 @@ function finalizeOrder() {
         <div class="theme-bg-card p-5 rounded-3xl border border-main space-y-3">
             <h3 class="font-bold text-main">ข้อมูลสำหรับรับสิทธิ์</h3>
             ${hasFontOrDeco ? `<input type="email" id="cusEmail" value="${defaultEmail}" placeholder="ระบุ Gmail สำหรับร่วมสิทธิ์ไดร์ฟ *" class="w-full p-3 border border-main rounded-xl outline-none bg-white text-slate-800">` : ''}
-            ${hasGroup ? `<input type="text" id="cusLine" placeholder="ระบุ LINE ID ผู้ซื้อ" class="w-full p-3 border border-main rounded-xl outline-none bg-white text-slate-800">` : ''}
+            ${hasGroup ? `<input type="text" id="cusLine" placeholder="ระбу LINE ID ผู้ซื้อ" class="w-full p-3 border border-main rounded-xl outline-none bg-white text-slate-800">` : ''}
         </div>
         <div class="theme-bg-card p-5 rounded-3xl text-center border border-main">
             <div class="flex gap-2 justify-center mb-4">
