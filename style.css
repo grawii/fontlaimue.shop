@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* 🪐 โครงสร้างตัวแปร CSS Variable 8 แกนสำหรับคลังพรีเซ็ตสำเร็จรูป */
+/* 🪐 โครงสร้างตัวแปร CSS Variable 8 แกนคุมโทนเสถียร */
 :root {
     --th-bg: #202430;
     --th-card: #282d3c;
@@ -16,7 +16,7 @@
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; padding: 0; min-height: 100vh; }
 
-/* คลาสจับคู่อินเตอร์เฟซระบบแแอปเดคเดค */
+/* คลาสจับคู่อินเตอร์เฟซระบบ */
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
@@ -25,20 +25,21 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
 
-/* บังคับสลับสีตัวอักษรปุ่มลิ้งค์เพื่อไม่ให้จมเมื่อเจอกับพรีเซ็ตสว่าง */
+/* สลับเฉดสีตัวหนังสือบนปุ่มหลัก ไม่ให้จมหายเมื่อเจอกับพรีเซ็ตสว่าง */
 .text-btn-link {
     color: var(--th-btn-text-color) !important;
 }
 
-/* 🔍 แก้ไขแถบหมวดหมู่ดาวในหน้ารีวิวร้าน (ใช้สีพื้นหลังเว็บหลัก ไม่ใช่สีขาว!) */
+/* 🔍 ล้างปัญหาแถบหน้ารีวิวค้างสีขาว (ผูกเข้ากับสีพื้นหลังหลักอย่างสมบูรณ์) */
 #reviewPage .bg-white,
 .review-filter-bar-wrapper,
-#reviewPage div[class*="bg-gray-"] {
+#reviewPage div[class*="bg-gray-"],
+#reviewPage div[class*="bg-slate-"] {
     background-color: var(--th-bg) !important; 
     border-color: var(--th-border) !important;
 }
 
-/* บังคับให้ปุ่มกดตัวเลือกดาวภายในหน้ารีวิว อิงสีตามกล่องการ์ด */
+/* ปุ่มตัวเลือกหมวดหมู่ดาวในหน้ารีวิวร้านค้า */
 .review-star-filter-btn {
     background-color: var(--th-card) !important;
     color: var(--th-text) !important;
@@ -49,7 +50,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-btn-text-color) !important;
 }
 
-/* ป๊อปอัพล็อกอินและแผงหลังบ้าน เปลี่ยนสีตามพรีเซ็ต */
+/* กล่องป็อปอัพ (Modal) ทั้งหมดผูกสีตามพรีเซ็ต */
 #unifiedAuthModal .bg-white,
 #newReviewModal .bg-white,
 #promotionModal .bg-white,
@@ -59,7 +60,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-text) !important;
 }
 
-/* ล็อกช่อง Input ล็อกอินเด่นอ่านง่าย */
+/* ช่องข้อมูลใน Modal สว่างเด่นอ่านง่าย */
 #unifiedAuthModal input, #newReviewModal textarea {
     background-color: #ffffff !important;
     color: #1c1e21 !important;
