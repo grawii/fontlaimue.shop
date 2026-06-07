@@ -12,7 +12,6 @@ let isRegisterMode = false;
 let currentReviewStarFilter = "all";
 let currentInputStarValue = 5;
 
-// 📝 ระบบรองรับการจำกัดจำนวนโควตาแก้อีมูเลเตอร์รีวิวของลูกค้าไม่เกิน 2 ครั้ง
 let reviewsData = JSON.parse(localStorage.getItem('web_reviews')) || [
     { id: "rev_1", name: "คุณเอิร์น", score: 5, date: "14 พ.ค. 2567", text: "ฟอนต์สวยงาม ใช้งานง่าย ทางร้านบริการดีมากครับ", editCount: 0 },
     { id: "rev_2", name: "คุณนัท", score: 4, date: "15 พ.ค. 2567", text: "น่ารักมากค่ะ จัดส่งไวมาก", editCount: 0 },
@@ -96,7 +95,6 @@ function applyTheme() {
     root.style.setProperty(`--th-secondary`, t.secondary || t.primary);
     root.style.setProperty(`--th-accent`, t.accent || t.primary);
     
-    // คำนวณความสว่างสีหลักเพื่อปรับสีตัวอักษรบนปุ่ม (ป้องกันปุ่มกลืนใน Light Mode)
     const isLight = isHexColorLight(t.primary || "#7082a6");
     root.style.setProperty(`--th-btn-text-color`, isLight ? "#111111" : "#ffffff");
 
@@ -133,22 +131,23 @@ function openPromotionModal() {
             </div>
         `).join('');
     }
-    document.getElementById('promotionModal').classList.remove('hidden');
+    if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.remove('hidden');
 }
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
-function linkToPromoProducts(brandName) {
-    closePromotionModal(); hideAllPages(); showMainLayout();
-    let list = window.db.getProducts().filter(p => p.brand === brandName);
-    storeFilterCat = "ทั้งหมด"; renderCategoryFilter(); renderStoreCards(list);
-    if(document.getElementById('productsSection')) document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER
+   3. UNIFIED LOGIN CONTROLLER (ซ่อมปุ่มล็อกอิน/ปิดป็อปอัพฟันเฟือง)
    ========================================== */
 function openUnifiedAuthModal() {
-    if(document.getElementById('unifiedAuthModal')) document.getElementById('unifiedAuthModal').classList.remove('hidden');
-    switchUnifiedTab('user');
+    if(document.getElementById('unifiedAuthModal')) {
+        document.getElementById('unifiedAuthModal').classList.remove('hidden');
+        switchUnifiedTab('user');
+    }
+}
+function closeUnifiedAuthModal() {
+    if(document.getElementById('unifiedAuthModal')) {
+        document.getElementById('unifiedAuthModal').classList.add('hidden');
+    }
 }
 function switchUnifiedTab(type) {
     currentAuthTab = type; isRegisterMode = false;
@@ -189,8 +188,7 @@ function processUserAuth() {
         window.db.saveCurrentUser(mem); alert(`ยินดีต้อนรับคุณ ${user} ค่ะ`);
     }
     uInput.value = ""; pInput.value = "";
-    if(document.getElementById('unifiedAuthModal')) document.getElementById('unifiedAuthModal').classList.add('hidden'); 
-    updateCreditDisplay();
+    closeUnifiedAuthModal(); updateCreditDisplay();
 }
 function logoutUser() { 
     window.db.saveCurrentUser(null); closeSubPage('userMenuPage'); closeSubPage('topupPage');
@@ -202,7 +200,7 @@ function handleGearIconClick() {
 }
 
 /* ==========================================
-   4. STOREFRONT RENDER & FILTER
+   4. STOREFRONT RENDER & FILTER (ซ่อมการ์ดสินค้ากดได้ปกติ)
    ========================================== */
 function openAllCategoriesPage() {
     hideAllPages(); if(document.getElementById('allCategoriesPage')) document.getElementById('allCategoriesPage').classList.remove('hidden');
@@ -249,13 +247,13 @@ function renderStoreCards(products) {
                 <h4 class="text-[11px] font-bold text-main line-clamp-2 leading-tight h-8">${p.name}</h4>
                 <div class="text-[12px] font-black mt-1 text-main">฿${p.price - p.discount}</div>
             </div>
-            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-btn-link py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
+            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-white py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
         </div>`;
     }).join('');
 }
 
 /* ==========================================
-   5. REVIEWS SYSTEM (จำกัดโควตาแก้รีวิว 2 ครั้ง / แอดมินลบรีวิว)
+   5. REVIEWS SYSTEM
    ========================================== */
 function openReviewPage() { 
     hideAllPages(); if(document.getElementById('reviewPage')) document.getElementById('reviewPage').classList.remove('hidden'); 
@@ -268,6 +266,10 @@ function calculateStarCounters() {
         if(document.getElementById(`count-${step}`)) document.getElementById(`count-${step}`).innerText = totalStar;
     }
 }
+function filterReviewsByStar(starType) {
+    currentReviewStarFilter = starType;
+    renderReviewsList();
+}
 function renderReviewsList() {
     let outputList = reviewsData;
     if(currentReviewStarFilter !== "all") {
@@ -279,7 +281,6 @@ function renderReviewsList() {
     }
     const currentUser = window.db.getCurrentUser();
     container.innerHTML = outputList.map(r => {
-        // เงื่อนไขเปิดแสดงผลปุ่มแก้สำหรับเจ้าของบัญชี โดยต้องแก้ไม่เกิน 2 ครั้ง
         const isOwner = currentUser && currentUser.username === r.name;
         const remainingEdits = 2 - (r.editCount || 0);
         let editBtnHtml = "";
@@ -301,21 +302,16 @@ function renderReviewsList() {
         </div>`;
     }).join('');
 }
-
-// เปิดโมดอลแก้ไขรีวิว
 function openEditReviewModal(reviewId) {
     const rev = reviewsData.find(r => r.id === reviewId); if(!rev) return;
+    if((rev.editCount || 0) >= 2) return alert("ขออภัยค่ะ คุณสิทธิ์แก้ไขรีวิวนี้ครบพิกัด 2 ครั้งแล้วค่ะ");
     const newText = prompt("แก้ไขข้อความรีวิวของคุณที่นี่ค่ะ ✨:", rev.text);
     if(newText === null) return;
     if(!newText.trim()) return alert("กรุณาระบุข้อความรีวิวด้วยค่ะ");
-    
-    if((rev.editCount || 0) >= 2) return alert("ขออภัยค่ะ คุณสิทธิ์แก้ไขรีวิวนี้ครบพิกัด 2 ครั้งแล้วค่ะ");
-    
     rev.text = newText.trim(); rev.editCount = (rev.editCount || 0) + 1; rev.date = "แก้ไขแล้ว";
     localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
     renderReviewsList(); alert("บันทึกการแก้ไขรีวิวของคุณเรียบร้อยแล้วค่ะ! 🐰");
 }
-
 function openNewReviewModal() {
     const u = window.db.getCurrentUser(); if(!u) { alert("กรุณาเข้าสู่ระบบก่อนรีวิวค่ะ"); openUnifiedAuthModal(); return; }
     if(document.getElementById('newReviewModal')) document.getElementById('newReviewModal').classList.remove('hidden');
@@ -334,6 +330,13 @@ function submitNewReviewData() {
 /* ==========================================
    6. ADMIN DASHBOARD & ADVANCED CONTROLS
    ========================================== */
+function checkAdminPassword() { 
+    if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) {
+        closeUnifiedAuthModal();
+        document.getElementById('adminPasswordInput').value = ""; renderAdminDashboard();
+    } else alert("รหัสผ่านไม่ถูกต้อง!"); 
+}
+
 function renderAdminDashboard() {
     const dash = document.getElementById('adminDashboard'); if(!dash) return;
     hideAllPages(); dash.classList.remove('hidden');
@@ -444,28 +447,38 @@ function renderAdminDashboard() {
                 <div id="pagination" class="flex gap-1 justify-center mt-4"></div>
             </div>
         </div>`;
-    renderAdminProductList(); renderPresets(); renderAdminPromoList(); renderAdminTaxonomyLists(); renderAdminReviewManagerList();
+    renderAdminProductList(); renderPresets(); renderAdminPromoList(); renderAdminTaxonomyLists(); renderAdminReviewManagementZoneList();
 }
 
-function updateColor(k, v) { window.db.config.theme[k] = v; applyTheme(); }
-function saveAsPresetAdmin() {
-    const name = prompt("ตั้งชื่อให้พรีเซ็ตสีใหม่ชิ้นนี้ด้วยนะคะ 🎨:"); if (!name || !name.trim()) return;
-    if (!window.db.config.themePresets) window.db.config.themePresets = [];
-    const colorsCopy = JSON.parse(JSON.stringify(window.db.config.theme));
-    window.db.config.themePresets.push({ id: 'custom_' + Date.now(), name: "🎨 " + name.trim(), colors: colorsCopy });
-    window.db.saveConfig(window.db.config); renderAdminDashboard(); alert("บันทึกพรีเซ็ตใหม่เรียบร้อยแล้วค่ะ! ✨");
+function renderAdminReviewManagementZoneList() {
+    const zone = document.getElementById('adminReviewManagementZone'); if(!zone) return;
+    if(reviewsData.length === 0) { zone.innerHTML = `<p class="text-sub text-[11px]">ไม่มีประวัติรีวิวร้านค้า</p>`; return; }
+    zone.innerHTML = reviewsData.map(r => `
+        <div class="flex justify-between items-center p-2.5 border border-main rounded-xl bg-black/25 text-[11px]">
+            <div class="truncate max-w-[80%]">
+                <span class="font-bold text-main">👤 ${r.name} (${r.score} ดาว)</span>
+                <p class="text-sub truncate mt-0.5">${r.text}</p>
+            </div>
+            <button onclick="deleteReviewByAdmin('${r.id}')" class="text-red-400 font-bold px-2 hover:underline">ลบรีวิว</button>
+        </div>`).join('');
 }
-
-// 🪐 คลังเรนเดอร์พรีเซ็ตพร้อมฟังก์ชันเปลี่ยนชื่อแบรนด์และระบบปุ่มลบ
+function deleteReviewByAdmin(reviewId) {
+    myConfirm("คุณแน่ใจนะว่าต้องการลบรีวิวชิ้นนี้ของลูกค้าออกจากระบบ?", () => {
+        reviewsData = reviewsData.filter(r => r.id !== reviewId);
+        localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
+        renderAdminReviewManagementZoneList(); calculateStarCounters();
+        alert("ลบรีวิวชิ้นดังกล่าวออกจากคลังเรียบร้อยค่ะ");
+    });
+}
 function renderPresets() {
     const list = document.getElementById('presetList'); if(!list) return;
     list.innerHTML = (window.db.config.themePresets || []).map((p) => `
         <div class="flex items-center bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
-            <button onclick="applyPresetAdmin('${p.id}')" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1 text-slate-800 bg-white">
+            <button type="button" onclick="applyPresetAdmin('${p.id}')" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1 text-slate-800 bg-white">
                 <span class="w-2 h-2 rounded-full" style="background:${p.colors.primary || '#7082a6'}"></span> ${p.name}
             </button>
-            <button onclick="renamePresetAdmin('${p.id}')" class="bg-gray-100 text-gray-600 px-2 py-2 border-l border-gray-200 text-[9px]">ชื่อ</button>
-            ${p.id.toString().startsWith('custom_') || p.id.toString().startsWith('p') ? `<button onclick="removePresetAdmin('${p.id}')" class="bg-red-50 text-red-500 px-2 py-2 border-l border-gray-200 text-[10px] font-bold">×</button>` : ''}
+            <button type="button" onclick="renamePresetAdmin('${p.id}')" class="bg-gray-100 text-gray-600 px-2 py-2 border-l border-gray-200 text-[9px]">ชื่อ</button>
+            <button type="button" onclick="removePresetAdmin('${p.id}')" class="bg-red-50 text-red-500 px-2 py-2 border-l border-gray-200 text-[10px] font-bold">×</button>
         </div>`).join('');
 }
 function renamePresetAdmin(presetId) {
@@ -495,30 +508,6 @@ function saveShopInfo() {
     if(document.getElementById('cfgMarqueeText')) window.db.config.marqueeText = document.getElementById('cfgMarqueeText').value;
     if(document.getElementById('cfgGasUrl')) window.db.config.googleAppsScriptUrl = document.getElementById('cfgGasUrl').value; 
     window.db.saveConfig(window.db.config); alert("บันทึกเรียบร้อย! ✨"); init();
-}
-
-/* ==========================================
-   🔧 ส่วนแอดมินลบรีวิวร้านค้าขยะ
-   ========================================== */
-function renderAdminReviewManagerList() {
-    const zone = document.getElementById('adminReviewManagementZone'); if(!zone) return;
-    if(reviewsData.length === 0) { zone.innerHTML = `<p class="text-sub text-[11px]">ไม่มีประวัติรีวิวร้านค้า</p>`; return; }
-    zone.innerHTML = reviewsData.map(r => `
-        <div class="flex justify-between items-center p-2.5 border border-main rounded-xl bg-black/25 text-[11px]">
-            <div class="truncate max-w-[80%]">
-                <span class="font-bold text-main">👤 ${r.name} (${r.score} ดาว)</span>
-                <p class="text-sub truncate mt-0.5">${r.text}</p>
-            </div>
-            <button onclick="deleteReviewByAdmin('${r.id}')" class="text-red-400 font-bold px-2 hover:underline">ลบรีวิว</button>
-        </div>`).join('');
-}
-function deleteReviewByAdmin(reviewId) {
-    myConfirm("คุณแน่ใจนะว่าต้องการลบรีวิวชิ้นนี้ของลูกค้าออกจากระบบ?", () => {
-        reviewsData = reviewsData.filter(r => r.id !== reviewId);
-        localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
-        renderAdminReviewManagerList(); calculateStarCounters();
-        alert("ลบรีวิวชิ้นดังกล่าวออกจากคลังเรียบร้อยค่ะ");
-    });
 }
 
 function renderAdminPromoList() {
@@ -586,44 +575,4 @@ function saveProductAdmin() {
     const nameEl = document.getElementById('admName'); const priceEl = document.getElementById('admPrice'); if(!nameEl || !priceEl) return;
     const p = { 
         name: nameEl.value, price: Number(priceEl.value), discount: Number(document.getElementById('admDisc') ? document.getElementById('admDisc').value : 0), 
-        category: document.getElementById('admCat') ? document.getElementById('admCat').value : "ฟอนต์", subCategory: document.getElementById('admSub') ? document.getElementById('admSub').value : "ลายมือ", brand: document.getElementById('admBrand') ? document.getElementById('admBrand').value : "DekDec Studio", 
-        img: (document.getElementById('admImg') && document.getElementById('admImg').value) || "https://picsum.photos/400/400", desc: document.getElementById('admDesc') ? document.getElementById('admDesc').value : "", featured: document.getElementById('admFeat') ? document.getElementById('admFeat').checked : false, limitOne: document.getElementById('admLimit') ? document.getElementById('admLimit').checked : false, autoDriveShare: document.getElementById('admDriveShare') ? document.getElementById('admDriveShare').checked : false, googleDriveFolderId: document.getElementById('admDriveFolderId') ? document.getElementById('admDriveFolderId').value : "" 
-    };
-    if(!p.name || !p.price) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-    window.db.products.unshift(p); window.db.saveProducts(window.db.products); renderAdminDashboard(); renderStore();
-}
-
-/* ==========================================
-   7. CART & LAYOUT MANAGER
-   ========================================== */
-function openCartPage() { hideAllPages(); if(document.getElementById('cartPage')) document.getElementById('cartPage').classList.remove('hidden'); renderCart(); }
-function renderCart() {
-    const cont = document.getElementById('cartItemsContainer'); const summary = document.getElementById('receiptSummary'); if(!cont) return;
-    if(cart.length === 0) { cont.innerHTML = `<div class="text-center py-24 text-sub text-xs"><i class="fa-solid fa-basket-shopping text-3xl mb-3 block"></i>ไม่มีสินค้าในตะกร้าของคุณ</div>`; if(summary) summary.innerHTML = ""; return; }
-    cont.innerHTML = cart.map((i, idx) => `
-        <div class="card-bg p-3 rounded-2xl flex gap-3 items-center border border-main shadow-sm text-xs theme-bg-card">
-            <img src="${i.img}" class="w-12 h-12 rounded-xl object-cover border border-main"><div class="flex-1 font-bold text-main truncate">${i.name}</div>
-            <div class="flex items-center gap-1.5"><button onclick="updateQty(${idx},-1)" class="w-7 h-7 border border-main rounded-lg theme-bg-card text-main">-</button><span class="w-4 text-center font-bold text-main">${i.qty}</span><button onclick="updateQty(${idx},1)" class="w-7 h-7 border border-main rounded-lg theme-bg-card text-main">+</button></div>
-            <button onclick="removeCartItem(${idx})" class="text-red-400 px-1 font-bold text-base">×</button>
-        </div>`).join('');
-    const total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
-    if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full theme-bg-btn text-btn-link py-4 rounded-2xl font-bold text-xs shadow-xl">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
-}
-function updateQty(idx, d) { cart[idx].qty += d; if(cart[idx].qty <= 0) cart.splice(idx,1); updateCartCount(); renderCart(); }
-function removeCartItem(idx) { myConfirm("ลบสินค้าชิ้นนี้ออกจากตะกร้า?", () => { cart.splice(idx,1); updateCartCount(); renderCart(); }); }
-
-function hideAllPages() {
-    ['mainPage', 'productDetailPage', 'cartPage', 'receiptPage', 'userMenuPage', 'topupPage', 'reviewPage', 'allCategoriesPage', 'adminDashboard'].forEach(id => {
-        const el = document.getElementById(id); if(el) el.classList.add('hidden');
-    });
-    if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.add('hidden');
-    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.add('hidden');
-    if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.add('hidden');
-}
-function showMainLayout() {
-    if(document.getElementById('mainPage')) document.getElementById('mainPage').classList.remove('hidden');
-    if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.remove('hidden');
-    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.remove('hidden');
-    if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.remove('hidden');
-}
-function closeSubPage(pageId) { if(document.getElementById(pageId)) document.getElementById(pageId).classList.add('hidden'); showMainLayout(); }
+        category: document.getElementById('admCat') ? document.getElementById('admCat').value : "ฟอนต์", subCategory: document.getElementById('admSub') ? document.getElementById('admSub').value : "ลายมือ", brand: document
