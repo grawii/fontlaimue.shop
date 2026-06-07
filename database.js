@@ -10,27 +10,34 @@
             googleAppsScriptUrl: "", 
             adminPass: "1234",
             
-            // 🌟 1. โทนสีเริ่มต้นเมื่อเปิดเว็บครั้งแรก
+            // 🪐 โทนสีเริ่มต้นเมื่อเปิดเว็บครั้งแรก (อิงตามโทนมืด Slate Grey ในภาพ user_14)
             theme: {
-                bgApp: "#202430",          /* พื้นหลังแอปโทนเข้มลึก Slate Grey */
-                bgCard: "#282d3c",         /* พื้นหลังการ์ด/กล่องข้อความย่อย */
-                bgProductCard: "#1d212c",  /* พื้นหลังการ์ดสินค้า */
-                bgInput: "#343b4f",        /* ช่องค้นหา/ช่องรับค่า */
-                bgMarquee: "#282d3c",      /* แบนเนอร์ข้อความวิ่ง */
-                bgBtn: "#7082a6",          /* ปุ่มหลักโทนน้ำเงินอมเทา */
-                bgCatBtnNormal: "#343b4f",  /* ปุ่มหมวดหมู่ปกติ */
-                bgCatBtnActive: "#94b3ff",  /* ปุ่มหมวดหมู่ที่เลือกอยู่ (สีฟ้าสว่างไฮไลต์) */
-                txtMain: "#ffffff",         /* ข้อความหลัก */
-                txtSub: "#9ea8be",          /* ข้อความรอง */
-                txtProductName: "#ffffff",  /* ชื่อสินค้า */
-                txtMarquee: "#94b3ff",      /* ข้อความวิ่ง */
-                txtBtnInside: "#ffffff",    /* ตัวหนังสือบนปุ่มหลัก */
-                txtCatNormal: "#9ea8be",    /* ตัวหนังสือหมวดหมู่ปกติ */
-                txtCatActive: "#1a1d24",    /* ตัวหนังสือหมวดหมู่ที่เลือกอยู่ */
-                borderColor: "#3a4358"      /* เส้นขอบ */
+                bgApp: "#202430",          /* พื้นหลังเว็บไซต์หลัก */
+                bgCard: "#282d3c",         /* พื้นหลังกล่องข้อความ/แผงทั่วไป */
+                bgProductCard: "#1d212c",  /* พื้นหลังตัวการ์ดสินค้าหน้าร้าน */
+                bgInput: "#343b4f",        /* พื้นหลังกล่องพิมพ์/ช่องรับค่า */
+                bgMarquee: "#282d3c",      /* พื้นหลังแบนเนอร์ข้อความวิ่ง */
+                bgBtn: "#7082a6",          /* พื้นหลังปุ่มหลัก (ปุ่มตะกร้า/ซื้อสินค้า) */
+                bgCatBtnNormal: "#343b4f",  /* พื้นหลังปุ่มหมวดหมู่ (ปกติ) */
+                bgCatBtnActive: "#94b3ff",  /* พื้นหลังปุ่มหมวดหมู่ (เมื่อเลือกอยู่) */
+                bgModal: "#282d3c",        /* พื้นหลังกล่องป็อปอัพ / Modal */
+                bgReviewNav: "#202430",    /* พื้นหลังแถบตัวเลือกดาวหน้ารีวิว */
+                
+                txtMain: "#ffffff",         /* สีข้อความหัวข้อหลัก */
+                txtSub: "#9ea8be",          /* สีข้อความรายละเอียดซับใน */
+                txtProductName: "#ffffff",  /* สีชื่อตัวสินค้าบนการ์ด */
+                txtMarquee: "#94b3ff",      /* สีข้อความวิ่งบนแบนเนอร์ */
+                txtBtnInside: "#ffffff",    /* สีตัวหนังสือข้างในปุ่มหลัก */
+                txtCatNormal: "#9ea8be",    /* สีตัวหนังสือปุ่มหมวดหมู่ (ปกติ) */
+                txtCatActive: "#1a1d24",    /* สีตัวหนังสือปุ่มหมวดหมู่ (เมื่อเลือกอยู่) */
+                txtModalMain: "#ffffff",    /* สีข้อความหลักในกล่องป็อปอัพ/ป้ายกรอกข้อมูล */
+                txtModalSub: "#9ea8be",     /* สีข้อความรองในกล่องป็อปอัพ */
+                txtInputText: "#ffffff",    /* สีตัวอักษรเวลาพิมพ์ลงในกล่องข้อความ */
+                
+                borderColor: "#3a4358"      /* สีเส้นขอบกรอบโครงสร้าง */
             },
             
-            // 🌟 2. แผงพรีเซ็ตสีสำเร็จรูปถอดแบบจากรูป user_14_dark-mode-ui-for-apps.jpg (แก้ไขในระบบได้ทุกส่วน)
+            // 🎨 คลังพรีเซ็ตสำเร็จรูปถอดแบบจากรูปภาพ (สามารถเข้าแก้ไขต่อได้ทุกส่วนแยกขาด)
             presets: [
                 {
                     name: "🪐 user_14 Dark Slate (โทนมืดตามรูป)",
@@ -42,6 +49,8 @@
                     bgBtn: "#7082a6",
                     bgCatBtnNormal: "#343b4f",
                     bgCatBtnActive: "#94b3ff",
+                    bgModal: "#282d3c",
+                    bgReviewNav: "#202430",
                     txtMain: "#ffffff",
                     txtSub: "#9ea8be",
                     txtProductName: "#ffffff",
@@ -49,6 +58,9 @@
                     txtBtnInside: "#ffffff",
                     txtCatNormal: "#9ea8be",
                     txtCatActive: "#1a1d24",
+                    txtModalMain: "#ffffff",
+                    txtModalSub: "#9ea8be",
+                    txtInputText: "#ffffff",
                     borderColor: "#3a4358"
                 },
                 {
@@ -61,6 +73,8 @@
                     bgBtn: "#2d4373",
                     bgCatBtnNormal: "#e4e6eb",
                     bgCatBtnActive: "#2d4373",
+                    bgModal: "#ffffff",
+                    bgReviewNav: "#f0f2f5",
                     txtMain: "#1c1e21",
                     txtSub: "#606770",
                     txtProductName: "#1c1e21",
@@ -68,10 +82,13 @@
                     txtBtnInside: "#ffffff",
                     txtCatNormal: "#606770",
                     txtCatActive: "#ffffff",
+                    txtModalMain: "#1c1e21",
+                    txtModalSub: "#606770",
+                    txtInputText: "#1c1e21",
                     borderColor: "#ced0d4"
                 },
                 {
-                    name: "🎨 คิวท์พาสเทล (Cute Pastel)",
+                    name: "🐰 น่ารักนมเย็น (Pink Pastel)",
                     bgApp: "#fdf6f6",
                     bgCard: "#ffffff",
                     bgProductCard: "#ffffff",
@@ -80,6 +97,8 @@
                     bgBtn: "#ff8da1",
                     bgCatBtnNormal: "#fff0f2",
                     bgCatBtnActive: "#ff8da1",
+                    bgModal: "#ffffff",
+                    bgReviewNav: "#fdf6f6",
                     txtMain: "#613b43",
                     txtSub: "#a67c84",
                     txtProductName: "#613b43",
@@ -87,6 +106,9 @@
                     txtBtnInside: "#ffffff",
                     txtCatNormal: "#a67c84",
                     txtCatActive: "#ffffff",
+                    txtModalMain: "#613b43",
+                    txtModalSub: "#a67c84",
+                    txtInputText: "#613b43",
                     borderColor: "#ffd6dc"
                 }
             ],
@@ -108,7 +130,6 @@
         ]
     };
 
-    // ระบบโหลดและบันทึกลง LocalStorage
     if (!localStorage.getItem('dekdec_store_db')) {
         localStorage.setItem('dekdec_store_db', JSON.stringify(defaultData));
     }
