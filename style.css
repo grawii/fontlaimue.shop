@@ -60,6 +60,12 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-text) !important;
 }
 
+/* 🔍 แก้ไขปุ่มสลับแท็บล็อกอินสำหรับผู้ดูแลระบบให้ทำงานตามเฉดสีจริง */
+#tabAuthAdminBtn.border-main, 
+#tabAuthUserBtn.border-main {
+    border-bottom-color: var(--th-primary) !important;
+}
+
 #unifiedAuthModal input, #newReviewModal textarea {
     background-color: #ffffff !important;
     color: #1c1e21 !important;
@@ -85,6 +91,20 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 #adminDashboard select option {
     background-color: var(--th-card) !important;
     color: var(--th-text) !important;
+}
+
+/* 🧼 ล้างสีเทาเข้มออก เปลี่ยนเป็นโทนขาว/เทาอ่อนนุ่มละมุนตาตามรีเควสของคุณเกด */
+.admin-inner-panel {
+    background-color: #ffffff !important;
+    border-color: var(--th-border) !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.03) !important;
+}
+
+/* บังคับสลับสีฟอนต์ให้อ่านง่ายเมื่อแผงอินเนอร์ปรับเป็นสีขาวสว่าง */
+.admin-inner-panel p, 
+.admin-inner-panel span,
+.admin-inner-panel label {
+    color: #333333 !important;
 }
 
 .app-container {
