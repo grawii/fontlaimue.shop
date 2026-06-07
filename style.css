@@ -30,7 +30,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-btn-text-color) !important;
 }
 
-/* 🔍 ล้างปัญหาแถบหน้ารีวิวค้างสีขาว (ผูกเข้ากับสีพื้นหลังหลักอย่างสมบูรณ์) */
+/* 🔍 ล้างปัญหาแถบหน้ารีวิวและแอดมินค้างสีแปลกปลอม */
 #reviewPage .bg-white,
 .review-filter-bar-wrapper,
 #reviewPage div[class*="bg-gray-"],
@@ -50,17 +50,18 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-btn-text-color) !important;
 }
 
-/* กล่องป็อปอัพ (Modal) ทั้งหมดผูกสีตามพรีเซ็ต */
+/* กล่องป็อปอัพ (Modal) และฟอร์มล็อกอินหลังบ้านผูกสีตามพรีเซ็ต */
 #unifiedAuthModal .bg-white,
 #newReviewModal .bg-white,
 #promotionModal .bg-white,
-.modal-content-card {
+.modal-content-card,
+#unifiedAuthModal div[class*="bg-white"] {
     background-color: var(--th-card) !important;
     border: 1px solid var(--th-border) !important;
     color: var(--th-text) !important;
 }
 
-/* ช่องข้อมูลใน Modal สว่างเด่นอ่านง่าย */
+/* ช่องข้อมูลในอินพุตต่างๆ ของ Modal สว่างและพิมพ์อ่านง่าย */
 #unifiedAuthModal input, #newReviewModal textarea {
     background-color: #ffffff !important;
     color: #1c1e21 !important;
@@ -76,6 +77,16 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     background-color: var(--th-card) !important;
     color: var(--th-text) !important;
     border: 1px solid var(--th-border) !important;
+}
+
+/* ปรับแต่งอินพุต Select และ Textarea ในระบบหลังบ้านให้ตรงธีมเสมอ */
+#adminDashboard input, #adminDashboard select, #adminDashboard textarea {
+    border-color: var(--th-border) !important;
+    color: var(--th-text) !important;
+}
+#adminDashboard select option {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
 }
 
 .app-container {
