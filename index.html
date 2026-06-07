@@ -13,7 +13,7 @@
 
     <div class="app-container">
         
-        <div id="topSearchBar" class="px-4 pt-4 pb-3 flex gap-2 items-center bg-white">
+        <div id="topSearchBar" class="px-4 pt-4 pb-3 flex gap-2 items-center bg-white sticky top-0 z-50">
             <button onclick="openPromotionModal()" class="w-10 h-10 bg-[#F1F3F5] rounded-full flex items-center justify-center text-main text-sm shadow-sm flex-shrink-0 transition-transform active:scale-90 relative">
                 <i class="fa-solid fa-bell animate-bounce-slow"></i>
                 <span id="promoBadgeCount" class="absolute top-0 right-0 bg-amber-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">0</span>
@@ -24,7 +24,7 @@
                 <input type="text" id="searchInput" oninput="searchProducts(this.value)" placeholder="ค้นหาสินค้า" class="w-full pl-10 pr-4 py-2.5 bg-[#F1F3F5] rounded-full text-xs outline-none border border-transparent focus:border-main transition-all">
             </div>
             
-            <button onclick="openUnifiedAuthModal()" class="p-2.5 bg-[#F1F3F5] rounded-full text-gray-600 text-sm flex-shrink-0 transition-transform active:scale-90" title="เข้าสู่ระบบ">
+            <button onclick="handleGearIconClick()" class="p-2.5 bg-[#F1F3F5] rounded-full text-gray-600 text-sm flex-shrink-0 transition-transform active:scale-90" title="จัดการบัญชีสมาชิก">
                 <i class="fa-solid fa-user-gear"></i>
             </button>
             
@@ -34,21 +34,19 @@
             </button>
         </div>
 
-        <div class="max-w-[520px] mx-auto px-4 pb-3 bg-white">
+        <div class="w-full max-w-[560px] mx-auto px-4 pb-3 bg-white">
             <div class="bg-[var(--card-color)] border border-gray-100 rounded-3xl shadow-sm overflow-hidden transition-all duration-300">
                 
                 <div id="userHeaderCard" onclick="toggleUserDropdown()" class="p-4 flex items-center justify-between cursor-pointer select-none hover:bg-gray-50/50 transition-colors">
                     <div class="flex items-center gap-3">
-                        <img id="shopProfile" src="" class="w-11 h-11 rounded-2xl object-cover border shadow-inner" alt="Shop Profile">
-                        <div>
-                            <h1 id="shopName" class="text-sm font-black text-main leading-tight">Loading...</h1>
+                        <img id="shopProfile" src="" alt="Shop" class="w-10 h-10 rounded-2xl object-cover border shadow-sm">
+                        <div class="flex flex-col">
+                            <h1 id="shopName" class="font-bold text-sm text-main leading-tight">Loading...</h1>
                             <p class="text-[10px] text-sub font-medium">ยินดีต้อนรับสู่คลังความน่ารัก 🐰</p>
                         </div>
                     </div>
-
                     <div class="flex items-center gap-2">
-                        <div id="userStatusArea" class="text-right">
-                            </div>
+                        <div id="userStatusArea" class="text-right"></div>
                         <div id="dropdownArrowIcon" class="text-xs text-gray-300 transition-transform duration-300 hidden">▼</div>
                     </div>
                 </div>
@@ -64,7 +62,6 @@
 
             </div>
         </div>
-        </header>
 
         <main id="mainPage" class="page-section pb-32 bg-white">
             <div class="mx-4 mt-4 py-2.5 bg-white border border-gray-200 rounded-[25px] overflow-hidden whitespace-nowrap shadow-sm">
@@ -90,12 +87,14 @@
                 <i class="fa-solid fa-cubes text-base"></i>
                 <span class="text-[9px] font-bold">รวมสินค้า</span>
             </button>
+            
             <div class="relative w-20 flex justify-center">
                 <button onclick="backToStoreHome()" class="w-14 h-14 btn-main text-white rounded-full flex flex-col items-center justify-center shadow-md -translate-y-4 active:scale-90 transition-transform border-4 border-white">
                     <i class="fa-solid fa-house text-lg"></i>
                     <span class="text-[8px] font-bold mt-0.5">หน้าแรก</span>
                 </button>
             </div>
+
             <button onclick="openReviewPage()" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-main transition-transform active:scale-95">
                 <i class="fa-solid fa-star text-base text-amber-400"></i>
                 <span class="text-[9px] font-bold">รีวิวร้าน</span>
@@ -116,13 +115,77 @@
 
         <main id="receiptPage" class="page-section hidden fixed inset-0 z-[60] bg-[#F8F9FA] overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl"></main>
         
-        <main id="reviewPage" class="page-section hidden fixed inset-0 z-50 bg-[#F8F9FA] overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
-            <div class="sticky top-0 bg-white px-4 py-4 flex items-center border-b z-10 shadow-sm">
-                <button onclick="closeSubPage('reviewPage')" class="text-xl p-1 text-main"><i class="fa-solid fa-chevron-left"></i></button>
-                <h2 class="text-md font-bold text-main mx-auto"><i class="fa-solid fa-star text-yellow-400 mr-1"></i> รีวิวสินค้า</h2>
-                <button onclick="addNewReviewPrompt()" class="bg-main text-white px-3 py-1.5 rounded-full text-[10px] font-bold shadow-sm">เพิ่มรีวิว</button>
+        <main id="userMenuPage" class="page-section hidden fixed inset-0 z-50 bg-[#F8F9FA] overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
+            <div class="sticky top-0 bg-white px-4 py-4 flex items-center justify-between border-b z-10 shadow-sm">
+                <button onclick="closeSubPage('userMenuPage')" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
+                <span class="font-bold text-main text-sm">👤 แก้ไขข้อมูลส่วนตัวสมาชิก</span>
+                <button onclick="logoutUser()" class="text-red-500 font-bold text-xs">ออกจากระบบ</button>
             </div>
-            <div class="p-4 space-y-3" id="reviewsContainer"></div>
+            <div class="p-4 space-y-4 text-xs max-w-[480px] mx-auto">
+                <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3">
+                    <h3 class="font-bold text-main uppercase text-xs"><i class="fa-solid fa-user-pen mr-1"></i> รายละเอียดข้อมูลบัญชี</h3>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">ชื่อผู้ใช้งาน (แสดงผล)</label>
+                        <input type="text" id="usrEditName" class="w-full p-3 border rounded-xl outline-none focus:border-main bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">อีเมลส่วนตัว (รับสิทธิ์ไดร์ฟ)</label>
+                        <input type="email" id="usrEditEmail" class="w-full p-3 border rounded-xl outline-none focus:border-main bg-gray-50" placeholder="example@gmail.com">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">เปลี่ยนรหัสผ่านใหม่</label>
+                        <input type="password" id="usrEditPass" class="w-full p-3 border rounded-xl outline-none focus:border-main bg-gray-50" placeholder="กรอกรหัสผ่านใหม่เพื่อเปลี่ยน">
+                    </div>
+                    <button onclick="saveUserProfileData()" class="w-full py-3 btn-main rounded-xl font-bold shadow-md">บันทึกข้อมูลส่วนตัว</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button onclick="switchHistoryTab('order')" id="tabOrderBtn" class="py-2.5 rounded-xl font-bold bg-white border border-main text-main">ประวัติการสั่งซื้อสินค้า</button>
+                    <button onclick="switchHistoryTab('topup')" id="tabTopupBtn" class="py-2.5 rounded-xl font-bold bg-gray-100 text-gray-400">ประวัติการเติมเครดิต</button>
+                </div>
+                <div id="historyLogsContainer" class="space-y-2"></div>
+            </div>
+        </main>
+
+        <main id="topupPage" class="page-section hidden fixed inset-0 z-50 bg-[#F8F9FA] overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
+            <div class="sticky top-0 bg-white px-4 py-4 flex items-center justify-between border-b z-10 shadow-sm">
+                <button onclick="closeSubPage('topupPage')" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
+                <span class="font-bold text-main text-sm">💰 ศูนย์เติมเครดิตระบบ</span>
+                <div class="w-10"></div>
+            </div>
+            <div class="p-4 space-y-4 text-xs max-w-[480px] mx-auto">
+                <div class="bg-white p-5 rounded-3xl border border-gray-100 text-center shadow-sm">
+                    <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase tracking-wider">เครดิตสะสมคงเหลือปัจจุบัน</p>
+                    <h2 class="text-3xl font-black text-main">฿<span class="userCreditDisplayField">0</span></h2>
+                </div>
+                <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm text-center space-y-3">
+                    <h3 class="font-bold text-main uppercase text-xs text-left border-b pb-2"><i class="fa-solid fa-university mr-1"></i> บัญชีธนาคารร้าน</h3>
+                    <p id="bankNoDisplay" class="font-black text-main text-sm bg-gray-50 py-2.5 rounded-xl border border-dashed border-gray-200">Loading...</p>
+                    <div class="p-3 border rounded-2xl bg-gray-50 max-w-[150px] mx-auto">
+                        <img id="bankQRDisplay" src="" class="w-full rounded-xl">
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3">
+                    <h3 class="font-bold text-main uppercase text-xs"><i class="fa-solid fa-receipt mr-1"></i> อัปโหลดรูปภาพสลิปตรวจสอบ API</h3>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">จำนวนเงินตามสลิป (บาท) *</label>
+                        <input type="number" id="topupPageAmount" placeholder="ระบุจำนวนเงินที่โอนจริง" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-main font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">รูปหลักฐานการโอนเงิน *</label>
+                        <div class="relative w-full p-4 border border-dashed border-gray-200 rounded-xl bg-gray-50 text-center cursor-pointer hover:bg-gray-100/50 transition-colors">
+                            <input type="file" id="slipFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <div id="slipUploadPlaceholder" class="space-y-1 text-gray-400">
+                                <i class="fa-solid fa-cloud-arrow-up text-xl text-main"></i>
+                                <p class="text-[10px] font-bold">คลิกเพื่อเลือกไฟล์รูปภาพสลิป</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="verifySlipWithAPI()" id="verifySlipBtn" class="w-full py-3.5 btn-main rounded-xl font-bold shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-shield-check"></i> ตรวจสอบสลิปและเติมเครดิต
+                    </button>
+                </div>
+            </div>
         </main>
         
         <main id="allCategoriesPage" class="page-section hidden fixed inset-0 z-50 bg-[#F8F9FA] overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
@@ -136,47 +199,13 @@
             </div>
         </main>
 
-        <main id="userMenuPage" class="page-section hidden fixed inset-0 z-50 bg-[#F8F9FA] overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
-            <div class="sticky top-0 bg-white px-4 py-4 flex items-center justify-between border-b z-10 shadow-sm">
-                <button onclick="closeSubPage('userMenuPage')" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
-                <span class="font-bold text-main text-sm">แผงข้อมูลสมาชิก</span>
-                <button onclick="logoutUser()" class="text-red-500 font-bold text-xs">ออกจากระบบ</button>
+        <main id="reviewPage" class="page-section hidden fixed inset-0 z-50 bg-[#F8F9FA] overflow-y-auto w-full max-w-[768px] mx-auto pb-24 shadow-2xl">
+            <div class="sticky top-0 bg-white px-4 py-4 flex items-center border-b z-10 shadow-sm">
+                <button onclick="closeSubPage('reviewPage')" class="text-xl p-1 text-main"><i class="fa-solid fa-chevron-left"></i></button>
+                <h2 class="text-md font-bold text-main mx-auto"><i class="fa-solid fa-star text-yellow-400 mr-1"></i> รีวิวสินค้า</h2>
+                <button onclick="addNewReviewPrompt()" class="bg-main text-white px-3 py-1.5 rounded-full text-[10px] font-bold shadow-sm">เพิ่มรีวิว</button>
             </div>
-            <div class="p-4 space-y-4 text-xs">
-                <div class="card-bg p-5 rounded-3xl text-center bg-white">
-                    <p class="text-xs text-gray-400 font-bold mb-1 uppercase tracking-wider">เครดิตสะสมคงเหลือ</p>
-                    <h2 class="text-3xl font-black text-main">฿<span id="userCreditDetail">0</span></h2>
-                </div>
-                
-                <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3">
-                    <h3 class="font-bold text-main uppercase text-xs"><i class="fa-solid fa-user-pen mr-1"></i> ปรับแต่งแก้ไขรายละเอียดของฉัน</h3>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1">ชื่อผู้ใช้งาน (แสดงผล)</label>
-                        <input type="text" id="usrEditName" class="w-full p-3 border rounded-xl outline-none focus:border-main">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1">อีเมลส่วนตัว</label>
-                        <input type="email" id="usrEditEmail" class="w-full p-3 border rounded-xl outline-none focus:border-main" placeholder="example@gmail.com">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1">เปลี่ยนรหัสผ่านใหม่</label>
-                        <input type="password" id="usrEditPass" class="w-full p-3 border rounded-xl outline-none focus:border-main" placeholder="ใส่รหัสผ่านใหม่ที่ต้องการ">
-                    </div>
-                    <button onclick="saveUserProfileData()" class="w-full py-3 btn-main rounded-xl font-bold shadow-md">บันทึกข้อมูลส่วนตัว</button>
-                </div>
-
-                <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm">
-                    <h3 class="font-bold text-main mb-3 uppercase text-xs"><i class="fa-solid fa-wallet mr-1"></i> แจ้งเติมเงินเครดิตเข้าระบบ</h3>
-                    <input type="number" id="topupAmount" placeholder="ระบุจำนวนเงินโอนจริง *" class="w-full p-3 border rounded-xl mb-3 outline-none focus:border-main">
-                    <button onclick="submitTopup()" class="w-full py-3 btn-main rounded-xl font-bold shadow-sm">ส่งคำขอตรวจสอบสลิป</button>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="switchHistoryTab('order')" id="tabOrderBtn" class="py-2.5 rounded-xl font-bold bg-white border border-main text-main">ประวัติการสั่งซื้อสินค้า</button>
-                    <button onclick="switchHistoryTab('topup')" id="tabTopupBtn" class="py-2.5 rounded-xl font-bold bg-gray-100 text-gray-400">ประวัติการเติมเครดิต</button>
-                </div>
-                <div id="historyLogsContainer" class="space-y-2"></div>
-            </div>
+            <div class="p-4 space-y-3" id="reviewsContainer"></div>
         </main>
 
         <div id="adminDashboard" class="page-section hidden fixed inset-0 bg-white z-[90] overflow-y-auto px-4 py-6 w-full max-w-[768px] mx-auto shadow-2xl"></div>
@@ -187,7 +216,7 @@
         <div class="bg-white w-full max-w-[360px] rounded-[30px] pt-6 pb-4 px-2 shadow-2xl border relative animate-pop">
             <button onclick="closePromotionModal()" class="absolute -top-3 -right-3 w-8 h-8 bg-main text-white rounded-full flex items-center justify-center shadow-md z-10 font-bold">×</button>
             <div class="text-center px-4 mb-3">
-                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">📢 สิทธิพิเศษ</span>
+                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">📢 Hot Promotions</span>
             </div>
             <div id="promoCarouselContainer" class="flex gap-4 overflow-x-auto px-4 py-2 scroll-smooth snap-x snap-mandatory no-scrollbar max-h-[420px]"></div>
             <p class="text-[9px] text-gray-400 text-center mt-2"><i class="fa-solid fa-left-right mr-1"></i> เลื่อนซ้าย-ขวาเพื่อดูโปรโมชั่นเพิ่มเติม</p>
