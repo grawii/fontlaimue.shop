@@ -6,7 +6,7 @@ let adminFilterCat = "ทั้งหมด";
 let storeFilterCat = "ทั้งหมด";
 let storeFilterStyle = "ทั้งหมด";
 let cart = JSON.parse(localStorage.getItem('temp_cart')) || [];
-let currentHistoryTab = "order";
+let currentHistoryTab = "order"; // 'order' หรือ 'topup'
 let currentAuthTab = "user"; 
 let isRegisterMode = false;
 let currentReviewStarFilter = "all";
@@ -60,7 +60,6 @@ function restartMarqueeAnimation() {
     }
 }
 
-// 👤 ดึงปุ่มเติมเงิน แก้ไขข้อมูลส่วนตัว สลับหน้ากลับมาบนแถบเลื่อน Dropdown สมาชิก
 function updateCreditDisplay() {
     const userArea = document.getElementById('userStatusArea');
     const arrow = document.getElementById('dropdownArrowIcon');
@@ -108,7 +107,7 @@ function renderUserDropdownItems(u) {
         <div class="space-y-1">
             <button onclick="goToUserSubPage('topup')" class="w-full text-left p-2 hover:bg-black/10 rounded-xl text-main font-medium"><i class="fa-solid fa-wallet text-green-500 mr-2"></i>เติมเงินเข้าระบบ</button>
             <button onclick="goToUserSubPage('editProfile')" class="w-full text-left p-2 hover:bg-black/10 rounded-xl text-main font-medium"><i class="fa-solid fa-user-gear text-blue-400 mr-2"></i>แก้ไขข้อมูลส่วนตัว</button>
-            <button onclick="openUserMenuPage()" class="w-full text-left p-2 hover:bg-black/10 rounded-xl text-main font-medium"><i class="fa-solid fa-clock-history text-amber-400 mr-2"></i>ประวัติสั่งซื้อ</button>
+            <button onclick="openUserMenuPage()" class="w-full text-left p-2 hover:bg-black/10 rounded-xl text-main font-medium"><i class="fa-solid fa-clock-history text-amber-400 mr-2"></i>ประวัติใช้งาน</button>
             <div class="border-t border-main my-1"></div>
             <button onclick="logoutUser()" class="w-full text-left p-2 hover:bg-rose-500/10 rounded-xl text-red-400 font-bold"><i class="fa-solid fa-right-from-bracket mr-2"></i>ออกจากระบบ</button>
         </div>
@@ -148,15 +147,6 @@ function applyTheme() {
     }
 }
 
-function isHexColorLight(color) {
-    const hex = color.replace('#', '');
-    const cr = parseInt(hex.substr(0, 2), 16);
-    const cg = parseInt(hex.substr(2, 2), 16);
-    const cb = parseInt(hex.substr(4, 2), 16);
-    const brightness = (cr * 299 + cg * 587 + cb * 114) / 1000;
-    return brightness > 155;
-}
-
 function updateColor(key, val) {
     window.db.config.theme[key] = val;
     applyTheme();
@@ -185,7 +175,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (บังคับปุ่มขาวมีเงาเปลี่ยนตามพรีเซ็ตหลัก)
+   3. UNIFIED LOGIN CONTROLLER (ปรับปุ่มล็อกอินแอดมินตามพรีเซ็ตหลัก + อัดเงาขาวคมชัด)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -214,7 +204,6 @@ function switchUnifiedTab(type) {
             if(userSubmitBtn) {
                 userSubmitBtn.innerText = "ลงชื่อเข้าใช้งาน";
                 userSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md text-white";
-                // 🎨 บังคับสลับสวมสีตามพาเลทพรีเซ็ต และอัดเงาตัวอักษรขาวคมชัด
                 userSubmitBtn.style.backgroundColor = "var(--th-primary)";
                 userSubmitBtn.style.color = "#ffffff";
                 userSubmitBtn.style.textShadow = "0 1px 3px rgba(0,0,0,0.4)";
@@ -228,7 +217,7 @@ function switchUnifiedTab(type) {
             if(adminSubmitBtn) {
                 adminSubmitBtn.innerText = "เข้าสู่ระบบผู้ดูแลระบบ";
                 adminSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md text-white";
-                // 🎨 บังคับสวมสีแอดมินตามพรีเซ็ตเดียวกัน และอัดเงาตัวอักษรขาวคมชัด
+                // 🔒 บังคับปุ่มแอดมินดึงสีหลักจากพรีเซ็ตเดียวกัน และอัดเงาตัวอักษรขาวคมชัด
                 adminSubmitBtn.style.backgroundColor = "var(--th-primary)";
                 adminSubmitBtn.style.color = "#ffffff";
                 adminSubmitBtn.style.textShadow = "0 1px 3px rgba(0,0,0,0.4)";
@@ -267,9 +256,16 @@ function logoutUser() {
     const dropdown = document.getElementById('userDropdownMenu'); if (dropdown) { dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0"; }
     updateCreditDisplay(); alert("ออกจากระบบแล้ว"); 
 }
+
+// ⚙️ ตรวจเช็คบั๊กกดปุ่มฟันเฟือง: ถ้าล็อกอินสมาชิกอยู่แล้วให้ข้ามผ่านเข้าสู่หน้าแก้ไขโปรไฟล์/ประวัติการซื้อได้เลย ไม่ต้องกรอกซ้ำตามบรีฟล่าสุด
 function handleGearIconClick() {
-    openUnifiedAuthModal();
-    setTimeout(() => { switchUnifiedTab('admin'); }, 50);
+    const u = window.db.getCurrentUser();
+    if (u) {
+        openUserMenuPage();
+    } else {
+        openUnifiedAuthModal();
+        setTimeout(() => { switchUnifiedTab('admin'); }, 50);
+    }
 }
 
 /* ==========================================
@@ -374,7 +370,7 @@ function openEditReviewModal(reviewId) {
     if((rev.editCount || 0) >= 2) return alert("ขออภัยค่ะ คุณสิทธิ์แก้ไขรีวิวนี้ครบพิกัด 2 ครั้งแล้วค่ะ");
     const newText = prompt("แก้ไขข้อความรีวิวของคุณที่นี่ค่ะ ✨:", rev.text);
     if(newText === null) return;
-    if(!newText.trim()) return alert("กรุณาระบุข้อความรีวิวด้วยค่ะ");
+    if(!newText.trim()) return alert("กรุณากรอกข้อความรีวิวด้วยค่ะ");
     rev.text = newText.trim(); rev.editCount = (rev.editCount || 0) + 1; rev.date = "แก้ไขแล้ว";
     localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
     renderReviewsList(); alert("บันทึกการแก้ไขรีวิวของคุณเรียบร้อยแล้วค่ะ! 🐰");
@@ -472,7 +468,7 @@ function renderAdminDashboard() {
                     </div>
                     <div class="p-2 border border-main rounded-xl admin-inner-panel">
                         <p class="font-bold text-main mb-1">แบรนด์/ผู้สร้าง</p>
-                        <div class="max-w-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxBrandZone"></div>
+                        <div class="max-h-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxBrandZone"></div>
                         <div class="flex gap-1"><input type="text" id="newTaxBrandInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('brands','newTaxBrandInput')" class="px-2 theme-bg-btn text-white rounded" style="background-color: var(--th-primary);">+</button></div>
                     </div>
                 </div>
@@ -514,14 +510,6 @@ function renderAdminReviewManagementZoneList() {
             </div>
             <button onclick="deleteReviewByAdmin('${r.id}')" class="text-rose-400 font-bold px-2 hover:underline">ลบรีวิว</button>
         </div>`).join('');
-}
-function deleteReviewByAdmin(reviewId) {
-    myConfirm("คุณแน่ใจนะว่าต้องการลบรีวิวชิ้นนี้ของลูกค้าออกจากระบบ?", () => {
-        reviewsData = reviewsData.filter(r => r.id !== reviewId);
-        localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
-        renderAdminReviewManagementZoneList(); calculateStarCounters();
-        alert("ลบรีวิวชิ้นดังกล่าวออกจากคลังเรียบร้อยค่ะ");
-    });
 }
 
 function renderPresets() {
@@ -654,7 +642,7 @@ function saveProductAdmin() {
 }
 
 /* ==========================================
-   7. CART & RECEIPTS SYSTEM (นำฟังก์ชันพิมพ์ใบเสร็จกลับมา)
+   7. CART & RECEIPTS SYSTEM
    ========================================== */
 function openProductDetail(idx) {
     const p = window.db.products[idx]; const detail = document.getElementById('productDetailPage'); if(!detail) return;
@@ -744,6 +732,94 @@ function renderReceiptPage(order) {
         </div>`;
 }
 
+/* ==========================================
+   👥 MEMBER PROFILE & HISTORY ZONE (นำแผงประวัติและข้อมูลส่วนตัวกลับมาเต็มพิกัด)
+   ========================================== */
+function openUserMenuPage() {
+    hideAllPages(); if(document.getElementById('userMenuPage')) document.getElementById('userMenuPage').classList.remove('hidden');
+    renderUserMenuDetails();
+}
+
+function renderUserMenuDetails() {
+    const cont = document.getElementById('userMenuPage'); if(!cont) return;
+    const u = window.db.getCurrentUser();
+    if(!u) { cont.innerHTML = `<p class="text-center py-10 text-main">กรุณาเข้าสู่ระบบก่อนค่ะ</p>`; return; }
+
+    cont.className = "page-section p-4 theme-bg-app text-main min-h-screen overflow-y-auto animate-pop";
+    cont.innerHTML = `
+        <div class="sticky top-0 theme-bg-card p-4 rounded-2xl border border-main flex items-center justify-between mb-4 shadow-sm">
+            <button onclick="backToStoreHome()" class="text-main font-bold"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
+            <span class="font-bold text-sm">แผงควบคุมสมาชิก</span>
+            <div class="w-4"></div>
+        </div>
+
+        <div class="space-y-4 text-xs pb-24">
+            <div class="theme-bg-card p-4 rounded-2xl border border-main space-y-3">
+                <h3 class="font-bold text-main text-[13px] border-b border-main pb-2">📋 ข้อมูลบัญชีของฉัน</h3>
+                <div>
+                    <label class="block text-sub mb-1">ชื่อผู้ใช้งาน (Username)</label>
+                    <input type="text" id="usrEditName" value="${u.username}" disabled class="w-full p-2.5 border border-main rounded-xl bg-black/5 text-sub">
+                </div>
+                <div>
+                    <label class="block text-sub mb-1">อีเมลติดต่อ (Email)</label>
+                    <input type="email" id="usrEditEmail" value="${u.email || ''}" placeholder="ยังไม่ได้ระบุอีเมล" class="w-full p-2.5 border border-main rounded-xl theme-bg-card text-main">
+                </div>
+                <button onclick="saveUserProfileData()" class="w-full py-2.5 theme-bg-btn text-white font-bold rounded-xl shadow-md" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">💾 บันทึกข้อมูลส่วนตัว</button>
+            </div>
+
+            <div class="theme-bg-card p-4 rounded-2xl border border-main space-y-3">
+                <h3 class="font-bold text-main text-[13px]">⏱️ ประวัติการใช้งานระบบ</h3>
+                <div class="flex border-b border-main">
+                    <button onclick="switchHistoryTab('order')" class="flex-1 pb-2 font-bold text-center ${currentHistoryTab==='order'?'text-main border-b-2 border-main':'text-sub'}">📦 ประวัติการช้อป</button>
+                    <button onclick="switchHistoryTab('topup')" class="flex-1 pb-2 font-bold text-center ${currentHistoryTab==='topup'?'text-main border-b-2 border-main':'text-sub'}">💰 ประวัติการเติมเงิน</button>
+                </div>
+                <div id="userHistoryListLogs" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar pt-1"></div>
+            </div>
+        </div>
+    `;
+    renderUserHistoryLogsContent(u);
+}
+
+function switchHistoryTab(tabType) {
+    currentHistoryTab = tabType;
+    const u = window.db.getCurrentUser();
+    if(u) renderUserMenuDetails();
+}
+
+function renderUserHistoryLogsContent(u) {
+    const logZone = document.getElementById('userHistoryListLogs'); if(!logZone) return;
+    if(currentHistoryTab === 'order') {
+        const orders = u.orderHistory || [];
+        if(orders.length === 0) { logZone.innerHTML = `<p class="text-center py-6 text-sub">ยังไม่มีประวัติการสั่งซื้อฟอนต์ค่ะ</p>`; return; }
+        logZone.innerHTML = orders.map(o => `
+            <div class="p-2.5 rounded-xl border border-main bg-black/5 space-y-1.5">
+                <div class="flex justify-between font-bold text-main"><span>🆔 ${o.orderId}</span><span class="text-green-500">฿${o.total}</span></div>
+                <div class="text-[10px] text-sub flex justify-between"><span>วันที่สั่งซื้อ: ${o.date}</span><span>ชำระสำเร็จ</span></div>
+                <div class="border-t border-dashed border-main pt-1.5 space-y-1 text-main">
+                    ${o.items.map(i => `<div class="flex justify-between font-medium"><span>• ${i.name} (x${i.qty})</span><button onclick="alert('กำลังเปิดลิงก์ดาวน์โหลดสิทธิ์เข้าใช้งานโฟลเดอร์ Google Drive ค่ะ')" class="text-blue-400 font-bold hover:underline">📥 ดาวน์โหลด</button></div>`).join('')}
+                </div>
+            </div>`).join('');
+    } else {
+        const topups = u.topupHistory || [];
+        if(topups.length === 0) { logZone.innerHTML = `<p class="text-center py-6 text-sub">ยังไม่มีประวัติการแจ้งเติมเครดิตเข้ามาระบบค่ะ</p>`; return; }
+        logZone.innerHTML = topups.map(t => `
+            <div class="p-2.5 rounded-xl border border-main bg-black/5 flex justify-between items-center text-main">
+                <div><span class="font-bold block">💵 เติมเงินผ่าน QR-Code</span><span class="text-[10px] text-sub block mt-0.5">เมื่อ: ${t.date || 'วันนี้'}</span></div>
+                <div class="text-right font-black text-green-500">+$${t.amount}</div>
+            </div>`).join('');
+    }
+}
+
+function saveUserProfileData() {
+    const emailVal = document.getElementById('usrEditEmail').value.trim();
+    const u = window.db.getCurrentUser(); if(!u) return;
+    u.email = emailVal; window.db.saveCurrentUser(u);
+    let members = window.db.getMembers();
+    const idx = members.findIndex(m => m.username === u.username);
+    if(idx !== -1) { members[idx] = u; window.db.saveMembers(members); }
+    alert("อัปเดตข้อมูลส่วนตัวของคุณสำเร็จแล้วค่ะ 🐰✨"); renderUserMenuDetails();
+}
+
 function saveAsPresetAdmin() {
     const name = prompt("ตั้งชื่อพรีเซ็ตสีชุดนี้:"); if(!name || !name.trim()) return;
     if(!window.db.config.themePresets) window.db.config.themePresets = [];
@@ -772,10 +848,6 @@ function goToUserSubPage(section) {
     if (section === 'topup') {
         if(document.getElementById('topupPage')) document.getElementById('topupPage').classList.remove('hidden');
     } else if (section === 'editProfile') {
-        if(document.getElementById('userMenuPage')) document.getElementById('userMenuPage').classList.remove('hidden');
+        openUserMenuPage();
     }
-}
-function openUserMenuPage() {
-    hideAllPages();
-    if(document.getElementById('userMenuPage')) document.getElementById('userMenuPage').classList.remove('hidden');
 }
