@@ -3,7 +3,7 @@
 :root {
     --bg-color: #F8F9FA;
     --card-color: #FFFFFF;
-    --btn-color: #102A43; /* ปรับโทนสีกรมท่าเข้มหรูหราอิงตามปุ่มในภาพตัวอย่าง */
+    --btn-color: #102A43;
     --txt-main-color: #102A43;
     --txt-sub-color: #627D98;
     --border-color: #E4E7EB;
@@ -20,7 +20,7 @@ body {
 
 .app-container {
     width: 100%;
-    max-width: 768px; /* บีบขนาดความกว้างหน้าสไตล์แอปพลิเคชันเว็บโมเดิร์นแบบในภาพ */
+    max-width: 768px;
     margin: 0 auto;
     min-height: 100vh;
     background-color: var(--card-color);
@@ -28,18 +28,13 @@ body {
     box-shadow: 0 0 30px rgba(0,0,0,0.03);
 }
 
-.page-section {
-    position: relative;
-    width: 100%;
-    min-height: calc(100vh - 120px);
-}
-
+.page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); }
 .btn-main { background: var(--btn-color); color: white; }
 .text-main { color: var(--txt-main-color); }
 .text-sub { color: var(--txt-sub-color); }
 .border-main { border-color: var(--border-color); }
 
-/* สไตล์การ์ดสินค้าแบบคลีน มินิมอล โค้งมนสวยงามตามรูปภาพ */
+/* สไตล์การ์ดสินค้ามินิมอล */
 .product-card {
     background: #FFFFFF;
     border: 1px solid #E4E7EB;
@@ -47,21 +42,11 @@ body {
     padding: 10px;
     transition: all 0.2s ease;
 }
-.product-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-}
+.product-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
 
-/* แถบเลื่อนแบนเนอร์ข้อความวิ่งความเร็วเสถียร */
-.animate-marquee {
-    display: inline-block;
-    white-space: nowrap;
-    animation: marquee 20s linear infinite;
-}
-@keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
+/* สไลด์ข้อความวิ่งวิ่งแบนเนอร์ */
+.animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -74,35 +59,48 @@ body {
 }
 .page-btn.active { background: var(--btn-color); color: white; border-color: var(--btn-color); }
 
-/* หน้าต่างรีวิวและรับสมัครตัวแทนคลาสสิกโค้งมนตามแบบภาพตัวอย่าง */
-.custom-panel-card {
-    background: white;
-    border: 1px solid #E4E7EB;
-    border-radius: 24px;
-    padding: 20px;
-}
+.custom-panel-card { background: white; border: 1px solid #E4E7EB; border-radius: 24px; padding: 20px; }
 
-/* ดีไซน์แถบล่างแบบใหม่ */
-#floatingBottomNav {
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 12px 40px rgba(16, 42, 67, 0.08);
-}
-
-/* ปรับแต่งปุ่มตะกร้าตรงกลางให้เป็นทรงสี่เหลี่ยมมุมโค้งมน (Squircle) อิงตามสไตล์ไอคอน iOS ไม่ให้ซ้ำใคร */
+/* ปรับดีไซน์กรอบอันกลางของแถบล่างลอยตัวให้กลายเป็นวงกลมสมบูรณ์ */
 #floatingBottomNav .btn-main {
-    border-radius: 18px;
+    border-radius: 50% !important; 
     background: var(--btn-color);
+    box-shadow: 0 8px 20px rgba(16, 42, 67, 0.2);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+#floatingBottomNav .btn-main:hover { transform: translateY(-18px) scale(1.05); }
 
-#floatingBottomNav .btn-main:hover {
-    transform: translate-y(-18px) scale(1.05);
+/* กล่องพิกเซลการ์ดเลือกหน้าหมวดหมู่รวมสินค้า */
+.category-select-card {
+    background: white;
+    border: 1px solid #E4E7EB;
+    border-radius: 20px;
+    padding: 24px 16px;
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.category-select-card:hover { border-color: var(--btn-color); background: #F8F9FA; }
+/* แอนิเมชันสั่นกระดิ่งแบบนุ่มนวล */
+.animate-bounce-slow {
+    animation: bell-ring 3s ease-in-out infinite;
+}
+@keyframes bell-ring {
+    0%, 100% { transform: rotate(0); }
+    10%, 30% { transform: rotate(15deg); }
+    20%, 40% { transform: rotate(-15deg); }
+    50% { transform: rotate(0); }
 }
 
-/* ปรับเอฟเฟกต์เวลาเปลี่ยนหน้าให้ปุ่มอื่นดูนิ่มนวล */
-#floatingBottomNav button {
-    transition: transform 0.2s ease, opacity 0.2s ease;
+/* 🌟 สไตล์สำหรับการควบคุมสไลด์การ์ดโปรโมชั่น ซ้าย-ขวา */
+#promoCarouselContainer {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
 }
-#floatingBottomNav button:active {
-    transform: scale(0.92);
+
+.promo-slide-card {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    width: 100%; /* บังคับให้การ์ดโปรโมชั่นแสดงผลเต็มพื้นที่ทีละ 1 ใบ */
+    transition: all 0.3s ease;
 }
