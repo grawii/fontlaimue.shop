@@ -141,7 +141,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (ซ่อมสีปุ่มล็อกอินแอดมินหลังบ้านให้แปรผันตามธีม)
+   3. UNIFIED LOGIN CONTROLLER (ซ่อมสีปุ่มล็อกอินหลังบ้านแท็บแอดมินตามพรีเซ็ตจริง)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -175,7 +175,8 @@ function switchUnifiedTab(type) {
             userBtn.className = "flex-1 pb-3 text-sub border-b-2 border-transparent";
             if(adminForm) adminForm.classList.remove('hidden'); if(userForm) userForm.classList.add('hidden');
             if(adminSubmitBtn) {
-                adminSubmitBtn.className = "w-full theme-bg-btn text-btn-link py-3 rounded-xl font-bold transition-all active:scale-95";
+                adminSubmitBtn.innerText = "เข้าสู่ระบบผู้ดูแลระบบ";
+                adminSubmitBtn.className = "w-full theme-bg-btn text-btn-link py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md";
             }
         }
     }
@@ -206,7 +207,8 @@ function logoutUser() {
     updateCreditDisplay(); alert("ออกจากระบบแล้ว"); 
 }
 function handleGearIconClick() {
-    const u = window.db.getCurrentUser(); if (u) goToUserSubPage('editProfile'); else openUnifiedAuthModal();
+    openUnifiedAuthModal();
+    setTimeout(() => { switchUnifiedTab('admin'); }, 50);
 }
 
 /* ==========================================
@@ -317,14 +319,14 @@ function openEditReviewModal(reviewId) {
     if((rev.editCount || 0) >= 2) return alert("ขออภัยค่ะ คุณสิทธิ์แก้ไขรีวิวนี้ครบพิกัด 2 ครั้งแล้วค่ะ");
     const newText = prompt("แก้ไขข้อความรีวิวของคุณที่นี่ค่ะ ✨:", rev.text);
     if(newText === null) return;
-    if(!newText.trim()) return alert("กรุณาระบุข้อความรีวิวด้วยค่ะ");
+    if(!newText.trim()) return alert("กรุณากรอกข้อความรีวิวด้วยค่ะ");
     rev.text = newText.trim(); rev.editCount = (rev.editCount || 0) + 1; rev.date = "แก้ไขแล้ว";
     localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
     renderReviewsList(); alert("บันทึกการแก้ไขรีวิวของคุณเรียบร้อยแล้วค่ะ! 🐰");
 }
 
 /* ==========================================
-   6. ADMIN DASHBOARD & ADVANCED CONTROLS (ซ่อมปุ่มเซฟสี + เพิ่มปุ่มดินสอแก้ไขพรีเซ็ตสี)
+   6. ADMIN DASHBOARD & ADVANCED CONTROLS (ล้างสีเทาเข้มออก ให้เป็นขาว/เทาอ่อนตามใจคุณเกด)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) {
@@ -367,7 +369,7 @@ function renderAdminDashboard() {
                 <h3 class="font-bold text-main mb-1">2. ศูนย์ปรับแต่งโทนสีแกนหลัก (8 แกนควบคุมเสถียรทุกหน้าเว็บ)</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] mb-4">
                     ${Object.keys(paletteLabels).map(k => `
-                        <div class="bg-black/10 p-2 rounded-xl border border-main shadow-inner">
+                        <div class="admin-inner-panel p-2 rounded-xl border border-main shadow-inner">
                             <span class="font-bold block mb-1 text-main">${paletteLabels[k]}</span>
                             <div class="flex gap-1.5 items-center">
                                 <input type="color" oninput="updateColor('${k}', this.value); this.nextElementSibling.value=this.value" value="${t[k] || '#ffffff'}" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
@@ -391,7 +393,7 @@ function renderAdminDashboard() {
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-2">4. ระบบจัดการโปรโมชั่นสไลด์เดอร์</h3>
                 <div class="space-y-2 mb-3" id="adminPromoListZone"></div>
-                <div class="p-3 bg-black/10 border border-main rounded-xl space-y-2">
+                <div class="admin-inner-panel p-3 border border-main rounded-xl space-y-2">
                     <p class="font-bold text-main text-[11px]">➕ เพิ่มโปรโมชั่นใหม่</p>
                     <input type="text" id="addPromoTitle" placeholder="ข้อความหัวข้อโปรโมชั่น" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
                     <input type="text" id="addPromoImg" placeholder="URL รูปภาพโปรโมชั่น" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
@@ -403,17 +405,17 @@ function renderAdminDashboard() {
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-2">5. จัดการโครงสร้างแท็ก & หมวดหมู่</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="p-2 border border-main rounded-xl bg-black/5">
+                    <div class="p-2 border border-main rounded-xl admin-inner-panel">
                         <p class="font-bold text-main mb-1">หมวดหลัก</p>
                         <div class="max-h-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxCatZone"></div>
                         <div class="flex gap-1"><input type="text" id="newTaxCatInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('categories','newTaxCatInput')" class="px-2 theme-bg-btn text-btn-link rounded">+</button></div>
                     </div>
-                    <div class="p-2 border border-main rounded-xl bg-black/5">
+                    <div class="p-2 border border-main rounded-xl admin-inner-panel">
                         <p class="font-bold text-main mb-1">สไตล์/หมวดย่อย</p>
                         <div class="max-h-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxSubZone"></div>
                         <div class="flex gap-1"><input type="text" id="newTaxSubInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('subCategories','newTaxSubInput')" class="px-2 theme-bg-btn text-btn-link rounded">+</button></div>
                     </div>
-                    <div class="p-2 border border-main rounded-xl bg-black/5">
+                    <div class="p-2 border border-main rounded-xl admin-inner-panel">
                         <p class="font-bold text-main mb-1">แบรนด์/ผู้สร้าง</p>
                         <div class="max-h-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxBrandZone"></div>
                         <div class="flex gap-1"><input type="text" id="newTaxBrandInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('brands','newTaxBrandInput')" class="px-2 theme-bg-btn text-btn-link rounded">+</button></div>
@@ -429,11 +431,11 @@ function renderAdminDashboard() {
                 <select id="admSub" class="w-full p-3 border border-main rounded-xl mb-2 bg-transparent text-main">${tax.subCategories.map(c=>`<option value="${c}" style="background:var(--th-card); color:var(--th-text);">${c}</option>`).join('')}</select>
                 <select id="admBrand" class="w-full p-3 border border-main rounded-xl mb-2 bg-transparent text-main">${tax.brands.map(c=>`<option value="${c}" style="background:var(--th-card); color:var(--th-text);">${c}</option>`).join('')}</select>
                 <input type="text" id="admImg" placeholder="URL รูป" class="w-full p-3 border border-main rounded-xl mb-2 bg-transparent text-main"><textarea id="admDesc" placeholder="รายละเอียด" class="w-full p-3 border border-main rounded-xl h-16 mb-2 bg-transparent text-main"></textarea>
-                <div class="p-3 bg-black/10 border border-main border-dashed rounded-xl mb-3 space-y-2">
+                <div class="p-3 admin-inner-panel border border-main border-dashed rounded-xl mb-3 space-y-2">
                     <label class="flex items-center gap-1 font-bold text-main"><input type="checkbox" id="admDriveShare"> ดึงเมลร่วมสิทธิ์ใน Google Drive อัตโนมัติ</label>
                     <input type="text" id="admDriveFolderId" placeholder="Google Drive Folder ID" class="w-full p-2.5 border border-main rounded-lg bg-transparent text-main">
                 </div>
-                <div class="flex gap-4 p-2 bg-black/20 rounded-xl mb-3 text-main"><label><input type="checkbox" id="admFeat"> แนะนำ</label><label><input type="checkbox" id="admLimit"> จำกัด 1 ชิ้น</label></div>
+                <div class="flex gap-4 p-2 admin-inner-panel rounded-xl mb-3 text-main"><label><input type="checkbox" id="admFeat"> แนะนำ</label><label><input type="checkbox" id="admLimit"> จำกัด 1 ชิ้น</label></div>
                 <button onclick="saveProductAdmin()" class="w-full py-3 theme-bg-btn text-btn-link rounded-xl font-bold">บันทึกสินค้าลงคลัง</button>
             </div>
             
@@ -450,7 +452,7 @@ function renderAdminReviewManagementZoneList() {
     const zone = document.getElementById('adminReviewManagementZone'); if(!zone) return;
     if(reviewsData.length === 0) { zone.innerHTML = `<p class="text-sub text-[11px]">ไม่มีประวัติรีวิวร้านค้า</p>`; return; }
     zone.innerHTML = reviewsData.map(r => `
-        <div class="flex justify-between items-center p-2.5 border border-main rounded-xl bg-black/25 text-[11px]">
+        <div class="flex justify-between items-center p-2.5 border border-main rounded-xl admin-inner-panel text-[11px]">
             <div class="truncate max-w-[80%]">
                 <span class="font-bold text-main">👤 ${r.name} (${r.score} ดาว)</span>
                 <p class="text-sub truncate mt-0.5">${r.text}</p>
@@ -467,7 +469,6 @@ function deleteReviewByAdmin(reviewId) {
     });
 }
 
-// ✏️ เพิ่มฟังก์ชันเปิดให้สามารถแก้ไขพรีเซ็ตสีที่บันทึกไว้ได้ตามสัญญากับคุณเกด
 function renderPresets() {
     const list = document.getElementById('presetList'); if(!list) return;
     list.innerHTML = (window.db.config.themePresets || []).map((p) => `
@@ -486,7 +487,6 @@ function editPresetColorsDirect(presetId) {
     window.db.config.theme = JSON.parse(JSON.stringify(target.colors));
     applyTheme();
     
-    // ดันสีขึ้นช่อง Input สเปกตรัมด้านบน
     Object.keys(target.colors).forEach(k => {
         const inputHex = document.getElementById(`input-hex-${k}`);
         if(inputHex) {
@@ -530,7 +530,7 @@ function renderAdminPromoList() {
     const zone = document.getElementById('adminPromoListZone'); if(!zone) return;
     const promos = window.db.config.promotions || [];
     zone.innerHTML = promos.map((p, idx) => `
-        <div class="flex justify-between items-center p-2 border border-main rounded-xl bg-black/10">
+        <div class="flex justify-between items-center p-2 border border-main rounded-xl admin-inner-panel">
             <div class="truncate max-w-[80%]"><p class="font-bold text-main line-clamp-1">${p.title}</p></div>
             <button onclick="deletePromoData(${idx})" class="text-rose-400 font-bold px-1">ลบ</button>
         </div>`).join('');
@@ -571,7 +571,7 @@ function renderAdminProductList() {
     const items = pAll.slice((currentAdminPage-1)*perPage, currentAdminPage*perPage);
     cont.innerHTML = items.map((p) => {
         const idx = window.db.products.indexOf(p);
-        return `<div class="flex items-center gap-3 p-2 border border-main rounded-2xl text-[10px] text-main bg-black/10">
+        return `<div class="flex items-center gap-3 p-2 border border-main rounded-2xl text-[10px] text-main admin-inner-panel">
             <div class="flex flex-col"><button onclick="moveProduct(${idx},-1)" class="text-main font-bold">▲</button><button onclick="moveProduct(${idx},1)" class="text-main font-bold">▼</button></div>
             <img src="${p.img}" class="w-9 h-9 rounded object-cover border border-main"><div class="flex-1 font-bold truncate">${p.name}</div>
             <button onclick="editProduct(${idx})" class="text-blue-400 font-bold">แก้ไข</button><button onclick="deleteProduct(${idx})" class="text-rose-400 font-bold">ลบ</button></div>`;
@@ -599,7 +599,7 @@ function saveProductAdmin() {
 }
 
 /* ==========================================
-   7. CART & RECEIPTS SYSTEM (ซ่อมเสร็จสมบูรณ์ ปุ่มสรุปยอดทำงานได้ดี)
+   7. CART & RECEIPTS SYSTEM
    ========================================== */
 function openProductDetail(idx) {
     const p = window.db.products[idx]; const detail = document.getElementById('productDetailPage'); if(!detail) return;
