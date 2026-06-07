@@ -113,6 +113,11 @@ function isHexColorLight(color) {
     return brightness > 155;
 }
 
+function updateColor(key, val) {
+    window.db.config.theme[key] = val;
+    applyTheme();
+}
+
 /* ==========================================
    2. PROMOTION SYSTEM
    ========================================== */
@@ -125,7 +130,7 @@ function openPromotionModal() {
             <div class="promo-slide-card text-center space-y-3">
                 <h4 class="text-xs font-bold text-main line-clamp-1 px-2">${p.title}</h4>
                 <img src="${p.img}" class="w-full rounded-2xl aspect-[4/3] object-cover border border-main shadow-inner">
-                <button onclick="linkToPromoProducts('${p.brandLink}')" class="w-[90%] mx-auto py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-[10px] shadow-sm flex items-center justify-center gap-1">
+                <button onclick="linkToPromoProducts('${p.brandLink}')" class="w-[90%] mx-auto py-2 theme-bg-btn text-btn-link font-bold rounded-xl text-[10px] shadow-sm flex items-center justify-center gap-1">
                     <i class="fa-solid fa-basket-shopping"></i> ดูสินค้าโปรโมชั่นเครือ ${p.brandLink}
                 </button>
             </div>
@@ -136,7 +141,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (แก้ปุ่มปิดป็อปอัพทำงานได้สนิท)
+   3. UNIFIED LOGIN CONTROLLER (แก้สีตัวอักษรกลืนหน้าล็อกอินหลังบ้าน)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -153,6 +158,8 @@ function switchUnifiedTab(type) {
     currentAuthTab = type; isRegisterMode = false;
     const userBtn = document.getElementById('tabAuthUserBtn'); const adminBtn = document.getElementById('tabAuthAdminBtn');
     const userForm = document.getElementById('formAuthUser'); const adminForm = document.getElementById('formAuthAdmin');
+    const adminSubmitBtn = document.getElementById('adminAuthSubmitBtn');
+    
     if(userBtn && adminBtn) {
         if(type === 'user') {
             userBtn.className = "flex-1 pb-3 text-main font-bold border-b-2 border-main"; 
@@ -167,6 +174,9 @@ function switchUnifiedTab(type) {
             adminBtn.className = "flex-1 pb-3 text-main font-bold border-b-2 border-main"; 
             userBtn.className = "flex-1 pb-3 text-sub border-b-2 border-transparent";
             if(adminForm) adminForm.classList.remove('hidden'); if(userForm) userForm.classList.add('hidden');
+            if(adminSubmitBtn) {
+                adminSubmitBtn.className = "w-full theme-bg-btn text-btn-link py-3 rounded-xl font-bold transition-all active:scale-95";
+            }
         }
     }
 }
@@ -200,7 +210,7 @@ function handleGearIconClick() {
 }
 
 /* ==========================================
-   4. STOREFRONT RENDER & FILTER (ปลดล็อกการ์ดสินค้ากดได้ปกติ)
+   4. STOREFRONT RENDER & FILTER 
    ========================================== */
 function openAllCategoriesPage() {
     hideAllPages(); if(document.getElementById('allCategoriesPage')) document.getElementById('allCategoriesPage').classList.remove('hidden');
@@ -247,13 +257,13 @@ function renderStoreCards(products) {
                 <h4 class="text-[11px] font-bold text-main line-clamp-2 leading-tight h-8">${p.name}</h4>
                 <div class="text-[12px] font-black mt-1 text-main">฿${p.price - p.discount}</div>
             </div>
-            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-white py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
+            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-btn-link py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
         </div>`;
     }).join('');
 }
 
 /* ==========================================
-   5. REVIEWS SYSTEM (จำกัดแก้ไขรีวิว 2 ครั้ง / ลบรีวิว)
+   5. REVIEWS SYSTEM 
    ========================================== */
 function openReviewPage() { 
     hideAllPages(); if(document.getElementById('reviewPage')) document.getElementById('reviewPage').classList.remove('hidden'); 
@@ -307,7 +317,7 @@ function openEditReviewModal(reviewId) {
     if((rev.editCount || 0) >= 2) return alert("ขออภัยค่ะ คุณสิทธิ์แก้ไขรีวิวนี้ครบพิกัด 2 ครั้งแล้วค่ะ");
     const newText = prompt("แก้ไขข้อความรีวิวของคุณที่นี่ค่ะ ✨:", rev.text);
     if(newText === null) return;
-    if(!newText.trim()) return alert("กรุณาระบุข้อความรีวิวด้วยค่ะ");
+    if(!newText.trim()) return alert("กรุณากรอกข้อความรีวิวด้วยค่ะ");
     rev.text = newText.trim(); rev.editCount = (rev.editCount || 0) + 1; rev.date = "แก้ไขแล้ว";
     localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
     renderReviewsList(); alert("บันทึกการแก้ไขรีวิวของคุณเรียบร้อยแล้วค่ะ! 🐰");
@@ -328,7 +338,7 @@ function submitNewReviewData() {
 }
 
 /* ==========================================
-   6. ADMIN DASHBOARD & ADVANCED CONTROLS
+   6. ADMIN DASHBOARD (ปรับปุ่มและกรอบตามพรีเซ็ตสีทั้งหมด)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) {
@@ -353,7 +363,7 @@ function renderAdminDashboard() {
     dash.innerHTML = `
         <div class="flex justify-between items-center mb-6 theme-bg-card p-4 rounded-2xl border-main">
             <h2 class="font-bold text-main text-base uppercase">Admin Controls</h2>
-            <button onclick="location.reload()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md">Log out</button>
+            <button onclick="location.reload()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md">Log out</button>
         </div>
         
         <div class="space-y-6 pb-24 text-xs">
@@ -382,7 +392,7 @@ function renderAdminDashboard() {
                 </div>
                 <div class="flex gap-2 mb-3">
                     <button onclick="saveAsPresetAdmin()" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold shadow-md">✨ บันทึกเป็นพรีเซ็ตใหม่</button>
-                    <button onclick="location.reload()" class="flex-1 py-3 bg-gray-500 text-white rounded-xl font-bold shadow-md">❌ ยกเลิกการแก้ไข</button>
+                    <button onclick="location.reload()" class="flex-1 py-3 bg-zinc-500 text-white rounded-xl font-bold shadow-md">❌ ยกเลิกการแก้ไข</button>
                 </div>
                 <div id="presetList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
             </div>
@@ -395,32 +405,32 @@ function renderAdminDashboard() {
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-2">4. ระบบจัดการโปรโมชั่นสไลด์เดอร์</h3>
                 <div class="space-y-2 mb-3" id="adminPromoListZone"></div>
-                <div class="p-3 bg-white/5 border border-main rounded-xl space-y-2">
+                <div class="p-3 bg-black/10 border border-main rounded-xl space-y-2">
                     <p class="font-bold text-main text-[11px]">➕ เพิ่มโปรโมชั่นใหม่</p>
                     <input type="text" id="addPromoTitle" placeholder="ข้อความหัวข้อโปรโมชั่น" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
                     <input type="text" id="addPromoImg" placeholder="URL รูปภาพโปรโมชั่น" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
                     <input type="text" id="addPromoLink" placeholder="ชื่อแบรนด์สินค้าที่เชื่อมโยง" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
-                    <button onclick="addNewPromoData()" class="w-full py-2 bg-amber-500 text-white font-bold rounded-xl text-[10px]">เพิ่มสไลด์โปรโมชั่น</button>
+                    <button onclick="addNewPromoData()" class="w-full py-2 theme-bg-btn text-btn-link font-bold rounded-xl text-[10px]">เพิ่มสไลด์โปรโมชั่น</button>
                 </div>
             </div>
 
             <div class="theme-bg-card p-4 rounded-3xl border-main">
                 <h3 class="font-bold text-main mb-2">5. จัดการโครงสร้างแท็ก & หมวดหมู่</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="p-2 border border-main rounded-xl">
+                    <div class="p-2 border border-main rounded-xl bg-black/5">
                         <p class="font-bold text-main mb-1">หมวดหลัก</p>
                         <div class="max-h-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxCatZone"></div>
-                        <div class="flex gap-1"><input type="text" id="newTaxCatInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('categories','newTaxCatInput')" class="px-2 bg-slate-700 text-white rounded">+</button></div>
+                        <div class="flex gap-1"><input type="text" id="newTaxCatInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('categories','newTaxCatInput')" class="px-2 theme-bg-btn text-btn-link rounded">+</button></div>
                     </div>
-                    <div class="p-2 border border-main rounded-xl">
+                    <div class="p-2 border border-main rounded-xl bg-black/5">
                         <p class="font-bold text-main mb-1">สไตล์/หมวดย่อย</p>
                         <div class="max-h-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxSubZone"></div>
-                        <div class="flex gap-1"><input type="text" id="newTaxSubInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('subCategories','newTaxSubInput')" class="px-2 bg-slate-700 text-white rounded">+</button></div>
+                        <div class="flex gap-1"><input type="text" id="newTaxSubInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('subCategories','newTaxSubInput')" class="px-2 theme-bg-btn text-btn-link rounded">+</button></div>
                     </div>
-                    <div class="p-2 border border-main rounded-xl">
+                    <div class="p-2 border border-main rounded-xl bg-black/5">
                         <p class="font-bold text-main mb-1">แบรนด์/ผู้สร้าง</p>
                         <div class="max-h-24 overflow-y-auto space-y-1 mb-2 text-[11px]" id="admTaxBrandZone"></div>
-                        <div class="flex gap-1"><input type="text" id="newTaxBrandInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('brands','newTaxBrandInput')" class="px-2 bg-slate-700 text-white rounded">+</button></div>
+                        <div class="flex gap-1"><input type="text" id="newTaxBrandInput" class="w-full p-1 border border-main text-main bg-transparent rounded"><button onclick="addTaxonomyItem('brands','newTaxBrandInput')" class="px-2 theme-bg-btn text-btn-link rounded">+</button></div>
                     </div>
                 </div>
             </div>
@@ -433,7 +443,7 @@ function renderAdminDashboard() {
                 <select id="admSub" class="w-full p-3 border border-main rounded-xl mb-2 bg-transparent text-main">${tax.subCategories.map(c=>`<option value="${c}" style="background:var(--th-card); color:var(--th-text);">${c}</option>`).join('')}</select>
                 <select id="admBrand" class="w-full p-3 border border-main rounded-xl mb-2 bg-transparent text-main">${tax.brands.map(c=>`<option value="${c}" style="background:var(--th-card); color:var(--th-text);">${c}</option>`).join('')}</select>
                 <input type="text" id="admImg" placeholder="URL รูป" class="w-full p-3 border border-main rounded-xl mb-2 bg-transparent text-main"><textarea id="admDesc" placeholder="รายละเอียด" class="w-full p-3 border border-main rounded-xl h-16 mb-2 bg-transparent text-main"></textarea>
-                <div class="p-3 bg-blue-50/10 border border-main border-dashed rounded-xl mb-3 space-y-2">
+                <div class="p-3 bg-black/10 border border-main border-dashed rounded-xl mb-3 space-y-2">
                     <label class="flex items-center gap-1 font-bold text-main"><input type="checkbox" id="admDriveShare"> ดึงเมลร่วมสิทธิ์ใน Google Drive อัตโนมัติ</label>
                     <input type="text" id="admDriveFolderId" placeholder="Google Drive Folder ID" class="w-full p-2.5 border border-main rounded-lg bg-transparent text-main">
                 </div>
@@ -459,7 +469,7 @@ function renderAdminReviewManagementZoneList() {
                 <span class="font-bold text-main">👤 ${r.name} (${r.score} ดาว)</span>
                 <p class="text-sub truncate mt-0.5">${r.text}</p>
             </div>
-            <button onclick="deleteReviewByAdmin('${r.id}')" class="text-red-400 font-bold px-2 hover:underline">ลบรีวิว</button>
+            <button onclick="deleteReviewByAdmin('${r.id}')" class="text-rose-400 font-bold px-2 hover:underline">ลบรีวิว</button>
         </div>`).join('');
 }
 function deleteReviewByAdmin(reviewId) {
@@ -516,7 +526,7 @@ function renderAdminPromoList() {
     zone.innerHTML = promos.map((p, idx) => `
         <div class="flex justify-between items-center p-2 border border-main rounded-xl bg-black/10">
             <div class="truncate max-w-[80%]"><p class="font-bold text-main line-clamp-1">${p.title}</p></div>
-            <button onclick="deletePromoData(${idx})" class="text-red-400 font-bold px-1">ลบ</button>
+            <button onclick="deletePromoData(${idx})" class="text-rose-400 font-bold px-1">ลบ</button>
         </div>`).join('');
 }
 function addNewPromoData() {
@@ -532,13 +542,13 @@ function deletePromoData(idx) {
 function renderAdminTaxonomyLists() {
     const tax = window.db.getTaxonomy();
     if(document.getElementById('admTaxCatZone')) {
-        document.getElementById('admTaxCatZone').innerHTML = tax.categories.map((c, i) => `<div class="flex justify-between text-main"><span>• ${c}</span><span onclick="removeTaxonomyItem('categories',${i})" class="text-red-400 cursor-pointer">🗑️</span></div>`).join('');
+        document.getElementById('admTaxCatZone').innerHTML = tax.categories.map((c, i) => `<div class="flex justify-between text-main"><span>• ${c}</span><span onclick="removeTaxonomyItem('categories',${i})" class="text-rose-400 cursor-pointer">🗑️</span></div>`).join('');
     }
     if(document.getElementById('admTaxSubZone')) {
-        document.getElementById('admTaxSubZone').innerHTML = tax.subCategories.map((s, i) => `<div class="flex justify-between text-main"><span>• ${s}</span><span onclick="removeTaxonomyItem('subCategories',${i})" class="text-red-400 cursor-pointer">🗑️</span></div>`).join('');
+        document.getElementById('admTaxSubZone').innerHTML = tax.subCategories.map((s, i) => `<div class="flex justify-between text-main"><span>• ${s}</span><span onclick="removeTaxonomyItem('subCategories',${i})" class="text-rose-400 cursor-pointer">🗑️</span></div>`).join('');
     }
     if(document.getElementById('admTaxBrandZone')) {
-        document.getElementById('admTaxBrandZone').innerHTML = tax.brands.map((b, i) => `<div class="flex justify-between text-main"><span>• ${b}</span><span onclick="removeTaxonomyItem('brands',${i})" class="text-red-400 cursor-pointer">🗑️</span></div>`).join('');
+        document.getElementById('admTaxBrandZone').innerHTML = tax.brands.map((b, i) => `<div class="flex justify-between text-main"><span>• ${b}</span><span onclick="removeTaxonomyItem('brands',${i})" class="text-rose-400 cursor-pointer">🗑️</span></div>`).join('');
     }
 }
 function addTaxonomyItem(field, inputId) {
@@ -558,7 +568,7 @@ function renderAdminProductList() {
         return `<div class="flex items-center gap-3 p-2 border border-main rounded-2xl text-[10px] text-main bg-black/10">
             <div class="flex flex-col"><button onclick="moveProduct(${idx},-1)" class="text-main font-bold">▲</button><button onclick="moveProduct(${idx},1)" class="text-main font-bold">▼</button></div>
             <img src="${p.img}" class="w-9 h-9 rounded object-cover border border-main"><div class="flex-1 font-bold truncate">${p.name}</div>
-            <button onclick="editProduct(${idx})" class="text-blue-400 font-bold">แก้ไข</button><button onclick="deleteProduct(${idx})" class="text-red-400 font-bold">ลบ</button></div>`;
+            <button onclick="editProduct(${idx})" class="text-blue-400 font-bold">แก้ไข</button><button onclick="deleteProduct(${idx})" class="text-rose-400 font-bold">ลบ</button></div>`;
     }).join('');
     const pag = document.getElementById('pagination'); if(!pag) return; pag.innerHTML = "";
     for(let i=1; i<=total; i++) pag.innerHTML += `<button onclick="currentAdminPage=${i}; renderAdminProductList()" class="page-btn ${i===currentAdminPage?'active':''}">${i}</button>`;
@@ -583,7 +593,7 @@ function saveProductAdmin() {
 }
 
 /* ==========================================
-   7. CART & LAYOUT MANAGER
+   7. CART & RECEIPTS SYSTEM (แก้ปุ่มสรุปยอดค้าง)
    ========================================== */
 function openProductDetail(idx) {
     const p = window.db.products[idx]; const detail = document.getElementById('productDetailPage'); if(!detail) return;
@@ -631,13 +641,54 @@ function renderCart() {
         <div class="card-bg p-3 rounded-2xl flex gap-3 items-center border border-main shadow-sm text-xs theme-bg-card">
             <img src="${i.img}" class="w-12 h-12 rounded-xl object-cover border border-main"><div class="flex-1 font-bold text-main truncate">${i.name}</div>
             <div class="flex items-center gap-1.5"><button onclick="updateQty(${idx},-1)" class="w-7 h-7 border border-main rounded-lg theme-bg-card text-main">-</button><span class="w-4 text-center font-bold text-main">${i.qty}</span><button onclick="updateQty(${idx},1)" class="w-7 h-7 border border-main rounded-lg theme-bg-card text-main">+</button></div>
-            <button onclick="removeCartItem(${idx})" class="text-red-400 px-1 font-bold text-base">×</button>
+            <button onclick="removeCartItem(${idx})" class="text-rose-400 px-1 font-bold text-base">×</button>
         </div>`).join('');
     const total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
     if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full theme-bg-btn text-btn-link py-4 rounded-2xl font-bold text-xs shadow-xl">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
 }
 function updateQty(idx, d) { cart[idx].qty += d; if(cart[idx].qty <= 0) cart.splice(idx,1); updateCartCount(); renderCart(); }
 function removeCartItem(idx) { myConfirm("ลบสินค้าชิ้นนี้ออกจากตะกร้า?", () => { cart.splice(idx,1); updateCartCount(); renderCart(); }); }
+
+function finalizeOrder() {
+    const u = window.db.getCurrentUser(); if(!u) { alert("กรุณาเข้าสู่ระบบก่อนชำระเงินค่ะ"); openUnifiedAuthModal(); return; }
+    const total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
+    if(u.credit < total) { alert("เครดิตของคุณไม่เพียงพอ กรุณาเติมเงินก่อนนะคะ"); return; }
+    
+    u.credit -= total;
+    const newOrder = { orderId: "OR-" + Date.now(), items: [...cart], total: total, date: "วันนี้" };
+    if(!u.orderHistory) u.orderHistory = []; u.orderHistory.unshift(newOrder);
+    window.db.saveCurrentUser(u);
+    
+    let members = window.db.getMembers();
+    const idx = members.findIndex(m => m.username === u.username);
+    if(idx !== -1) { members[idx] = u; window.db.saveMembers(members); }
+    
+    renderReceiptPage(newOrder);
+    cart = []; updateCartCount();
+}
+
+function renderReceiptPage(order) {
+    hideAllPages(); if(document.getElementById('receiptPage')) document.getElementById('receiptPage').classList.remove('hidden');
+    const container = document.getElementById('receiptPage'); if(!container) return;
+    container.innerHTML = `
+        <div class="p-6 text-center space-y-4 max-w-[420px] mx-auto text-xs animate-pop">
+            <div class="text-emerald-500 text-4xl"><i class="fa-solid fa-circle-check"></i></div>
+            <h2 class="text-base font-bold text-main">ชำระเงินสำเร็จแล้วค่ะ!</h2>
+            <p class="text-sub">รหัสสั่งซื้อ: ${order.orderId}</p>
+            <div class="theme-bg-card p-4 rounded-2xl border border-main text-left space-y-2 text-main">
+                ${order.items.map(i => `<div class="flex justify-between"><span>${i.name} (x${i.qty})</span><span>฿${(i.price-i.discount)*i.qty}</span></div>`).join('')}
+                <div class="border-t border-main pt-2 flex justify-between font-bold text-sm"><span>ยอดรวมทั้งสิ้น</span><span>฿${order.total}</span></div>
+            </div>
+            <button onclick="backToStoreHome()" class="w-full py-3 theme-bg-btn text-btn-link rounded-xl font-bold">กลับสู่หน้าร้านค้าหลัก</button>
+        </div>`;
+}
+
+function saveAsPresetAdmin() {
+    const name = prompt("ตั้งชื่อพรีเซ็ตสีชุดนี้:"); if(!name || !name.trim()) return;
+    if(!window.db.config.themePresets) window.db.config.themePresets = [];
+    window.db.config.themePresets.push({ id: "pre_" + Date.now(), name: name.trim(), colors: JSON.parse(JSON.stringify(window.db.config.theme)) });
+    window.db.saveConfig(window.db.config); renderAdminDashboard(); alert("บันทึกพรีเซ็ตสำเร็จแล้วค่ะ!");
+}
 
 function hideAllPages() {
     ['mainPage', 'productDetailPage', 'cartPage', 'receiptPage', 'userMenuPage', 'topupPage', 'reviewPage', 'allCategoriesPage', 'adminDashboard'].forEach(id => {
