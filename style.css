@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
+/* 🪐 โครงสร้างเฉดสีระบบ Dynamic อิงตามพาเลทที่เลือก */
 :root {
     --th-bg: #202430;
     --th-card: #282d3c;
@@ -9,12 +10,12 @@
     --th-primary: #7082a6;
     --th-secondary: #5c6b8c;
     --th-accent: #8fa3c7;
-    --th-btn-text-color: #ffffff;
 }
 
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; padding: 0; min-height: 100vh; }
 
+/* ยึดโครงสร้างสีกราฟิกตามพรีเซ็ตที่เปลี่ยนแปลงจริง */
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
@@ -22,9 +23,8 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .text-main { color: var(--th-text) !important; }
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
-.text-btn-link { color: var(--th-btn-text-color) !important; }
 
-/* 🧼 ส่วนหน้าระบบแอดมินอินเนอร์สีขาวละมุนตามรีเควส */
+/* 🧼 ส่วนหน้าระบบแอดมินอินเนอร์สีขาวละมุนตา */
 .admin-inner-panel {
     background-color: #ffffff !important;
     border-color: var(--th-border) !important;
@@ -34,7 +34,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: #333333 !important;
 }
 
-/* 📢 บังคับจัดตำแหน่งเลย์เอาท์แบนเนอร์และสั่งเล่น Animation */
+/* 📢 จัดตำแหน่งเลย์เอาท์แบนเนอร์และสั่งเล่น Animation */
 .marquee-container {
     display: flex;
     overflow: hidden;
@@ -46,7 +46,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     display: inline-block;
 }
 
-/* 🎥 คุมคีย์เฟรมการเลื่อนวิ่งสลับฝั่งของข้อความตัววิ่งแบนเนอร์ร้านค้า */
+/* 🎥 คีย์เฟรมการเลื่อนวิ่งสลับฝั่งของข้อความตัววิ่งแบนเนอร์ร้านค้า */
 @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-100%); }
@@ -54,6 +54,68 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 @keyframes marquee2 {
     0% { transform: translateX(100%); }
     100% { transform: translateX(0%); }
+}
+
+/* หน้ารีวิวสลัดสีแปลกปลอมออก */
+#reviewPage .bg-white,
+.review-filter-bar-wrapper,
+#reviewPage div[class*="bg-gray-"],
+#reviewPage div[class*="bg-slate-"] {
+    background-color: var(--th-bg) !important; 
+    border-color: var(--th-border) !important;
+}
+
+.review-star-filter-btn {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
+}
+.review-star-filter-btn.active {
+    background-color: var(--th-primary) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* นำระบบพรีเซ็ตสวมเข้าสู่กล่องป็อปอัพทั้งหมด */
+#unifiedAuthModal .bg-white,
+#newReviewModal .bg-white,
+#promotionModal .bg-white,
+.modal-content-card,
+#unifiedAuthModal div[class*="bg-white"] {
+    background-color: var(--th-card) !important;
+    border: 1px solid var(--th-border) !important;
+    color: var(--th-text) !important;
+}
+
+/* สไตล์แท็บคุมสีใต้ขอบ */
+#tabAuthAdminBtn.border-main, #tabAuthUserBtn.border-main {
+    border-bottom-color: var(--th-primary) !important;
+}
+
+#unifiedAuthModal input, #newReviewModal textarea {
+    background-color: #ffffff !important;
+    color: #1c1e21 !important;
+    border: 1px solid var(--th-border) !important;
+}
+
+#topSearchBar input {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
+}
+#topSearchBar button, .action-circle-btn {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
+}
+
+#adminDashboard input, #adminDashboard select, #adminDashboard textarea {
+    border-color: var(--th-border) !important;
+    color: var(--th-text) !important;
+}
+#adminDashboard select option {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
 }
 
 .app-container { width: 100%; max-width: 100%; margin: 0 auto; min-height: 100vh; position: relative; }
@@ -72,4 +134,4 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--th-border);
     background: var(--th-card); color: var(--th-text); cursor: pointer;
 }
-.page-btn.active { background: var(--th-primary); color: var(--th-btn-text-color); }
+.page-btn.active { background: var(--th-primary); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
