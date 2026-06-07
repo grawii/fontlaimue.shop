@@ -169,77 +169,91 @@ function processUserAuth() {
 function logoutUser() { 
     window.db.saveCurrentUser(null); 
     closeSubPage('userMenuPage'); 
+    // สั่งปิดตัวสไลด์บาร์ลงเมื่อล็อกเอาท์
+    const dropdown = document.getElementById('userDropdownMenu');
+    if (dropdown) { dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0"; }
+    const arrow = document.getElementById('dropdownArrowIcon');
+    if (arrow) arrow.style.transform = "rotate(0deg)";
+    
     updateCreditDisplay(); 
     alert("ออกจากระบบแล้ว"); 
 }
 
-// 🌟 ฟังก์ชันเพิ่มพิเศษ: ระบบเปิด/ปิด แสดงกล่องเมนูดรอปดาวน์ผู้ใช้
+// 🌟 ฟังก์ชันสไลด์แผงลิ้นชักด้านล่าง ขึ้น-ลง แบบแอนิเมชันนุ่มนวล (Smooth Slide) ตามรูปที่วาดมา
 function toggleUserDropdown() {
+    const u = window.db.getCurrentUser();
+    // ถ้ายังไม่ได้ล็อกอิน ไม่ต้องเปิดสไลด์ ให้เด้งหน้าต่างล็อกอินแทนเพื่อความลื่นไหลของระบบ
+    if (!u) {
+        openUnifiedAuthModal();
+        return;
+    }
+    
     const dropdown = document.getElementById('userDropdownMenu');
-    if (dropdown) {
-        dropdown.classList.toggle('hidden');
+    const arrow = document.getElementById('dropdownArrowIcon');
+    if (!dropdown) return;
+    
+    if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
+        // ทำการสไลด์เลื่อนแถบลงมาโชว์เมนู
+        dropdown.style.maxHeight = "50px"; 
+        dropdown.style.opacity = "1";
+        if (arrow) arrow.style.transform = "rotate(180deg)";
+    } else {
+        // ทำการหดแถบกลับขึ้นไปซ่อน
+        dropdown.style.maxHeight = "0px";
+        dropdown.style.opacity = "0";
+        if (arrow) arrow.style.transform = "rotate(0deg)";
     }
 }
 
-// 🌟 ฟังก์ชันเพิ่มพิเศษ: ตรวจจับการคลิกนอกพื้นที่ Dropdown เพื่อให้ปิดตัวเองอัตโนมัติ
+// 🌟 ฟังก์ชันตรวจจับเหตุการณ์คลิกนอกกรอบสี่เหลี่ยม เพื่อพับเก็บแถบสไลด์ลงอัตโนมัติ
 window.addEventListener('click', function(e) {
-    const btn = document.getElementById('userDropdownBtn');
+    const headerCard = document.getElementById('userHeaderCard');
     const dropdown = document.getElementById('userDropdownMenu');
-    if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.add('hidden');
+    const arrow = document.getElementById('dropdownArrowIcon');
+    if (headerCard && dropdown && !headerCard.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.maxHeight = "0px";
+        dropdown.style.opacity = "0";
+        if (arrow) arrow.style.transform = "rotate(0deg)";
     }
 });
 
-// 🌟 ฟังก์ชันเพิ่มพิเศษ: ปรับปรุงฟังก์ชัน Render สถานะผู้ใช้ให้เป็น Dropdown ตามแบบรูปภาพแนบ
+// 🌟 ฟังก์ชันปรับปรุงโครงสร้าง Render สถานะผู้ใช้ในกรอบแบบใหม่
 function updateCreditDisplay() {
     const userArea = document.getElementById('userStatusArea');
+    const arrow = document.getElementById('dropdownArrowIcon');
     const u = window.db.getCurrentUser();
     if (!userArea) return;
     
     if (u) {
+        // เมื่อล็อกอินแล้ว: แสดงชื่อ ยอดเครดิต และเผยโฉมลูกศรเปิดแผงสไลด์
         userArea.innerHTML = `
-            <div class="flex items-center gap-1">
-                <div id="userDropdownBtn" onclick="toggleUserDropdown()" class="cursor-pointer bg-white/80 hover:bg-white border px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5 text-[11px] font-bold transition-all select-none">
-                    <span class="text-sub">👤</span>
-                    <span class="text-main max-w-[80px] truncate">${u.username}</span>
-                    <span class="text-green-600 font-extrabold">฿${u.credit}</span>
-                    <span class="text-[8px] text-gray-400 ml-0.5">▼</span>
-                </div>
-            </div>
-            
-            <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 z-[99] text-[11px]">
-                <div class="px-3 py-1 border-b border-gray-100 mb-1 text-gray-400 font-bold text-[9px] uppercase tracking-wider">เมนูสมาชิก</div>
-                <button onclick="goToUserSubPage('topup')" class="w-full text-left px-3 py-2 text-main hover:bg-gray-50 flex items-center gap-2 font-semibold transition-colors">
-                    💰 แจ้งเติมเครดิตร้าน
-                </button>
-                <button onclick="goToUserSubPage('editProfile')" class="w-full text-left px-3 py-2 text-main hover:bg-gray-50 flex items-center gap-2 font-semibold transition-colors">
-                    ⚙️ แก้ไขข้อมูลส่วนตัว
-                </button>
-                <button onclick="goToUserSubPage('history')" class="w-full text-left px-3 py-2 text-main hover:bg-gray-50 flex items-center gap-2 font-semibold transition-colors">
-                    📦 ประวัติการสั่งซื้อสินค้า
-                </button>
-                <div class="border-t border-gray-100 mt-1 pt-1">
-                    <button onclick="logoutUser(); toggleUserDropdown();" class="w-full text-left px-3 py-2 text-red-500 hover:bg-red-50 flex items-center gap-2 font-bold transition-colors">
-                        🚶 ออกจากระบบ
-                    </button>
-                </div>
+            <div class="text-[11px] font-bold select-none">
+                <span class="text-main block max-w-[110px] truncate">👤 ${u.username}</span>
+                <span class="text-green-600 block mt-0.5">฿${u.credit}</span>
             </div>
         `;
+        if (arrow) arrow.classList.remove('hidden');
         if (document.getElementById('userCreditDetail')) document.getElementById('userCreditDetail').innerText = u.credit;
     } else {
+        // ยังไม่ล็อกอิน: แสดงปุ่มลงชื่อเข้าใช้ และซ่อนสัญลักษณ์ลูกศร
         userArea.innerHTML = `
-            <button onclick="openUnifiedAuthModal()" class="bg-[var(--btn-color)] text-white px-3 py-2 rounded-xl text-[10px] font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-1">
+            <button onclick="openUnifiedAuthModal()" class="bg-[var(--btn-color)] text-white px-3 py-1.5 rounded-xl text-[10px] font-bold shadow-sm transition-all active:scale-95">
                 ลงชื่อเข้าใช้
             </button>
         `;
+        if (arrow) arrow.classList.add('hidden');
     }
 }
 
-// 🌟 ฟังก์ชันเพิ่มพิเศษ: ลิงก์ทางลัดจากดรอปดาวน์ไปยังหน้าย่อยแบบโฟกัสจุดกรอกทันที
+// 🌟 ฟังก์ชันเชื่อมหน้าแยก: กดปุ่มจากแผงสไลด์แล้วพุ่งตรงไปโฟกัสฟิลด์ที่ต้องการทันที
 function goToUserSubPage(section) {
     openUserMenuPage();
+    
+    // พับเก็บแผงสไลด์ด้านบนขึ้นไปหลังกดเลือกเสร็จ
     const dropdown = document.getElementById('userDropdownMenu');
-    if (dropdown) dropdown.classList.add('hidden');
+    const arrow = document.getElementById('dropdownArrowIcon');
+    if (dropdown) { dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0"; }
+    if (arrow) arrow.style.transform = "rotate(0deg)";
     
     if (section === 'topup') {
         switchHistoryTab('topup');
