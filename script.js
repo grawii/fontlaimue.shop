@@ -60,7 +60,7 @@ function updateCreditDisplay() {
                 <span class="text-green-600 block mt-0.5">฿${u.credit}</span>
             </div>
         `;
-        if (arrow) arrow.classList.remove('hidden');
+        if (arrow) arrow.remove('hidden');
         
         const fields = document.querySelectorAll('.userCreditDisplayField');
         fields.forEach(f => f.innerText = u.credit);
@@ -91,19 +91,12 @@ function myConfirm(msg, onOk) {
 }
 
 /* ==========================================
-   ฟังก์ชันปรับแต่งธีมเวอร์ชันอัปเกรด (ขยายลิสตัวแปรสีเพิ่ม 21 จุด)
+   ฟังก์ชันปรับแต่งธีมเวอร์ชันอัปเกรด (ผูกสีอย่างชาญฉลาดผ่าน 8 ตัวแปรหลัก)
    ========================================== */
 function applyTheme() {
     const t = window.db.config.theme; const root = document.documentElement; if(!t) return;
     
-    const keys = [
-        'bgApp', 'bgCard', 'bgProductCard', 'bgInput', 'bgMarquee', 'bgBtn', 
-        'bgCatBtnNormal', 'bgCatBtnActive', 'bgModal', 'bgReviewNav',
-        'txtMain', 'txtSub', 'txtProductName', 'txtMarquee', 'txtBtnInside', 
-        'txtCatNormal', 'txtCatActive', 'txtModalMain', 'txtModalSub', 'txtInputText',
-        'borderColor'
-    ];
-    
+    const keys = ['bgApp', 'bgCard', 'bgInput', 'bgBtn', 'txtMain', 'txtSub', 'txtBtnInside', 'borderColor'];
     keys.forEach(k => { 
         if(t[k]) root.style.setProperty(`--${k}-color`, t[k]); 
     });
@@ -165,14 +158,14 @@ function switchUnifiedTab(type) {
     const userBtn = document.getElementById('tabAuthUserBtn'); const adminBtn = document.getElementById('tabAuthAdminBtn');
     const userForm = document.getElementById('formAuthUser'); const adminForm = document.getElementById('formAuthAdmin');
     if(type === 'user') {
-        userBtn.className = "flex-1 pb-3 theme-txt-modal-main font-bold border-b-2 border-main"; 
-        adminBtn.className = "flex-1 pb-3 theme-txt-modal-sub border-b-2 border-transparent";
+        userBtn.className = "flex-1 pb-3 text-main font-bold border-b-2 border-main"; 
+        adminBtn.className = "flex-1 pb-3 text-sub border-b-2 border-transparent";
         userForm.classList.remove('hidden'); adminForm.classList.add('hidden');
         if(document.getElementById('mainUserAuthBtn')) document.getElementById('mainUserAuthBtn').innerText = "ลงชื่อเข้าใช้งาน";
         if(document.getElementById('toggleRegBtn')) document.getElementById('toggleRegBtn').classList.remove('hidden');
     } else {
-        adminBtn.className = "flex-1 pb-3 theme-txt-modal-main font-bold border-b-2 border-main"; 
-        userBtn.className = "flex-1 pb-3 theme-txt-modal-sub border-b-2 border-transparent";
+        adminBtn.className = "flex-1 pb-3 text-main font-bold border-b-2 border-main"; 
+        userBtn.className = "flex-1 pb-3 text-sub border-b-2 border-transparent";
         adminForm.classList.remove('hidden'); userForm.classList.add('hidden');
     }
 }
@@ -315,15 +308,15 @@ function renderCategoryFilter() {
     const cont = document.getElementById('categoriesContainer'); const tax = window.db.getTaxonomy(); if(!cont) return;
     
     let allStyle = storeFilterCat === 'ทั้งหมด' 
-        ? 'style="background-color: var(--bgCatBtnActive-color); color: var(--txtCatActive-color); border-color: var(--borderColor-color); font-weight: bold;"' 
-        : 'style="background-color: var(--bgCatBtnNormal-color); color: var(--txtCatNormal-color); border-color: var(--borderColor-color);"';
+        ? 'style="background-color: var(--bgBtn-color); color: var(--txtBtnInside-color); border-color: var(--borderColor-color); font-weight: bold;"' 
+        : 'style="background-color: var(--bgInput-color); color: var(--txtSub-color); border-color: var(--borderColor-color);"';
         
     let html = `<button onclick="storeFilterCat='ทั้งหมด'; renderCategoryFilter(); renderStore();" ${allStyle} class="px-4 py-1.5 rounded-full text-[11px] border whitespace-nowrap shadow-sm transition-all">คลังทั้งหมด</button>`;
     
     tax.categories.forEach(c => {
         let currentStyle = storeFilterCat === c 
-            ? 'style="background-color: var(--bgCatBtnActive-color); color: var(--txtCatActive-color); border-color: var(--borderColor-color); font-weight: bold;"' 
-            : 'style="background-color: var(--bgCatBtnNormal-color); color: var(--txtCatNormal-color); border-color: var(--borderColor-color);"';
+            ? 'style="background-color: var(--bgBtn-color); color: var(--txtBtnInside-color); border-color: var(--borderColor-color); font-weight: bold;"' 
+            : 'style="background-color: var(--bgInput-color); color: var(--txtSub-color); border-color: var(--borderColor-color);"';
             
         html += `<button onclick="storeFilterCat='${c}'; renderCategoryFilter(); renderStore();" ${currentStyle} class="px-4 py-1.5 rounded-full text-[11px] border whitespace-nowrap shadow-sm transition-all">${c}</button>`;
     });
@@ -342,11 +335,11 @@ function renderStoreCards(products) {
     cont.innerHTML = products.map((p) => {
         const realIdx = window.db.products.findIndex(item => item.name === p.name);
         return `
-        <div class="product-card flex flex-col justify-between h-full theme-bg-product-card border border-main">
+        <div class="product-card flex flex-col justify-between h-full theme-bg-card border border-main">
             <div onclick="openProductDetail(${realIdx})" class="cursor-pointer">
                 <img src="${p.img}" class="w-full aspect-square object-cover rounded-xl mb-2.5 border border-main">
                 <span class="text-[9px] text-sub font-medium block mb-0.5"><i class="fa-solid fa-folder-open mr-1"></i>${p.category}</span>
-                <h4 class="text-[11px] font-bold theme-txt-product-name line-clamp-2 leading-tight h-8">${p.name}</h4>
+                <h4 class="text-[11px] font-bold text-main line-clamp-2 leading-tight h-8">${p.name}</h4>
                 <div class="text-[12px] font-black mt-1 text-main">฿${p.price - p.discount}</div>
             </div>
             <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-btn-inside py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all">➕ ใส่ตะกร้า</button>
@@ -534,7 +527,7 @@ function renderHistoryLogs() {
 }
 
 /* ==========================================
-   8. ADMIN BACKEND DASHBOARD (อัปเกรดแผงตั้งค่าสีแยกส่วน)
+   8. ADMIN BACKEND DASHBOARD (ปรับหน้าจิ้มสีแกนหลัก 8 ส่วนคลีนๆ)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) { closeUnifiedAuthModal(); document.getElementById('adminPasswordInput').value = ""; renderAdminDashboard(); } else alert("รหัสผ่านไม่ถูกต้อง!"); 
@@ -544,29 +537,16 @@ function renderAdminDashboard() {
     const dash = document.getElementById('adminDashboard'); hideAllPages(); dash.classList.remove('hidden');
     const cfg = window.db.config; const t = cfg.theme; const tax = window.db.getTaxonomy();
 
-    // ลิสเลเบลควบคุม 21 ชิ้นส่วนอิสระ แก้บั๊กข้อความซ่อนตัวในป็อปอัพหน้ารีวิวและช่องพิมพ์
+    // 8 ตัวแปรแกนหลักที่เน้นการใช้งานจริง ไม่ซับซ้อน ปรับแต่งแล้วเปลี่ยนแบบลื่นไหล
     const configPaletteLabels = {
-        bgApp: "🎨 พื้นหลังเว็บไซต์หลัก",
-        bgCard: "📦 พื้นหลังกล่องข้อความ/แผงทั่วไป",
-        bgProductCard: "🛍️ พื้นหลังตัวการ์ดสินค้าหน้าร้าน",
-        bgInput: "🔍 พื้นหลังกล่องพิมพ์/ช่องรับค่า",
-        bgMarquee: "🎀 พื้นหลังแบนเนอร์ข้อความวิ่ง",
-        bgBtn: "🛒 พื้นหลังปุ่มหลัก (ปุ่มตะกร้า/ซื้อสินค้า)",
-        bgCatBtnNormal: "📁 พื้นหลังปุ่มหมวดหมู่ (ปกติ)",
-        bgCatBtnActive: "📁 พื้นหลังปุ่มหมวดหมู่ (เมื่อเลือกอยู่)",
-        bgModal: "🚨 พื้นหลังกล่องป็อปอัพ / หน้าล็อกอิน",
-        bgReviewNav: "⭐ พื้นหลังแถบเลือกดาวหน้ารีวิว",
-        txtMain: "✏️ สีข้อความหัวข้อหลักหน้าร้าน",
-        txtSub: "✏️ สีข้อความรายละเอียดซับใน",
-        txtProductName: "✏️ สีชื่อตัวสินค้าบนการ์ด",
-        txtMarquee: "✏️ สีข้อความวิ่งบนแบนเนอร์",
-        txtBtnInside: "✏️ สีตัวหนังสือข้างในปุ่มหลัก",
-        txtCatNormal: "✏️ สีตัวหนังสือปุ่มหมวดหมู่ (ปกติ)",
-        txtCatActive: "✏️ สีตัวหนังสือปุ่มหมวดหมู่ (เมื่อเลือกอยู่)",
-        txtModalMain: "✏️ สีข้อความหัวข้อหลักในป็อปอัพ",
-        txtModalSub: "✏️ สีข้อความรองในป็อปอัพ/สิทธิ์รับสินค้า",
-        txtInputText: "✍️ สีตัวอักษรตอนพิมพ์ลงช่องข้อมูล",
-        borderColor: "🧼 สีเส้นขอบกรอบโครงสร้าง"
+        bgApp: "🎨 สีพื้นหลังเว็บไซต์หลัก",
+        bgCard: "📦 สีพื้นหลังกล่องการ์ด & ป็อปอัพ",
+        bgInput: "🔍 สีพื้นหลังกล่องพิมพ์ / ช่องรับค่า",
+        bgBtn: "🛒 สีพื้นหลังปุ่มกดหลักหน้าร้าน",
+        txtMain: "✏️ สีข้อความหัวข้อหลักทั้งหมด",
+        txtSub: "✏️ สีข้อความรายละเอียดรอง",
+        txtBtnInside: "🤍 สีตัวหนังสือข้างในปุ่มกด",
+        borderColor: "🧼 สีเส้นขอบและกรอบโครงสร้าง"
     };
 
     dash.innerHTML = `
@@ -583,7 +563,7 @@ function renderAdminDashboard() {
             </div>
 
             <div class="bg-gray-50 p-4 rounded-3xl border">
-                <h3 class="font-bold text-xs mb-3 text-main">2. ศูนย์ปรับแต่งโทนสีแยกส่วน (เปลี่ยนอิสระทุกจุดไม่พ่วงกัน)</h3>
+                <h3 class="font-bold text-xs mb-3 text-main">2. ศูนย์ปรับแต่งโทนสีแกนหลัก (เปลี่ยนปุ๊บ มีผลเนียนตาทุกจุด)</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] mb-4">
                     ${Object.keys(configPaletteLabels).map(k => `
                         <div class="bg-white p-2 rounded-xl border border-gray-100 shadow-sm">
