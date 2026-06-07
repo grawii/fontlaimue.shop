@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* 🌟 แมปตัวแปร 8 แกนหลักสไตล์ GUSSUE ควบคุมเฉดสีไม่ให้แข็งและป้องกันตัวหนังสือจม */
+/* 🪐 โครงสร้างสีหลักสไตล์แอป GUSSUE ผูกตัวแปรแก้ปัญหาปุ่มจม */
 :root {
     --th-bg: #202430;
     --th-card: #282d3c;
@@ -19,7 +19,7 @@ body {
     min-height: 100vh;
 }
 
-/* คลาสหลักดึงสีตามโมเดลฐานข้อมูลหน้าร้าน */
+/* คลาสหลักดึงโทนสีตามชุดพรีเซ็ตสำเร็จรูป */
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
@@ -28,30 +28,46 @@ body {
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
 
-/* บังคับพฤติกรรมกล่อง Input และ Placeholder ปลอมแปลงสีไม่ให้กลืนหาย */
-input, textarea, select {
-    color: var(--th-text) !important;
+/* 🔍 แก้ไขปัญหาปุ่มกดและช่องค้นหาแถบบนสุดกลืนหาย */
+#topSearchBar input {
     background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
 }
-input::placeholder, textarea::placeholder {
-    color: var(--th-muted) !important;
-    opacity: 0.65;
+#topSearchBar button, 
+.action-circle-btn {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 🧼 ล็อกโครงสร้างกล่อง Pop-up ข้อมูลล็อกอินเปลี่ยนสีตามพรีเซ็ต และช่องกรอกล็อกเป็นสีสว่าง */
+#unifiedAuthModal .bg-white,
+#newReviewModal .bg-white,
+#promotionModal .bg-white {
+    background-color: var(--th-card) !important;
+    border: 1px solid var(--th-border) !important;
+}
+#unifiedAuthModal input {
+    background-color: #ffffff !important;
+    color: #1c1e21 !important;
+    border: 1px solid var(--th-border) !important;
+}
+#unifiedAuthModal input::placeholder {
+    color: #888888 !important;
+}
+
+/* แถบหัวข้อหมวดหมู่ในหน้ารีวิวรองรับตาม Theme */
+.review-star-filter-btn {
+    transition: all 0.2s ease;
 }
 
 .app-container {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    min-height: 100vh;
-    position: relative;
-    box-shadow: 0 0 30px rgba(0,0,0,0.02);
-    transition: max-width 0.3s ease;
+    width: 100%; max-width: 100%; margin: 0 auto; min-height: 100vh; position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.02); transition: max-width 0.3s ease;
 }
-
-@media (min-width: 640px) {
-    .app-container { max-width: 640px; }
-}
-
+@media (min-width: 640px) { .app-container { max-width: 640px; } }
 @media (min-width: 1024px) {
     .app-container { max-width: 768px; }
     #productsContainer { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
@@ -59,11 +75,8 @@ input::placeholder, textarea::placeholder {
 
 .page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); background-color: transparent; }
 
-/* ตัวการ์ดแสดงผลสินค้าโค้งมนตามอัตราพรีเซ็ต user_14 */
 .product-card {
-    border-radius: 24px;
-    padding: 12px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px; padding: 12px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
 
@@ -77,27 +90,17 @@ input::placeholder, textarea::placeholder {
 .page-btn {
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
     border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--th-border);
-    background: white; cursor: pointer;
+    background: var(--th-card); color: var(--th-text); cursor: pointer;
+}
+.page-btn.active {
+    background: var(--th-primary); color: #ffffff;
 }
 
 .custom-panel-card { border-radius: 24px; padding: 20px; }
-
-.animate-bounce-slow { animation: bell-ring 3s ease-in-out infinite; }
-@keyframes bell-ring {
-    0%, 100% { transform: rotate(0); }
-    10%, 30% { transform: rotate(15deg); }
-    20%, 40% { transform: rotate(-15deg); }
-    50% { transform: rotate(0); }
-}
-
 #promoCarouselContainer { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
 .promo-slide-card { scroll-snap-align: start; flex-shrink: 0; width: 100%; transition: all 0.3s ease; }
 
 .category-select-card {
-    padding: 20px;
-    border-radius: 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    padding: 20px; border-radius: 24px; text-align: center; cursor: pointer; transition: all 0.2s ease;
 }
 .category-select-card:hover { transform: scale(1.02); }
