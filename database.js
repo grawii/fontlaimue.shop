@@ -10,7 +10,7 @@
             googleAppsScriptUrl: "", 
             adminPass: "1234",
             
-            // ค่าสีเริ่มต้นอิงตามสไตล์หรูหรามืด Slate Grey (user_14)
+            // ค่าสีเริ่มต้นอิงตามสไตล์หรูหรามืด Slate Grey
             theme: {
                 bg: "#202430",         
                 card: "#282d3c",       
@@ -22,7 +22,7 @@
                 accent: "#8fa3c7"      
             },
             
-            // 🪐 คลังพรีเซ็ตสำเร็จรูปครบเซ็ต
+            // 🪐 คลังพรีเซ็ตสำเร็จรูปครบเซ็ตดั้งเดิม
             themePresets: [
                 {
                     id: "p1",
@@ -63,8 +63,16 @@
         ]
     };
 
-    if (!localStorage.getItem('dekdec_store_db')) {
+    // ตรวจสอบและยัดพรีเซ็ตกลับคืนให้ครบถ้วนในกรณีที่หลุดหายไปจาก LocalStorage
+    let localDB = localStorage.getItem('dekdec_store_db');
+    if (!localDB) {
         localStorage.setItem('dekdec_store_db', JSON.stringify(defaultData));
+    } else {
+        let parsed = JSON.parse(localDB);
+        if (!parsed.config.themePresets || parsed.config.themePresets.length === 0) {
+            parsed.config.themePresets = defaultData.config.themePresets;
+            localStorage.setItem('dekdec_store_db', JSON.stringify(parsed));
+        }
     }
 
     const db = JSON.parse(localStorage.getItem('dekdec_store_db'));
