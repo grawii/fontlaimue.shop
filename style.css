@@ -10,13 +10,13 @@
     --th-primary: #7082a6;
     --th-secondary: #5c6b8c;
     --th-accent: #8fa3c7;
-    --th-btn-text-color: #ffffff; /* ปรับระดับสีตัวหนังสืออักษรให้เข้าคู่พรีเซ็ตอัตโนมัติ */
+    --th-btn-text-color: #ffffff;
 }
 
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; padding: 0; min-height: 100vh; }
 
-/* คลาสจับคู่อินเตอร์เฟซระบบแอป */
+/* คลาสจับคู่อินเตอร์เฟซระบบแแอปเดคเดค */
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
@@ -30,14 +30,15 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-btn-text-color) !important;
 }
 
-/* 🔍 แก้ไขแถบหมวดหมู่ดาวในหน้ารีวิวร้าน (เคลียร์แถบปื้นสีขาวออกแบบถาวร) */
+/* 🔍 แก้ไขแถบหมวดหมู่ดาวในหน้ารีวิวร้าน (ใช้สีพื้นหลังเว็บหลัก ไม่ใช่สีขาว!) */
 #reviewPage .bg-white,
-.review-filter-bar-wrapper {
+.review-filter-bar-wrapper,
+#reviewPage div[class*="bg-gray-"] {
     background-color: var(--th-bg) !important; 
     border-color: var(--th-border) !important;
 }
 
-/* ปรับแต่งปุ่มกดภายในแถบรีวิวสินค้า */
+/* บังคับให้ปุ่มกดตัวเลือกดาวภายในหน้ารีวิว อิงสีตามกล่องการ์ด */
 .review-star-filter-btn {
     background-color: var(--th-card) !important;
     color: var(--th-text) !important;
@@ -48,16 +49,31 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     color: var(--th-btn-text-color) !important;
 }
 
-/* ป๊อปอัพฟรอนต์เอนด์ ปลอมแปลงสีตามโทนมืด/สว่างสอดคล้องธีม */
+/* ป๊อปอัพล็อกอินและแผงหลังบ้าน เปลี่ยนสีตามพรีเซ็ต */
 #unifiedAuthModal .bg-white,
 #newReviewModal .bg-white,
-#promotionModal .bg-white {
+#promotionModal .bg-white,
+.modal-content-card {
     background-color: var(--th-card) !important;
     border: 1px solid var(--th-border) !important;
+    color: var(--th-text) !important;
 }
+
+/* ล็อกช่อง Input ล็อกอินเด่นอ่านง่าย */
 #unifiedAuthModal input, #newReviewModal textarea {
     background-color: #ffffff !important;
     color: #1c1e21 !important;
+    border: 1px solid var(--th-border) !important;
+}
+
+#topSearchBar input {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
+}
+#topSearchBar button, .action-circle-btn {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
     border: 1px solid var(--th-border) !important;
 }
 
