@@ -77,6 +77,7 @@ function updateCreditDisplay() {
 function backToStoreHome() {
     storeFilterCat = 'ทั้งหมด';
     storeFilterStyle = 'ทั้งหมด';
+    renderCategoryFilter();
     renderStore();
     hideAllPages();
     showMainLayout();
@@ -94,12 +95,11 @@ function myConfirm(msg, onOk) {
    ========================================== */
 function applyTheme() {
     const t = window.db.config.theme; const root = document.documentElement; if(!t) return;
-    // ปลดล็อกตัวแปรแมปปิ้งสีให้แปรผันครบทุกองค์ประกอบ
     const keys = ['bgApp', 'bgCard', 'bgInput', 'bgMarquee', 'bgBtn', 'txtMain', 'txtSub', 'txtMarquee', 'txtBtnInside', 'borderColor'];
     keys.forEach(k => { 
         if(t[k]) root.style.setProperty(`--${k}-color`, t[k]); 
     });
-    renderCategoryFilter(); // บังคับวาดสีกระดุมหมวดหมู่ใหม่ตามธีม
+    renderCategoryFilter(); 
 }
 
 /* ==========================================
@@ -137,6 +137,7 @@ function linkToPromoProducts(brandName) {
     
     let list = window.db.getProducts().filter(p => p.brand === brandName);
     storeFilterCat = "ทั้งหมด"; 
+    renderCategoryFilter();
     renderStoreCards(list);
     
     document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -335,7 +336,7 @@ function openAllCategoriesPage() {
             <div class="font-bold text-main text-xs">${c}</div>
         </div>`).join('');
 }
-function selectCategoryFromGrid(catName) { storeFilterCat = catName; renderStore(); closeSubPage('allCategoriesPage'); }
+function selectCategoryFromGrid(catName) { storeFilterCat = catName; renderCategoryFilter(); renderStore(); closeSubPage('allCategoriesPage'); }
 function searchProducts(keyword) { const filtered = window.db.getProducts().filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())); renderStoreCards(filtered); }
 
 function filterStyle(styleName) {
@@ -343,16 +344,22 @@ function filterStyle(styleName) {
     renderStore();
 }
 
-/* 🌟 แก้ไขบั๊กปุ่มหมวดหมู่ให้เปลี่ยนสีตามค่าที่เลือกจริง (Fix image_683b2a.png) */
+/* 🌟 แก้ไขให้ใช้สีที่เปลี่ยนจากระบบแอดมิน (CSS Variable) โดยไม่มีการฟิกส์คลาสทับ */
 function renderCategoryFilter() {
     const cont = document.getElementById('categoriesContainer'); const tax = window.db.getTaxonomy(); if(!cont) return;
     
-    let allActive = storeFilterCat === 'ทั้งหมด' ? 'theme-bg-btn text-btn-inside' : 'theme-bg-input text-main';
-    let html = `<button onclick="storeFilterCat='ทั้งหมด'; renderCategoryFilter(); renderStore();" class="px-4 py-1.5 rounded-full text-[11px] font-bold border border-main whitespace-nowrap shadow-sm transition-all ${allActive}">คลังทั้งหมด</button>`;
+    let allStyle = storeFilterCat === 'ทั้งหมด' 
+        ? 'style="background-color: var(--bgBtn-color); color: var(--txtBtnInside-color); border-color: var(--borderColor-color); font-weight: bold;"' 
+        : 'style="background-color: var(--bgInput-color); color: var(--txtMain-color); border-color: var(--borderColor-color);"';
+        
+    let html = `<button onclick="storeFilterCat='ทั้งหมด'; renderCategoryFilter(); renderStore();" ${allStyle} class="px-4 py-1.5 rounded-full text-[11px] border whitespace-nowrap shadow-sm transition-all">คลังทั้งหมด</button>`;
     
     tax.categories.forEach(c => {
-        let currentActive = storeFilterCat === c ? 'theme-bg-btn text-btn-inside font-bold' : 'theme-bg-input text-main';
-        html += `<button onclick="storeFilterCat='${c}'; renderCategoryFilter(); renderStore();" class="px-4 py-1.5 rounded-full text-[11px] font-medium border border-main whitespace-nowrap shadow-sm transition-all ${currentActive}">${c}</button>`;
+        let currentStyle = storeFilterCat === c 
+            ? 'style="background-color: var(--bgBtn-color); color: var(--txtBtnInside-color); border-color: var(--borderColor-color); font-weight: bold;"' 
+            : 'style="background-color: var(--bgInput-color); color: var(--txtMain-color); border-color: var(--borderColor-color);"';
+            
+        html += `<button onclick="storeFilterCat='${c}'; renderCategoryFilter(); renderStore();" ${currentStyle} class="px-4 py-1.5 rounded-full text-[11px] border whitespace-nowrap shadow-sm transition-all">${c}</button>`;
     });
     cont.innerHTML = html;
 }
@@ -425,7 +432,7 @@ function updateCartCount() {
 }
 
 /* ==========================================
-   ระบบรีวิวร้านค้าแบบจัดหมวดหมู่ดาว & สไตล์ Callout
+   ระบบรีวิวร้านค้าแบบจัดหมวดหมู่ดาว
    ========================================== */
 function openReviewPage() { 
     hideAllPages(); 
@@ -435,7 +442,6 @@ function openReviewPage() {
     renderReviewsList(); 
 }
 
-// คำนวณเลขจำนวนยอดสะสมในแต่ละหมวดหมู่ดาว
 function calculateStarCounters() {
     if(document.getElementById('count-all')) document.getElementById('count-all').innerText = reviewsData.length;
     for(let step=1; step<=5; step++) {
@@ -469,7 +475,6 @@ function renderReviewsList() {
         return;
     }
     
-    // วาดกล่องข้อความสไตล์ Alert Box/Callout Box มีเส้นแถบหนาแยกฝั่งซ้ายตามความพึงพอใจ
     container.innerHTML = outputList.map(r => {
         let borderLeftColor = r.score >= 4 ? 'border-l-amber-400' : 'border-l-gray-400';
         return `
@@ -484,7 +489,6 @@ function renderReviewsList() {
 }
 
 function openNewReviewModal() {
-    // 🌟 เช็คสิทธิ์ความปลอดภัย: ต้องล็อกอินและมียอดซื้อสินค้าจริงเท่านั้นจึงจะตั้งฟอร์มได้
     const u = window.db.getCurrentUser();
     if(!u) {
         alert("ขออภัยค่ะ คุณต้องเข้าสู่ระบบสมาชิกก่อนเปิดสิทธิ์ให้คะแนนรีวิวร้านค้า");
@@ -497,7 +501,7 @@ function openNewReviewModal() {
     }
     
     document.getElementById('newReviewModal').classList.remove('hidden');
-    setStarRatingInput(5); // ค่าเริ่มต้น 5 ดาว
+    setStarRatingInput(5); 
     document.getElementById('revInputName').value = u.username || "";
     document.getElementById('revInputText').value = "";
 }
@@ -564,7 +568,7 @@ function renderHistoryLogs() {
 }
 
 /* ==========================================
-   8. ADMIN BACKEND DASHBOARD (อัปเกรดระบบพรีเซ็ตแมปเปลี่ยนสี)
+   8. ADMIN BACKEND DASHBOARD
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) { closeUnifiedAuthModal(); document.getElementById('adminPasswordInput').value = ""; renderAdminDashboard(); } else alert("รหัสผ่านไม่ถูกต้อง!"); 
@@ -580,7 +584,6 @@ function renderAdminDashboard() {
             <button onclick="removePromotionAdmin(${i})" class="text-red-500 font-bold px-2">ลบ</button>
         </div>`).join('');
 
-    // นิยามคลังจานสีเปลี่ยนได้ทุกสัดส่วนพื้นหลังรวมข้อความภายใน
     const configPaletteLabels = {
         bgApp: "🎨 พื้นหลังเว็บไซต์หลัก",
         bgCard: "📦 พื้นหลังตัวการ์ด/กล่องข้อความ",
@@ -607,7 +610,6 @@ function renderAdminDashboard() {
                 <button onclick="saveShopInfo()" class="w-full py-3 btn-main rounded-xl font-bold">บันทึกข้อมูลหลัก</button>
             </div>
 
-            <!-- กล่องปรับสีเวอร์ชันปลดล็อกทุกตำแหน่งของระบบ -->
             <div class="bg-gray-50 p-4 rounded-3xl border">
                 <h3 class="font-bold text-xs mb-3 text-main">2. ปรับแต่งสีระบบเชิงลึก (เปลี่ยนได้ทุกส่วนของร้านค้า)</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] mb-4">
@@ -776,18 +778,25 @@ function processOrderPayment(method) {
 }
 
 /* ==========================================
-   11. LAYOUT CONTROLLER
+   11. LAYOUT CONTROLLER (🌟 แก้ไขบั๊กแถบเลื่อนซ้อนทับหน้าต่างย่อย)
    ========================================== */
 function hideAllPages() {
     ['mainPage', 'productDetailPage', 'cartPage', 'receiptPage', 'userMenuPage', 'topupPage', 'reviewPage', 'allCategoriesPage', 'adminDashboard'].forEach(id => {
         const el = document.getElementById(id); if(el) el.classList.add('hidden');
     });
+    // 🌟 ซ่อนหัวเว็บ แถบค้นหา และ แถบเมนูด้านล่างสุดด้วย เพื่อไม่ให้ซ้อนทับหน้าอื่น
+    if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.add('hidden');
+    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.add('hidden');
+    if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.add('hidden');
 }
+
 function showMainLayout() {
     document.getElementById('mainPage').classList.remove('hidden');
     if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.remove('hidden');
+    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.remove('hidden');
     if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.remove('hidden');
 }
+
 function closeSubPage(pageId) { 
     document.getElementById(pageId).classList.add('hidden'); 
     showMainLayout(); 
