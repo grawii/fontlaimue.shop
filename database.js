@@ -1,5 +1,5 @@
 (function() {
-    // 📦 โครงสร้างฐานข้อมูลหลักของร้าน DekDec คงเดิม 100%
+    // 📦 โครงสร้างฐานข้อมูลหลักร้าน DekDec พร้อมคลังพรีเซ็ตดั้งเดิมครบถ้วน
     const defaultData = {
         config: {
             shopName: "DekDec Font & Design",
@@ -10,19 +10,19 @@
             googleAppsScriptUrl: "", 
             adminPass: "1234",
             
-            // 🎨 ค่าสีเริ่มต้นอิงตามสไตล์หรูหรามืด Slate Grey (user_14)
+            // ค่าสีเริ่มต้นอิงตามสไตล์หรูหรามืด Slate Grey (user_14)
             theme: {
-                bg: "#202430",         /* สีพื้นหลังเว็บหลัก */
-                card: "#282d3c",       /* สีพื้นหลังกล่องการ์ด / ป็อปอัพ */
-                border: "#3a4358",     /* สีเส้นขอบกรอบโครงสร้าง */
-                text: "#ffffff",       /* สีข้อความหัวข้อหลัก */
-                muted: "#9ea8be",      /* สีข้อความรายละเอียดรอง */
-                primary: "#7082a6",    /* สีหลักปุ่มกด 1 (ปุ่มซื้อ/ใส่ตะกร้า) */
-                secondary: "#5c6b8c",  /* สีหลักปุ่มกด 2 */
-                accent: "#8fa3c7"      /* สีหลักปุ่มกด 3 */
+                bg: "#202430",         
+                card: "#282d3c",       
+                border: "#3a4358",     
+                text: "#ffffff",       
+                muted: "#9ea8be",      
+                primary: "#7082a6",    
+                secondary: "#5c6b8c",  
+                accent: "#8fa3c7"      
             },
             
-            // 🪐 คลังพรีเซ็ตสำเร็จรูป แมปปิ้งผ่านโครงสร้างระบบใหม่เรียบร้อย
+            // 🪐 คลังพรีเซ็ตสำเร็จรูปครบเซ็ต
             themePresets: [
                 {
                     id: "p1",
@@ -38,6 +38,11 @@
                     id: "p3",
                     name: "🐰 ชมพูนมเย็น (Cute Pink)",
                     colors: { bg: "#fdf6f6", card: "#ffffff", border: "#ffd6dc", text: "#613b43", muted: "#a67c84", primary: "#ff8da1", secondary: "#ffa6b7", accent: "#ffb3c1" }
+                },
+                {
+                    id: "p4",
+                    name: "🍵 ชาเขียวมัทฉะ (Matcha Green)",
+                    colors: { bg: "#f4f7f4", card: "#ffffff", border: "#cfe2cf", text: "#2e4a2e", muted: "#6b8e6b", primary: "#557a55", secondary: "#709670", accent: "#8cb38c" }
                 }
             ],
             promotions: [
@@ -78,25 +83,13 @@
         getCurrentUser() {
             return JSON.parse(localStorage.getItem('dekdec_current_user')) || null;
         },
-
-        saveConfig(cfg) {
-            this.config = cfg;
-            this.sync();
-        },
-        saveProducts(p) {
-            this.products = p;
-            this.sync();
-        },
-        saveMembers(m) {
-            this.members = m;
-            this.sync();
-        },
+        saveConfig(cfg) { this.config = cfg; this.sync(); },
+        saveTaxonomy(t) { this.taxonomy = t; this.sync(); },
+        saveProducts(p) { this.products = p; this.sync(); },
+        saveMembers(m) { this.members = m; this.sync(); },
         saveCurrentUser(user) {
-            if (user) {
-                localStorage.setItem('dekdec_current_user', JSON.stringify(user));
-            } else {
-                localStorage.removeItem('dekdec_current_user');
-            }
+            if (user) localStorage.setItem('dekdec_current_user', JSON.stringify(user));
+            else localStorage.removeItem('dekdec_current_user');
         },
         sync() {
             localStorage.setItem('dekdec_store_db', JSON.stringify({
