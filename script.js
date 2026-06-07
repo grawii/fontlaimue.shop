@@ -158,6 +158,7 @@ function switchUnifiedTab(type) {
     currentAuthTab = type; isRegisterMode = false;
     const userBtn = document.getElementById('tabAuthUserBtn'); const adminBtn = document.getElementById('tabAuthAdminBtn');
     const userForm = document.getElementById('formAuthUser'); const adminForm = document.getElementById('formAuthAdmin');
+    const userSubmitBtn = document.getElementById('mainUserAuthBtn');
     const adminSubmitBtn = document.getElementById('adminAuthSubmitBtn');
     
     if(userBtn && adminBtn) {
@@ -165,18 +166,26 @@ function switchUnifiedTab(type) {
             userBtn.className = "flex-1 pb-3 text-main font-bold border-b-2 border-main"; 
             adminBtn.className = "flex-1 pb-3 text-sub border-b-2 border-transparent";
             if(userForm) userForm.classList.remove('hidden'); if(adminForm) adminForm.classList.add('hidden');
-            if(document.getElementById('mainUserAuthBtn')) {
-                document.getElementById('mainUserAuthBtn').innerText = "ลงชื่อเข้าใช้งาน";
-                document.getElementById('mainUserAuthBtn').className = "w-full theme-bg-btn text-btn-link py-3 rounded-xl font-bold transition-all active:scale-95";
+            
+            if(userSubmitBtn) {
+                userSubmitBtn.innerText = "ลงชื่อเข้าใช้งาน";
+                userSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md";
+                // 🔥 บังคับดึงสีหลักจากพรีเซ็ตเดียวกันกับปุ่มลูกค้า
+                userSubmitBtn.style.backgroundColor = "var(--th-primary)";
+                userSubmitBtn.style.color = "var(--th-btn-text-color)";
             }
             if(document.getElementById('toggleRegBtn')) document.getElementById('toggleRegBtn').classList.remove('hidden');
         } else {
             adminBtn.className = "flex-1 pb-3 text-main font-bold border-b-2 border-main"; 
             userBtn.className = "flex-1 pb-3 text-sub border-b-2 border-transparent";
             if(adminForm) adminForm.classList.remove('hidden'); if(userForm) userForm.classList.add('hidden');
+            
             if(adminSubmitBtn) {
                 adminSubmitBtn.innerText = "เข้าสู่ระบบผู้ดูแลระบบ";
-                adminSubmitBtn.className = "w-full theme-bg-btn text-btn-link py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md";
+                adminSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md";
+                // 🔥 แก้ไขจุดนี้: บังคับใช้สีเดียวกับปุ่มลูกค้าตามพรีเซ็ตที่เลือกทันที ไม่เป็นสีขาวแล้ว
+                adminSubmitBtn.style.backgroundColor = "var(--th-primary)";
+                adminSubmitBtn.style.color = "var(--th-btn-text-color)";
             }
         }
     }
