@@ -82,7 +82,7 @@ function myConfirm(msg, onOk) {
 }
 
 /* ==========================================
-   ⚙️ ระบบควบคุมสลับโทนผ่าน CSS Variables 8 แกนหลัก
+   ⚙️ ระบบสี 8 แกน และฟังก์ชันตรวจสอบความสว่าง
    ========================================== */
 function applyTheme() {
     const cfg = window.db.getConfig(); const t = cfg.theme; const root = document.documentElement; if(!t) return;
@@ -136,7 +136,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (ซ่อมปุ่มล็อกอิน/ปิดป็อปอัพฟันเฟือง)
+   3. UNIFIED LOGIN CONTROLLER (แก้ปุ่มปิดป็อปอัพทำงานได้สนิท)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -200,7 +200,7 @@ function handleGearIconClick() {
 }
 
 /* ==========================================
-   4. STOREFRONT RENDER & FILTER (ซ่อมการ์ดสินค้ากดได้ปกติ)
+   4. STOREFRONT RENDER & FILTER (ปลดล็อกการ์ดสินค้ากดได้ปกติ)
    ========================================== */
 function openAllCategoriesPage() {
     hideAllPages(); if(document.getElementById('allCategoriesPage')) document.getElementById('allCategoriesPage').classList.remove('hidden');
@@ -253,7 +253,7 @@ function renderStoreCards(products) {
 }
 
 /* ==========================================
-   5. REVIEWS SYSTEM
+   5. REVIEWS SYSTEM (จำกัดแก้ไขรีวิว 2 ครั้ง / ลบรีวิว)
    ========================================== */
 function openReviewPage() { 
     hideAllPages(); if(document.getElementById('reviewPage')) document.getElementById('reviewPage').classList.remove('hidden'); 
@@ -575,4 +575,93 @@ function saveProductAdmin() {
     const nameEl = document.getElementById('admName'); const priceEl = document.getElementById('admPrice'); if(!nameEl || !priceEl) return;
     const p = { 
         name: nameEl.value, price: Number(priceEl.value), discount: Number(document.getElementById('admDisc') ? document.getElementById('admDisc').value : 0), 
-        category: document.getElementById('admCat') ? document.getElementById('admCat').value : "ฟอนต์", subCategory: document.getElementById('admSub') ? document.getElementById('admSub').value : "ลายมือ", brand: document
+        category: document.getElementById('admCat') ? document.getElementById('admCat').value : "ฟอนต์", subCategory: document.getElementById('admSub') ? document.getElementById('admSub').value : "ลายมือ", brand: document.getElementById('admBrand') ? document.getElementById('admBrand').value : "DekDec Studio", 
+        img: (document.getElementById('admImg') && document.getElementById('admImg').value) || "https://picsum.photos/400/400", desc: document.getElementById('admDesc') ? document.getElementById('admDesc').value : "", featured: document.getElementById('admFeat') ? document.getElementById('admFeat').checked : false, limitOne: document.getElementById('admLimit') ? document.getElementById('admLimit').checked : false, autoDriveShare: document.getElementById('admDriveShare') ? document.getElementById('admDriveShare').checked : false, googleDriveFolderId: document.getElementById('admDriveFolderId') ? document.getElementById('admDriveFolderId').value : "" 
+    };
+    if(!p.name || !p.price) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    window.db.products.unshift(p); window.db.saveProducts(window.db.products); renderAdminDashboard(); renderStore();
+}
+
+/* ==========================================
+   7. CART & LAYOUT MANAGER
+   ========================================== */
+function openProductDetail(idx) {
+    const p = window.db.products[idx]; const detail = document.getElementById('productDetailPage'); if(!detail) return;
+    hideAllPages(); detail.classList.remove('hidden');
+    detail.innerHTML = `
+        <div class="sticky top-0 theme-bg-card px-4 py-4 flex items-center justify-between border-b border-main z-10 shadow-sm">
+            <button onclick="closeProductDetail()" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
+            <span class="font-bold text-main text-sm">รายละเอียดสินค้า</span>
+            <div class="w-4"></div>
+        </div>
+        <div class="p-4 space-y-4 max-w-[520px] mx-auto text-xs">
+            <img src="${p.img}" class="w-full rounded-2xl border-main shadow-sm">
+            <div class="flex justify-between items-start">
+                <div><h1 class="text-base font-bold text-main">${p.name}</h1><span class="inline-block mt-1 text-[10px] theme-bg-card text-sub px-2.5 py-0.5 rounded-full border-main">สินค้าพร้อมส่ง</span></div>
+                <div class="text-right"><span class="text-lg font-black text-main">฿${p.price-p.discount}</span></div>
+            </div>
+            <div class="custom-panel-card theme-bg-card border-main"><p class="font-bold text-main mb-3">แอปพลิเคชันที่รองรับ</p>
+                <div class="space-y-2 text-sub"><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Good notes</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Canva</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Procreate</label></div>
+            </div>
+            <div class="custom-panel-card theme-bg-card border-main"><p class="font-bold text-main mb-1.5">รายละเอียดเพิ่มเติม</p><p class="text-sub leading-relaxed">${p.desc || 'สินค้าพรีเมียมลิขสิทธิ์แท้จากทางร้าน'}</p></div>
+        </div>
+        <div class="fixed bottom-0 left-0 right-0 p-4 theme-bg-card border-t border-main flex gap-3 max-w-[768px] mx-auto z-50 shadow-lg">
+            <button onclick="addToCartDirect(${idx}); closeProductDetail();" class="flex-1 py-3.5 border border-main text-main rounded-xl font-bold text-xs theme-bg-card">เพิ่มลงตะกร้า</button>
+            <button onclick="buyNowDirect(${idx})" class="flex-1 py-3.5 theme-bg-btn text-white rounded-xl font-bold text-xs shadow-md">ซื้อทันที</button>
+        </div>`;
+}
+function buyNowDirect(idx) { addToCartDirect(idx); closeProductDetail(); openCartPage(); }
+function closeProductDetail() { if(document.getElementById('productDetailPage')) document.getElementById('productDetailPage').classList.add('hidden'); showMainLayout(); }
+function addToCartDirect(idx) {
+    const p = window.db.products[idx]; if(!p) return;
+    const exist = cart.find(i => i.name === p.name);
+    if(exist) { if(p.limitOne) return alert("จำกัด 1 ชิ้น"); exist.qty++; } else { cart.push({...p, qty: 1}); }
+    updateCartCount(); alert("เพิ่มลงตะกร้าแล้วเรียบร้อย 🐰");
+}
+function updateCartCount() {
+    const el = document.getElementById('cartCount'); const total = cart.reduce((s, i) => s + i.qty, 0);
+    if(el) { el.innerText = total; el.classList.toggle('hidden', total === 0); }
+    localStorage.setItem('temp_cart', JSON.stringify(cart));
+}
+function openCartPage() { hideAllPages(); if(document.getElementById('cartPage')) document.getElementById('cartPage').classList.remove('hidden'); renderCart(); }
+function renderCart() {
+    const cont = document.getElementById('cartItemsContainer'); const summary = document.getElementById('receiptSummary'); if(!cont) return;
+    if(cart.length === 0) { cont.innerHTML = `<div class="text-center py-24 text-sub text-xs"><i class="fa-solid fa-basket-shopping text-3xl mb-3 block"></i>ไม่มีสินค้าในตะกร้าของคุณ</div>`; if(summary) summary.innerHTML = ""; return; }
+    cont.innerHTML = cart.map((i, idx) => `
+        <div class="card-bg p-3 rounded-2xl flex gap-3 items-center border border-main shadow-sm text-xs theme-bg-card">
+            <img src="${i.img}" class="w-12 h-12 rounded-xl object-cover border border-main"><div class="flex-1 font-bold text-main truncate">${i.name}</div>
+            <div class="flex items-center gap-1.5"><button onclick="updateQty(${idx},-1)" class="w-7 h-7 border border-main rounded-lg theme-bg-card text-main">-</button><span class="w-4 text-center font-bold text-main">${i.qty}</span><button onclick="updateQty(${idx},1)" class="w-7 h-7 border border-main rounded-lg theme-bg-card text-main">+</button></div>
+            <button onclick="removeCartItem(${idx})" class="text-red-400 px-1 font-bold text-base">×</button>
+        </div>`).join('');
+    const total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
+    if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full theme-bg-btn text-btn-link py-4 rounded-2xl font-bold text-xs shadow-xl">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
+}
+function updateQty(idx, d) { cart[idx].qty += d; if(cart[idx].qty <= 0) cart.splice(idx,1); updateCartCount(); renderCart(); }
+function removeCartItem(idx) { myConfirm("ลบสินค้าชิ้นนี้ออกจากตะกร้า?", () => { cart.splice(idx,1); updateCartCount(); renderCart(); }); }
+
+function hideAllPages() {
+    ['mainPage', 'productDetailPage', 'cartPage', 'receiptPage', 'userMenuPage', 'topupPage', 'reviewPage', 'allCategoriesPage', 'adminDashboard'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.classList.add('hidden');
+    });
+    if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.add('hidden');
+    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.add('hidden');
+    if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.add('hidden');
+}
+function showMainLayout() {
+    if(document.getElementById('mainPage')) document.getElementById('mainPage').classList.remove('hidden');
+    if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.remove('hidden');
+    if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.remove('hidden');
+    if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.remove('hidden');
+}
+function closeSubPage(pageId) { if(document.getElementById(pageId)) document.getElementById(pageId).classList.add('hidden'); showMainLayout(); }
+function goToUserSubPage(section) {
+    const dropdown = document.getElementById('userDropdownMenu'); if (dropdown) { dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0"; }
+    if (section === 'topup') {
+        hideAllPages(); if(document.getElementById('topupPage')) document.getElementById('topupPage').classList.remove('hidden'); updateCreditDisplay();
+    } else if (section === 'editProfile') {
+        openUserMenuPage();
+        setTimeout(() => {
+            const profileInput = document.getElementById('usrEditName'); if (profileInput) { profileInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); profileInput.focus(); }
+        }, 150);
+    }
+}
