@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* 🪐 โครงสร้างเฉดสีระบบ Dynamic อิงตามพาเลทที่เลือก */
 :root {
     --th-bg: #202430;
     --th-card: #282d3c;
@@ -16,7 +15,6 @@
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; padding: 0; min-height: 100vh; }
 
-/* ยึดโครงสร้างสีกราฟิกตามพรีเซ็ตที่เปลี่ยนแปลงจริง */
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
@@ -24,103 +22,47 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .text-main { color: var(--th-text) !important; }
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
+.text-btn-link { color: var(--th-btn-text-color) !important; }
 
-/* ข้อความบนปุ่มตัดสีคอนทราสต์ชัดเจนอ่านง่าย */
-.text-btn-link {
-    color: var(--th-btn-text-color) !important;
-}
-
-/* หน้ารีวิวสลัดสีแปลกปลอมออก */
-#reviewPage .bg-white,
-.review-filter-bar-wrapper,
-#reviewPage div[class*="bg-gray-"],
-#reviewPage div[class*="bg-slate-"] {
-    background-color: var(--th-bg) !important; 
-    border-color: var(--th-border) !important;
-}
-
-.review-star-filter-btn {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
-}
-.review-star-filter-btn.active {
-    background-color: var(--th-primary) !important;
-    color: var(--th-btn-text-color) !important;
-}
-
-/* นำระบบพรีเซ็ตสวมเข้าสู่กล่องป็อปอัพทั้งหมด */
-#unifiedAuthModal .bg-white,
-#newReviewModal .bg-white,
-#promotionModal .bg-white,
-.modal-content-card,
-#unifiedAuthModal div[class*="bg-white"] {
-    background-color: var(--th-card) !important;
-    border: 1px solid var(--th-border) !important;
-    color: var(--th-text) !important;
-}
-
-/* 🔍 แก้ไขปุ่มสลับแท็บล็อกอินสำหรับผู้ดูแลระบบให้ทำงานตามเฉดสีจริง */
-#tabAuthAdminBtn.border-main, 
-#tabAuthUserBtn.border-main {
-    border-bottom-color: var(--th-primary) !important;
-}
-
-#unifiedAuthModal input, #newReviewModal textarea {
-    background-color: #ffffff !important;
-    color: #1c1e21 !important;
-    border: 1px solid var(--th-border) !important;
-}
-
-#topSearchBar input {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
-}
-#topSearchBar button, .action-circle-btn {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
-}
-
-/* คุมดีไซน์ Select และฟิลด์กรอกข้อมูลในระบบหลังบ้านให้เสถียรตามธีม */
-#adminDashboard input, #adminDashboard select, #adminDashboard textarea {
-    border-color: var(--th-border) !important;
-    color: var(--th-text) !important;
-}
-#adminDashboard select option {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-}
-
-/* 🧼 ล้างสีเทาเข้มออก เปลี่ยนเป็นโทนขาว/เทาอ่อนนุ่มละมุนตาตามรีเควสของคุณเกด */
+/* 🧼 ส่วนหน้าระบบแอดมินอินเนอร์สีขาวละมุนตามรีเควส */
 .admin-inner-panel {
     background-color: #ffffff !important;
     border-color: var(--th-border) !important;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.03) !important;
 }
-
-/* บังคับสลับสีฟอนต์ให้อ่านง่ายเมื่อแผงอินเนอร์ปรับเป็นสีขาวสว่าง */
-.admin-inner-panel p, 
-.admin-inner-panel span,
-.admin-inner-panel label {
+.admin-inner-panel p, .admin-inner-panel span, .admin-inner-panel label {
     color: #333333 !important;
 }
 
-.app-container {
-    width: 100%; max-width: 100%; margin: 0 auto; min-height: 100vh; position: relative;
-    box-shadow: 0 0 30px rgba(0,0,0,0.02); transition: max-width 0.3s ease;
+/* 📢 บังคับจัดตำแหน่งเลย์เอาท์แบนเนอร์และสั่งเล่น Animation */
+.marquee-container {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
 }
-@media (min-width: 640px) { .app-container { max-width: 640px; } }
-@media (min-width: 1024px) {
-    .app-container { max-width: 768px; }
-    #productsContainer { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+#marqueeDisplay, #marqueeDisplay2 {
+    white-space: nowrap;
+    display: inline-block;
 }
 
-.page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); background-color: transparent; }
+/* 🎥 คุมคีย์เฟรมการเลื่อนวิ่งสลับฝั่งของข้อความตัววิ่งแบนเนอร์ร้านค้า */
+@keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+}
+@keyframes marquee2 {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(0%); }
+}
+
+.app-container { width: 100%; max-width: 100%; margin: 0 auto; min-height: 100vh; position: relative; }
+@media (min-width: 640px) { .app-container { max-width: 640px; } }
+@media (min-width: 1024px) { .app-container { max-width: 768px; } }
+
+.page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); }
 .product-card { border-radius: 24px; padding: 12px; transition: all 0.25s ease; }
 .product-card:hover { transform: translateY(-4px); }
-
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
