@@ -83,7 +83,6 @@ function backToStoreHome() {
     showMainLayout();
 }
 
-// ระบบกล่องข้อความยืนยันสำหรับ UI เว็บแอปพลิเคชันแบบกลมกลืนตามรูปภาพยึดหลัก responsive
 function myConfirm(msg, onOk) {
     const modal = document.getElementById('customConfirm'); if(!modal) return;
     document.getElementById('confirmMsg').innerText = msg; modal.classList.remove('hidden');
@@ -92,16 +91,16 @@ function myConfirm(msg, onOk) {
 }
 
 /* ==========================================
-   ฟังก์ชันปรับแต่งธีมเวอร์ชันอัปเกรด (แยกขาดทุกอนู 100%)
+   ฟังก์ชันปรับแต่งธีมเวอร์ชันอัปเกรด (ขยายลิสตัวแปรสีเพิ่ม 21 จุด)
    ========================================== */
 function applyTheme() {
     const t = window.db.config.theme; const root = document.documentElement; if(!t) return;
     
     const keys = [
         'bgApp', 'bgCard', 'bgProductCard', 'bgInput', 'bgMarquee', 'bgBtn', 
-        'bgCatBtnNormal', 'bgCatBtnActive',
+        'bgCatBtnNormal', 'bgCatBtnActive', 'bgModal', 'bgReviewNav',
         'txtMain', 'txtSub', 'txtProductName', 'txtMarquee', 'txtBtnInside', 
-        'txtCatNormal', 'txtCatActive',
+        'txtCatNormal', 'txtCatActive', 'txtModalMain', 'txtModalSub', 'txtInputText',
         'borderColor'
     ];
     
@@ -166,12 +165,14 @@ function switchUnifiedTab(type) {
     const userBtn = document.getElementById('tabAuthUserBtn'); const adminBtn = document.getElementById('tabAuthAdminBtn');
     const userForm = document.getElementById('formAuthUser'); const adminForm = document.getElementById('formAuthAdmin');
     if(type === 'user') {
-        userBtn.className = "flex-1 pb-3 text-main border-b-2 border-main"; adminBtn.className = "flex-1 pb-3 text-gray-400 border-b-2 border-transparent";
+        userBtn.className = "flex-1 pb-3 theme-txt-modal-main font-bold border-b-2 border-main"; 
+        adminBtn.className = "flex-1 pb-3 theme-txt-modal-sub border-b-2 border-transparent";
         userForm.classList.remove('hidden'); adminForm.classList.add('hidden');
         if(document.getElementById('mainUserAuthBtn')) document.getElementById('mainUserAuthBtn').innerText = "ลงชื่อเข้าใช้งาน";
         if(document.getElementById('toggleRegBtn')) document.getElementById('toggleRegBtn').classList.remove('hidden');
     } else {
-        adminBtn.className = "flex-1 pb-3 text-main border-b-2 border-main"; userBtn.className = "flex-1 pb-3 text-gray-400 border-b-2 border-transparent";
+        adminBtn.className = "flex-1 pb-3 theme-txt-modal-main font-bold border-b-2 border-main"; 
+        userBtn.className = "flex-1 pb-3 theme-txt-modal-sub border-b-2 border-transparent";
         adminForm.classList.remove('hidden'); userForm.classList.add('hidden');
     }
 }
@@ -219,42 +220,6 @@ function logoutUser() {
     updateCreditDisplay(); 
     alert("ออกจากระบบแล้ว"); 
 }
-
-function toggleUserDropdown() {
-    const u = window.db.getCurrentUser();
-    if (!u) { openUnifiedAuthModal(); return; }
-    
-    const dropdown = document.getElementById('userDropdownMenu');
-    const arrow = document.getElementById('dropdownArrowIcon');
-    if (!dropdown) return;
-    
-    if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
-        dropdown.style.maxHeight = "50px"; dropdown.style.opacity = "1";
-        if (arrow) arrow.style.transform = "rotate(180deg)";
-    } else {
-        dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0";
-        if (arrow) arrow.style.transform = "rotate(0deg)";
-    }
-}
-
-window.addEventListener('click', function(e) {
-    const headerCard = document.getElementById('userHeaderCard');
-    const dropdown = document.getElementById('userDropdownMenu');
-    const arrow = document.getElementById('dropdownArrowIcon');
-    if (headerCard && dropdown && !headerCard.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0";
-        if (arrow) arrow.style.transform = "rotate(0deg)";
-    }
-});
-
-document.addEventListener('change', function(e) {
-    if (e.target && e.target.id === 'slipFileInput') {
-        const placeholder = document.getElementById('slipUploadPlaceholder');
-        if (e.target.files && e.target.files[0] && placeholder) {
-            placeholder.innerHTML = `<i class="fa-solid fa-image text-green-500 text-xl"></i><p class="text-[10px] font-bold text-green-600">เลือกไฟล์สำเร็จ: ${e.target.files[0].name}</p>`;
-        }
-    }
-});
 
 /* ==========================================
    4. SLIP VERIFICATION API
@@ -346,11 +311,6 @@ function openAllCategoriesPage() {
 function selectCategoryFromGrid(catName) { storeFilterCat = catName; renderCategoryFilter(); renderStore(); closeSubPage('allCategoriesPage'); }
 function searchProducts(keyword) { const filtered = window.db.getProducts().filter(p => p.name.toLowerCase().includes(keyword.toLowerCase())); renderStoreCards(filtered); }
 
-function filterStyle(styleName) {
-    storeFilterStyle = styleName;
-    renderStore();
-}
-
 function renderCategoryFilter() {
     const cont = document.getElementById('categoriesContainer'); const tax = window.db.getTaxonomy(); if(!cont) return;
     
@@ -438,7 +398,7 @@ function updateCartCount() {
 }
 
 /* ==========================================
-   ระบบรีวิวร้านค้า
+   ระบบรีวิวร้านค้าแบบจัดหมวดหมู่ดาว
    ========================================== */
 function openReviewPage() { 
     hideAllPages(); 
@@ -574,7 +534,7 @@ function renderHistoryLogs() {
 }
 
 /* ==========================================
-   8. ADMIN BACKEND DASHBOARD (อัปเกรดช่องกรอกสี)
+   8. ADMIN BACKEND DASHBOARD (อัปเกรดแผงตั้งค่าสีแยกส่วน)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) { closeUnifiedAuthModal(); document.getElementById('adminPasswordInput').value = ""; renderAdminDashboard(); } else alert("รหัสผ่านไม่ถูกต้อง!"); 
@@ -584,13 +544,7 @@ function renderAdminDashboard() {
     const dash = document.getElementById('adminDashboard'); hideAllPages(); dash.classList.remove('hidden');
     const cfg = window.db.config; const t = cfg.theme; const tax = window.db.getTaxonomy();
 
-    const promoListHtml = (cfg.promotions || []).map((p, i) => `
-        <div class="flex items-center justify-between p-2.5 bg-white border rounded-xl text-[11px]">
-            <div class="truncate pr-2">📌 <strong>${p.title}</strong> → เครือ: <span class="text-amber-600 font-bold">${p.brandLink}</span></div>
-            <button onclick="removePromotionAdmin(${i})" class="text-red-500 font-bold px-2">ลบ</button>
-        </div>`).join('');
-
-    // แตกจานสีแยกอิสระครบสูตรแกะรหัสสีสำเร็จรูปแบบเรียลไทม์
+    // ลิสเลเบลควบคุม 21 ชิ้นส่วนอิสระ แก้บั๊กข้อความซ่อนตัวในป็อปอัพหน้ารีวิวและช่องพิมพ์
     const configPaletteLabels = {
         bgApp: "🎨 พื้นหลังเว็บไซต์หลัก",
         bgCard: "📦 พื้นหลังกล่องข้อความ/แผงทั่วไป",
@@ -600,13 +554,18 @@ function renderAdminDashboard() {
         bgBtn: "🛒 พื้นหลังปุ่มหลัก (ปุ่มตะกร้า/ซื้อสินค้า)",
         bgCatBtnNormal: "📁 พื้นหลังปุ่มหมวดหมู่ (ปกติ)",
         bgCatBtnActive: "📁 พื้นหลังปุ่มหมวดหมู่ (เมื่อเลือกอยู่)",
-        txtMain: "✏️ สีข้อความหัวข้อหลัก",
+        bgModal: "🚨 พื้นหลังกล่องป็อปอัพ / หน้าล็อกอิน",
+        bgReviewNav: "⭐ พื้นหลังแถบเลือกดาวหน้ารีวิว",
+        txtMain: "✏️ สีข้อความหัวข้อหลักหน้าร้าน",
         txtSub: "✏️ สีข้อความรายละเอียดซับใน",
         txtProductName: "✏️ สีชื่อตัวสินค้าบนการ์ด",
         txtMarquee: "✏️ สีข้อความวิ่งบนแบนเนอร์",
         txtBtnInside: "✏️ สีตัวหนังสือข้างในปุ่มหลัก",
         txtCatNormal: "✏️ สีตัวหนังสือปุ่มหมวดหมู่ (ปกติ)",
         txtCatActive: "✏️ สีตัวหนังสือปุ่มหมวดหมู่ (เมื่อเลือกอยู่)",
+        txtModalMain: "✏️ สีข้อความหัวข้อหลักในป็อปอัพ",
+        txtModalSub: "✏️ สีข้อความรองในป็อปอัพ/สิทธิ์รับสินค้า",
+        txtInputText: "✍️ สีตัวอักษรตอนพิมพ์ลงช่องข้อมูล",
         borderColor: "🧼 สีเส้นขอบกรอบโครงสร้าง"
     };
 
