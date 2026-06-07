@@ -175,7 +175,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (ปรับปุ่มล็อกอินแอดมินตามพรีเซ็ตหลัก + อัดเงาขาวคมชัด)
+   3. UNIFIED LOGIN CONTROLLER (บังคับสีปุ่มแอดมินให้เปลี่ยนตาม Preset ไม่เป็นสีขาว)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -216,8 +216,8 @@ function switchUnifiedTab(type) {
             
             if(adminSubmitBtn) {
                 adminSubmitBtn.innerText = "เข้าสู่ระบบผู้ดูแลระบบ";
+                // 🎨 แก้ไขบั๊กปุ่มขาว: บังคับให้ปุ่มแอดมินดึงสีหลักมาใช้และล้างสไตล์สีขาวแปลกปลอมออก
                 adminSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md text-white";
-                // 🔒 บังคับปุ่มแอดมินดึงสีหลักจากพรีเซ็ตเดียวกัน และอัดเงาตัวอักษรขาวคมชัด
                 adminSubmitBtn.style.backgroundColor = "var(--th-primary)";
                 adminSubmitBtn.style.color = "#ffffff";
                 adminSubmitBtn.style.textShadow = "0 1px 3px rgba(0,0,0,0.4)";
@@ -257,7 +257,6 @@ function logoutUser() {
     updateCreditDisplay(); alert("ออกจากระบบแล้ว"); 
 }
 
-// ⚙️ ตรวจเช็คบั๊กกดปุ่มฟันเฟือง: ถ้าล็อกอินสมาชิกอยู่แล้วให้ข้ามผ่านเข้าสู่หน้าแก้ไขโปรไฟล์/ประวัติการซื้อได้เลย ไม่ต้องกรอกซ้ำตามบรีฟล่าสุด
 function handleGearIconClick() {
     const u = window.db.getCurrentUser();
     if (u) {
@@ -733,7 +732,7 @@ function renderReceiptPage(order) {
 }
 
 /* ==========================================
-   👥 MEMBER PROFILE & HISTORY ZONE (นำแผงประวัติและข้อมูลส่วนตัวกลับมาเต็มพิกัด)
+   👥 MEMBER PROFILE & HISTORY ZONE (ปรับโครงสร้างการ์ดตามรูปภาพอ้างอิง + คืนชีพไอคอน Log out)
    ========================================== */
 function openUserMenuPage() {
     hideAllPages(); if(document.getElementById('userMenuPage')) document.getElementById('userMenuPage').classList.remove('hidden');
@@ -750,25 +749,39 @@ function renderUserMenuDetails() {
         <div class="sticky top-0 theme-bg-card p-4 rounded-2xl border border-main flex items-center justify-between mb-4 shadow-sm">
             <button onclick="backToStoreHome()" class="text-main font-bold"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
             <span class="font-bold text-sm">แผงควบคุมสมาชิก</span>
-            <div class="w-4"></div>
+            <button onclick="logoutUser()" class="text-red-400 font-black text-sm flex items-center gap-1 active:scale-95 transition-all">
+                <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+            </button>
         </div>
 
-        <div class="space-y-4 text-xs pb-24">
-            <div class="theme-bg-card p-4 rounded-2xl border border-main space-y-3">
-                <h3 class="font-bold text-main text-[13px] border-b border-main pb-2">📋 ข้อมูลบัญชีของฉัน</h3>
-                <div>
-                    <label class="block text-sub mb-1">ชื่อผู้ใช้งาน (Username)</label>
-                    <input type="text" id="usrEditName" value="${u.username}" disabled class="w-full p-2.5 border border-main rounded-xl bg-black/5 text-sub">
+        <div class="space-y-5 text-xs pb-24">
+            <div class="theme-bg-card p-4 rounded-2xl border border-main space-y-1">
+                <h3 class="font-bold text-main text-[12px] opacity-90 mb-3"><i class="fa-solid fa-id-card mr-1 text-blue-400"></i> โปรไฟล์สมาชิก</h3>
+                
+                <div class="profile-info-row flex justify-between items-center py-2.5 border-b border-main/40">
+                    <span class="text-sub font-medium">ชื่อผู้ใช้งาน (Username)</span>
+                    <span class="text-main font-bold">👤 ${u.username}</span>
                 </div>
-                <div>
-                    <label class="block text-sub mb-1">อีเมลติดต่อ (Email)</label>
-                    <input type="email" id="usrEditEmail" value="${u.email || ''}" placeholder="ยังไม่ได้ระบุอีเมล" class="w-full p-2.5 border border-main rounded-xl theme-bg-card text-main">
+                
+                <div class="profile-info-row flex justify-between items-center py-2.5 border-b border-main/40">
+                    <span class="text-sub font-medium">ระดับสมาชิก (Status)</span>
+                    <span class="text-amber-400 font-bold"><i class="fa-solid fa-crown mr-0.5"></i> เมมเบอร์ทั่วไป</span>
                 </div>
-                <button onclick="saveUserProfileData()" class="w-full py-2.5 theme-bg-btn text-white font-bold rounded-xl shadow-md" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">💾 บันทึกข้อมูลส่วนตัว</button>
+
+                <div class="profile-info-row flex justify-between items-center py-2.5 border-b border-main/40">
+                    <span class="text-sub font-medium">อีเมลติดต่อ (Email)</span>
+                    <input type="email" id="usrEditEmail" value="${u.email || ''}" placeholder="ระบุอีเมลสำหรับรับไฟล์" class="text-right bg-transparent border-0 outline-none p-0 focus:ring-0 text-main font-bold placeholder-gray-500 w-[60%]">
+                </div>
+
+                <div class="pt-3">
+                    <button onclick="saveUserProfileData()" class="w-full py-2.5 theme-bg-btn text-white font-bold rounded-xl shadow-md transition-all active:scale-95" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                        💾 บันทึกการแก้ไขอีเมล
+                    </button>
+                </div>
             </div>
 
             <div class="theme-bg-card p-4 rounded-2xl border border-main space-y-3">
-                <h3 class="font-bold text-main text-[13px]">⏱️ ประวัติการใช้งานระบบ</h3>
+                <h3 class="font-bold text-main text-[12px] opacity-90"><i class="fa-solid fa-history mr-1 text-amber-400"></i> บันทึกประวัติการใช้งาน</h3>
                 <div class="flex border-b border-main">
                     <button onclick="switchHistoryTab('order')" class="flex-1 pb-2 font-bold text-center ${currentHistoryTab==='order'?'text-main border-b-2 border-main':'text-sub'}">📦 ประวัติการช้อป</button>
                     <button onclick="switchHistoryTab('topup')" class="flex-1 pb-2 font-bold text-center ${currentHistoryTab==='topup'?'text-main border-b-2 border-main':'text-sub'}">💰 ประวัติการเติมเงิน</button>
