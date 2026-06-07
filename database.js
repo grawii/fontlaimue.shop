@@ -1,5 +1,5 @@
 (function() {
-    // โครงสร้างฐานข้อมูลหลักของร้าน DekDec
+    // 📦 โครงสร้างฐานข้อมูลหลักของร้าน DekDec คงเดิม 100%
     const defaultData = {
         config: {
             shopName: "DekDec Font & Design",
@@ -10,52 +10,34 @@
             googleAppsScriptUrl: "", 
             adminPass: "1234",
             
-            // 🪐 โทนสีเริ่มต้นอิงตามโทนมืด Slate Grey ในภาพ user_14_dark-mode-ui-for-apps.jpg
+            // 🎨 ค่าสีเริ่มต้นอิงตามสไตล์หรูหรามืด Slate Grey (user_14)
             theme: {
-                bgApp: "#202430",          /* สีพื้นหลังเว็บไซต์หลัก */
-                bgCard: "#282d3c",         /* สีพื้นหลังการ์ด / แผงทั่วไป / กล่องป็อปอัพ */
-                bgInput: "#343b4f",        /* สีพื้นหลังกล่องพิมพ์ / ช่องรับค่า */
-                bgBtn: "#7082a6",          /* สีพื้นหลังปุ่มหลัก */
-                txtMain: "#ffffff",         /* สีข้อความหัวข้อหลัก */
-                txtSub: "#9ea8be",          /* สีข้อความรายละเอียดซับใน */
-                txtBtnInside: "#ffffff",    /* สีตัวหนังสือข้างในปุ่มหลัก */
-                borderColor: "#3a4358"      /* สีเส้นขอบกรอบโครงสร้าง */
+                bg: "#202430",         /* สีพื้นหลังเว็บหลัก */
+                card: "#282d3c",       /* สีพื้นหลังกล่องการ์ด / ป็อปอัพ */
+                border: "#3a4358",     /* สีเส้นขอบกรอบโครงสร้าง */
+                text: "#ffffff",       /* สีข้อความหัวข้อหลัก */
+                muted: "#9ea8be",      /* สีข้อความรายละเอียดรอง */
+                primary: "#7082a6",    /* สีหลักปุ่มกด 1 (ปุ่มซื้อ/ใส่ตะกร้า) */
+                secondary: "#5c6b8c",  /* สีหลักปุ่มกด 2 */
+                accent: "#8fa3c7"      /* สีหลักปุ่มกด 3 */
             },
             
-            // 🎨 คลังพรีเซ็ตสำเร็จรูปคัดสรรตามโทนที่กำหนด ควบคุมง่ายผ่าน 8 แกนหลัก
-            presets: [
+            // 🪐 คลังพรีเซ็ตสำเร็จรูป แมปปิ้งผ่านโครงสร้างระบบใหม่เรียบร้อย
+            themePresets: [
                 {
-                    name: "🪐 user_14 Dark Slate (โทนมืดตามรูป)",
-                    bgApp: "#202430",
-                    bgCard: "#282d3c",
-                    bgInput: "#343b4f",
-                    bgBtn: "#7082a6",
-                    txtMain: "#ffffff",
-                    txtSub: "#9ea8be",
-                    txtBtnInside: "#ffffff",
-                    borderColor: "#3a4358"
+                    id: "p1",
+                    name: "🪐 user_14 Dark Slate",
+                    colors: { bg: "#202430", card: "#282d3c", border: "#3a4358", text: "#ffffff", muted: "#9ea8be", primary: "#7082a6", secondary: "#5c6b8c", accent: "#8fa3c7" }
                 },
                 {
-                    name: "☀️ user_14 Light Mode (โทนสว่างพาสเทล)",
-                    bgApp: "#f0f2f5",
-                    bgCard: "#ffffff",
-                    bgInput: "#e4e6eb",
-                    bgBtn: "#2d4373",
-                    txtMain: "#1c1e21",
-                    txtSub: "#606770",
-                    txtBtnInside: "#ffffff",
-                    borderColor: "#ced0d4"
+                    id: "p2",
+                    name: "☀️ user_14 Light Mode",
+                    colors: { bg: "#f0f2f5", card: "#ffffff", border: "#ced0d4", text: "#1c1e21", muted: "#606770", primary: "#2d4373", secondary: "#4b67a1", accent: "#7b9acc" }
                 },
                 {
+                    id: "p3",
                     name: "🐰 ชมพูนมเย็น (Cute Pink)",
-                    bgApp: "#fdf6f6",
-                    bgCard: "#ffffff",
-                    bgInput: "#fff0f2",
-                    bgBtn: "#ff8da1",
-                    txtMain: "#613b43",
-                    txtSub: "#a67c84",
-                    txtBtnInside: "#ffffff",
-                    borderColor: "#ffd6dc"
+                    colors: { bg: "#fdf6f6", card: "#ffffff", border: "#ffd6dc", text: "#613b43", muted: "#a67c84", primary: "#ff8da1", secondary: "#ffa6b7", accent: "#ffb3c1" }
                 }
             ],
             promotions: [
