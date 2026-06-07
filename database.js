@@ -1,5 +1,4 @@
 (function() {
-    // 📦 โครงสร้างฐานข้อมูลหลักร้าน DekDec พร้อมคลังพรีเซ็ตดั้งเดิมครบถ้วน
     const defaultData = {
         config: {
             shopName: "DekDec Font & Design",
@@ -10,7 +9,7 @@
             googleAppsScriptUrl: "", 
             adminPass: "1234",
             
-            // ค่าสีเริ่มต้นอิงตามสไตล์หรูหรามืด Slate Grey
+            // 🎨 แกนควบคุมเฉดสี 8 แกนหลักทำงานครอบคลุมทุกหน้าเพจ
             theme: {
                 bg: "#202430",         
                 card: "#282d3c",       
@@ -22,7 +21,6 @@
                 accent: "#8fa3c7"      
             },
             
-            // 🪐 คลังพรีเซ็ตสำเร็จรูปครบเซ็ตดั้งเดิม
             themePresets: [
                 {
                     id: "p1",
@@ -63,7 +61,6 @@
         ]
     };
 
-    // ตรวจสอบและยัดพรีเซ็ตกลับคืนให้ครบถ้วนในกรณีที่หลุดหายไปจาก LocalStorage
     let localDB = localStorage.getItem('dekdec_store_db');
     if (!localDB) {
         localStorage.setItem('dekdec_store_db', JSON.stringify(defaultData));
@@ -87,10 +84,7 @@
         getTaxonomy() { return this.taxonomy; },
         getProducts() { return this.products; },
         getMembers() { return this.members; },
-
-        getCurrentUser() {
-            return JSON.parse(localStorage.getItem('dekdec_current_user')) || null;
-        },
+        getCurrentUser() { return JSON.parse(localStorage.getItem('dekdec_current_user')) || null; },
         saveConfig(cfg) { this.config = cfg; this.sync(); },
         saveTaxonomy(t) { this.taxonomy = t; this.sync(); },
         saveProducts(p) { this.products = p; this.sync(); },
@@ -101,10 +95,7 @@
         },
         sync() {
             localStorage.setItem('dekdec_store_db', JSON.stringify({
-                config: this.config,
-                taxonomy: this.taxonomy,
-                products: this.products,
-                members: this.members
+                config: this.config, taxonomy: this.taxonomy, products: this.products, members: this.members
             }));
         }
     };
