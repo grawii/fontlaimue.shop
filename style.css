@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* 🪐 โครงสร้างสีหลักแบบไดนามิก ป้องกันคลาสแข็งทับซ้อน */
+/* 🪐 โครงสร้างตัวแปร CSS Variable 8 แกนสำหรับคลังพรีเซ็ตสำเร็จรูป */
 :root {
     --th-bg: #202430;
     --th-card: #282d3c;
@@ -10,16 +10,13 @@
     --th-primary: #7082a6;
     --th-secondary: #5c6b8c;
     --th-accent: #8fa3c7;
+    --th-btn-text-color: #ffffff; /* ปรับระดับสีตัวหนังสืออักษรให้เข้าคู่พรีเซ็ตอัตโนมัติ */
 }
 
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; padding: 0; min-height: 100vh; }
 
-body {
-    margin: 0; padding: 0;
-    min-height: 100vh;
-}
-
-/* คลาสหลักดึงโทนสีตามชุดพรีเซ็ตสำเร็จรูป */
+/* คลาสจับคู่อินเตอร์เฟซระบบแอป */
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
@@ -28,47 +25,40 @@ body {
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
 
-/* ปุ่มค้นหาและไอคอนแถบบนสุดแยกเลเยอร์ชัดเจน */
-#topSearchBar input {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
-}
-#topSearchBar button, 
-.action-circle-btn {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* บังคับสลับสีตัวอักษรปุ่มลิ้งค์เพื่อไม่ให้จมเมื่อเจอกับพรีเซ็ตสว่าง */
+.text-btn-link {
+    color: var(--th-btn-text-color) !important;
 }
 
-/* 🧼 ล็อกโครงสร้างกล่อง Pop-up ข้อมูลล็อกอินเปลี่ยนสีตามพรีเซ็ต และช่องกรอกล็อกเป็นสีสว่าง */
+/* 🔍 แก้ไขแถบหมวดหมู่ดาวในหน้ารีวิวร้าน (เคลียร์แถบปื้นสีขาวออกแบบถาวร) */
+#reviewPage .bg-white,
+.review-filter-bar-wrapper {
+    background-color: var(--th-bg) !important; 
+    border-color: var(--th-border) !important;
+}
+
+/* ปรับแต่งปุ่มกดภายในแถบรีวิวสินค้า */
+.review-star-filter-btn {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
+}
+.review-star-filter-btn.active {
+    background-color: var(--th-primary) !important;
+    color: var(--th-btn-text-color) !important;
+}
+
+/* ป๊อปอัพฟรอนต์เอนด์ ปลอมแปลงสีตามโทนมืด/สว่างสอดคล้องธีม */
 #unifiedAuthModal .bg-white,
 #newReviewModal .bg-white,
 #promotionModal .bg-white {
     background-color: var(--th-card) !important;
     border: 1px solid var(--th-border) !important;
 }
-#unifiedAuthModal input {
+#unifiedAuthModal input, #newReviewModal textarea {
     background-color: #ffffff !important;
     color: #1c1e21 !important;
     border: 1px solid var(--th-border) !important;
-}
-#unifiedAuthModal input::placeholder {
-    color: #888888 !important;
-}
-
-/* 🧼 บังคับให้แถบหมวดหมู่ดาวในหน้ารีวิวเปลี่ยนสีสอดคล้องตามพื้นหลังพรีเซ็ต ไม่ค้างเป็นสีขาว */
-.review-star-filter-btn {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
-    transition: all 0.2s ease;
-}
-.review-star-filter-btn.active {
-    background-color: var(--th-primary) !important;
-    color: #ffffff !important;
-    border-color: var(--th-border) !important;
 }
 
 .app-container {
@@ -82,33 +72,16 @@ body {
 }
 
 .page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); background-color: transparent; }
-
-.product-card {
-    border-radius: 24px; padding: 12px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
-
-.animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 22s linear infinite; }
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.product-card { border-radius: 24px; padding: 12px; transition: all 0.25s ease; }
+.product-card:hover { transform: translateY(-4px); }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-@keyframes pop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .page-btn {
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
     border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--th-border);
     background: var(--th-card); color: var(--th-text); cursor: pointer;
 }
-.page-btn.active {
-    background: var(--th-primary); color: #ffffff;
-}
-
-.custom-panel-card { border-radius: 24px; padding: 20px; }
-#promoCarouselContainer { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-.promo-slide-card { scroll-snap-align: start; flex-shrink: 0; width: 100%; transition: all 0.3s ease; }
-
-.category-select-card {
-    padding: 20px; border-radius: 24px; text-align: center; cursor: pointer; transition: all 0.2s ease;
-}
-.category-select-card:hover { transform: scale(1.02); }
+.page-btn.active { background: var(--th-primary); color: var(--th-btn-text-color); }
