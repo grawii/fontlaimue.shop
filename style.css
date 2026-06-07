@@ -1,17 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* 🌟 แมปตัวแปรสี 8 แกนหลัก กระจายตัวดูแลองค์ประกอบย่อยอัจฉริยะ ป้องกันสีจม */
+/* 🌟 แมปตัวแปร 8 แกนหลักสไตล์ GUSSUE ควบคุมเฉดสีไม่ให้แข็งและป้องกันตัวหนังสือจม */
 :root {
-    --bgApp-color: #202430;
-    --bgCard-color: #282d3c;
-    --bgInput-color: #343b4f;
-    --bgBtn-color: #7082a6;
-    
-    --txtMain-color: #ffffff;
-    --txtSub-color: #9ea8be;
-    --txtBtnInside-color: #ffffff;
-    
-    --borderColor-color: #3a4358;
+    --th-bg: #202430;
+    --th-card: #282d3c;
+    --th-border: #3a4358;
+    --th-text: #ffffff;
+    --th-muted: #9ea8be;
+    --th-primary: #7082a6;
+    --th-secondary: #5c6b8c;
+    --th-accent: #8fa3c7;
 }
 
 * { font-family: 'Prompt', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -21,31 +19,25 @@ body {
     min-height: 100vh;
 }
 
-/* คลาสหลักสะท้อนสีจากแผงควบคุมหน้าแอดมิน */
-.theme-bg-app { background-color: var(--bgApp-color) !important; }
-.theme-bg-card { background-color: var(--bgCard-color) !important; }
-.theme-bg-input { background-color: var(--bgInput-color) !important; }
-.theme-bg-btn { background-color: var(--bgBtn-color) !important; }
+/* คลาสหลักดึงสีตามโมเดลฐานข้อมูลหน้าร้าน */
+.theme-bg-app { background-color: var(--th-bg) !important; }
+.theme-bg-card { background-color: var(--th-card) !important; }
+.theme-bg-btn { background-color: var(--th-primary) !important; }
 
-.text-main { color: var(--txtMain-color) !important; }
-.text-sub { color: var(--txtSub-color) !important; }
-.text-btn-inside { color: var(--txtBtnInside-color) !important; }
-.border-main { border-color: var(--borderColor-color) !important; }
+.text-main { color: var(--th-text) !important; }
+.text-sub { color: var(--th-muted) !important; }
+.border-main { border-color: var(--th-border) !important; }
 
-/* 🌟 แก้ไขให้หน้าต่างป็อปอัพ และ แถบเลือกดาวรีวิว ผูกกับตัวแปรหลักเพื่อสีไม่แข็งกระด้าง */
-.theme-bg-modal { background-color: var(--bgCard-color) !important; }
-.theme-bg-review-nav { background-color: var(--bgApp-color) !important; }
-
-/* บังคับสีตัวอักษรและพลาซโฮลเดอร์เวลาพิมพ์ในกล่องรับข้อมูลตามสีหลัก */
+/* บังคับพฤติกรรมกล่อง Input และ Placeholder ปลอมแปลงสีไม่ให้กลืนหาย */
 input, textarea, select {
-    color: var(--txtMain-color) !important;
+    color: var(--th-text) !important;
+    background-color: var(--th-card) !important;
 }
 input::placeholder, textarea::placeholder {
-    color: var(--txtSub-color) !important;
+    color: var(--th-muted) !important;
     opacity: 0.65;
 }
 
-/* โครงสร้างหลักสำหรับการแสดงผล Responsive */
 .app-container {
     width: 100%;
     max-width: 100%;
@@ -67,7 +59,7 @@ input::placeholder, textarea::placeholder {
 
 .page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); background-color: transparent; }
 
-/* ตัวการ์ดสินค้า ดีไซน์ขอบมนกลมกลืนตามพรีเซ็ต user_14 */
+/* ตัวการ์ดแสดงผลสินค้าโค้งมนตามอัตราพรีเซ็ต user_14 */
 .product-card {
     border-radius: 24px;
     padding: 12px;
@@ -84,7 +76,7 @@ input::placeholder, textarea::placeholder {
 
 .page-btn {
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--borderColor-color);
+    border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--th-border);
     background: white; cursor: pointer;
 }
 
