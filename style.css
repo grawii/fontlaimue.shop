@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* 🪐 โครงสร้างสีหลักสไตล์แอป GUSSUE ผูกตัวแปรแก้ปัญหาปุ่มจม */
+/* 🪐 โครงสร้างสีหลักแบบไดนามิก ป้องกันคลาสแข็งทับซ้อน */
 :root {
     --th-bg: #202430;
     --th-card: #282d3c;
@@ -28,7 +28,7 @@ body {
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
 
-/* 🔍 แก้ไขปัญหาปุ่มกดและช่องค้นหาแถบบนสุดกลืนหาย */
+/* ปุ่มค้นหาและไอคอนแถบบนสุดแยกเลเยอร์ชัดเจน */
 #topSearchBar input {
     background-color: var(--th-card) !important;
     color: var(--th-text) !important;
@@ -58,9 +58,17 @@ body {
     color: #888888 !important;
 }
 
-/* แถบหัวข้อหมวดหมู่ในหน้ารีวิวรองรับตาม Theme */
+/* 🧼 บังคับให้แถบหมวดหมู่ดาวในหน้ารีวิวเปลี่ยนสีสอดคล้องตามพื้นหลังพรีเซ็ต ไม่ค้างเป็นสีขาว */
 .review-star-filter-btn {
+    background-color: var(--th-card) !important;
+    color: var(--th-text) !important;
+    border: 1px solid var(--th-border) !important;
     transition: all 0.2s ease;
+}
+.review-star-filter-btn.active {
+    background-color: var(--th-primary) !important;
+    color: #ffffff !important;
+    border-color: var(--th-border) !important;
 }
 
 .app-container {
