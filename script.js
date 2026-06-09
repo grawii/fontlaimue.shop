@@ -166,7 +166,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER 
+   3. UNIFIED LOGIN CONTROLLER (ซ่อมปุ่มล็อกอินแอดมินขาวค้าง)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -249,9 +249,15 @@ function handleGearIconClick() {
         setTimeout(() => { switchUnifiedTab('admin'); }, 50);
     }
 }
+function logoutUser() { 
+    window.db.saveCurrentUser(null); 
+    hideAllPages();
+    alert("ออกจากระบบเรียบร้อยแล้วค่ะ 👋"); 
+    location.reload(); 
+}
 
 /* ==========================================
-   💰 ระบบคัดกรองเช็คสลิปเติมเครดิตอัตโนมัติ (API กสิกรไทย)
+   💰 ระบบคัดกรองเช็คสลิปเติมเครดิตอัตโนมัติ
    ========================================== */
 async function uploadAndVerifySlipAPI(fileInputId) {
     const fileInput = document.getElementById(fileInputId);
@@ -602,6 +608,149 @@ function adjustMemberCreditDirect(idx) {
     alert(`ปรับยอดเงินของบัญชีคุณ ${m.username} เป็น ฿${newAmount} เรียบร้อยครับ`); renderAdminDashboard();
 }
 
+function deleteMemberByAdmin(idx) {
+    let members = window.db.getMembers(); const name = members[idx].username;
+    myConfirm(`คุณเกดแน่ใจไหมว่าต้องการลบบัญชีสมาชิกคุณ "${name}" ออกจากระบบถาวร?`, () => {
+        members.splice(idx, 1); window.db.saveMembers(members);
+        const u = window.db.getCurrentUser(); if(u && u.username === name) { window.db.saveCurrentUser(null); updateCreditDisplay(); }
+        alert(`ลบชื่อผู้ใช้ ${name} สำเร็จครับ`); renderAdminDashboard();
+    });
+}
+
+function renderAdminReviewManagementZoneList() {
+    const zone = document.getElementById('adminReviewManagementZone'); if(!zone) return;
+    if(reviewsData.length === 0) { zone.innerHTML = `<p class="text-sub text-[11px]">ไม่มีประวัติรีวิวร้านค้า</p>`; return; }
+    zone.innerHTML = reviewsData.map(r => `
+        <div class="flex justify-between items-center p-2.5 border border-main rounded-xl admin-inner-panel text-[11px]">
+            <div class="truncate max-w-[80%]">
+                <span class="font-bold text-main">👤 ${r.name} (${r.score} ดาว)</span>
+                <p class="text-sub truncate mt-0.5">${r.text}</p>
+            </div>
+            <button onclick="deleteReviewByAdmin('${r.id}')" class="text-rose-400 font-bold px-2 hover:underline">ลบรีวิว</button>
+        </div>`).join('');
+}
+
+function deleteReviewByAdmin(reviewId) {
+    myConfirm("คุณแน่ใจนะว่าต้องการลบรีวิวชิ้นนี้ของลูกค้าออกจากระบบ?", () => {
+        reviewsData = reviewsData.filter(r => r.id !== reviewId);
+        localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
+        renderAdminReviewManagementZoneList(); calculateStarCounters();
+        alert("ลบรีวิวชิ้นดังกล่าวออกจากคลังเรียบร้อยค่ะ");
+    });
+}
+
+function renderPresets() {
+    const list = document.getElementById('presetList'); if(!list) return;
+    list.innerHTML = (window.db.config.themePresets || []).map((p) => `
+        <div class="flex items-center bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+            <button type="button" onclick="applyPresetAdmin('${p.id}')" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1 text-slate-800 bg-white">
+                <span class="w-2 h-2 rounded-full" style="background:${p.colors.primary || '#7082a6'}"></span> ${p.name}
+            </button>
+            <button type="button" onclick="editPresetColorsDirect('${p.id}')" class="bg-amber-100 text-amber-700 px-2 py-2 border-l border-gray-200 text-[10px]">✏️ แก้ไข</button>
+            <button type="button" onclick="renamePresetAdmin('${p.id}')" class="bg-gray-100 text-gray-600 px-2 py-2 border-l border-gray-200 text-[9px]">ชื่อ</button>
+            <button type="button" onclick="removePresetAdmin('${p.id}')" class="bg-red-50 text-red-500 px-2 py-2 border-l border-gray-200 text-[10px] font-bold">×</button>
+        </div>`).join('');
+}
+
+function editPresetColorsDirect(presetId) {
+    const target = window.db.config.themePresets.find(p => p.id === presetId); if(!target) return;
+    window.db.config.theme = JSON.parse(JSON.stringify(target.colors));
+    applyTheme();
+    Object.keys(target.colors).forEach(k => {
+        const inputHex = document.getElementById(`input-hex-${k}`);
+        if(inputHex) {
+            inputHex.value = target.colors[k];
+            if(inputHex.previousElementSibling) inputHex.previousElementSibling.value = target.colors[k];
+        }
+    });
+}
+
+function renamePresetAdmin(presetId) {
+    const target = window.db.config.themePresets.find(p => p.id === presetId); if(!target) return;
+    const newName = prompt("เปลี่ยนชื่อพรีเซ็ตสีนี้เป็น:", target.name);
+    if(newName && newName.trim()) {
+        target.name = newName.trim(); window.db.saveConfig(window.db.config); renderAdminDashboard();
+    }
+}
+function applyPresetAdmin(presetId) {
+    const target = window.db.config.themePresets.find(p => p.id === presetId);
+    if (target) {
+        window.db.config.theme = JSON.parse(JSON.stringify(target.colors));
+        applyTheme(); window.db.saveConfig(window.db.config); renderAdminDashboard();
+    }
+}
+function removePresetAdmin(presetId) {
+    myConfirm("ต้องการลบพรีเซ็ตสีนี้ใช่ไหมคะ?", () => {
+        window.db.config.themePresets = window.db.config.themePresets.filter(p => p.id !== presetId);
+        window.db.saveConfig(window.db.config); renderAdminDashboard();
+    });
+}
+function saveShopInfo() {
+    if(document.getElementById('cfgShopName')) window.db.config.shopName = document.getElementById('cfgShopName').value; 
+    if(document.getElementById('cfgShopProfile')) window.db.config.shopProfile = document.getElementById('cfgShopProfile').value;
+    if(document.getElementById('cfgAdminPass')) window.db.config.adminPass = document.getElementById('cfgAdminPass').value; 
+    if(document.getElementById('cfgMarqueeText')) window.db.config.marqueeText = document.getElementById('cfgMarqueeText').value;
+    if(document.getElementById('cfgGasUrl')) window.db.config.googleAppsScriptUrl = document.getElementById('cfgGasUrl').value; 
+    window.db.saveConfig(window.db.config); alert("บันทึกเรียบร้อย! ✨"); init();
+}
+
+function renderAdminPromoList() {
+    const zone = document.getElementById('adminPromoListZone'); if(!zone) return;
+    const promos = window.db.config.promotions || [];
+    zone.innerHTML = promos.map((p, idx) => `
+        <div class="flex justify-between items-center p-2 border border-main rounded-xl admin-inner-panel">
+            <div class="truncate max-w-[80%]"><p class="font-bold text-main line-clamp-1">${p.title}</p></div>
+            <button onclick="deletePromoData(${idx})" class="text-rose-400 font-bold px-1">ลบ</button>
+        </div>`).join('');
+}
+function addNewPromoData() {
+    const tEl = document.getElementById('addPromoTitle'); const iEl = document.getElementById('addPromoImg'); const lEl = document.getElementById('addPromoLink'); if(!tEl || !iEl) return;
+    const t = tEl.value.trim(); const i = iEl.value.trim(); const l = lEl.value.trim(); if(!t || !i) return alert("กรุณากรอกข้อมูลโปรโมชั่นให้ครบ");
+    if(!window.db.config.promotions) window.db.config.promotions = [];
+    window.db.config.promotions.push({ title: t, img: i, brandLink: l || "DekDec Studio" });
+    window.db.saveConfig(window.db.config); renderAdminPromoList(); init(); tEl.value = ""; iEl.value = ""; if(lEl) lEl.value = "";
+}
+function addTaxonomyItem(field, inputId) {
+    const input = document.getElementById(inputId); if(!input) return; const val = input.value.trim(); if(!val) return;
+    const tax = window.db.getTaxonomy(); tax[field].push(val); window.db.saveTaxonomy(tax); input.value = ""; renderAdminDashboard();
+}
+function removeTaxonomyItem(field, idx) {
+    const tax = window.db.getTaxonomy(); tax[field].splice(idx,1); window.db.saveTaxonomy(tax); renderAdminDashboard();
+}
+function moveProduct(idx, d) { const p = window.db.products; const t = idx + d; if(t >= 0 && t < p.length) { [p[idx], p[t]] = [p[t], p[idx]]; window.db.saveProducts(p); renderAdminProductList(); renderStore(); } }
+
+function renderAdminProductList() {
+    const cont = document.getElementById('adminProductList'); if(!cont) return;
+    const pAll = window.db.products; const perPage = 10; const total = Math.ceil(pAll.length / perPage);
+    const items = pAll.slice((currentAdminPage-1)*perPage, currentAdminPage*perPage);
+    cont.innerHTML = items.map((p) => {
+        const idx = window.db.products.indexOf(p);
+        return `<div class="flex items-center gap-3 p-2 border border-main rounded-2xl text-[10px] text-main admin-inner-panel">
+            <div class="flex flex-col"><button onclick="moveProduct(${idx},-1)" class="text-main font-bold">▲</button><button onclick="moveProduct(${idx},1)" class="text-main font-bold">▼</button></div>
+            <img src="${p.img}" class="w-9 h-9 rounded object-cover border border-main"><div class="flex-1 font-bold truncate">${p.name}</div>
+            <button onclick="editProduct(${idx})" class="text-blue-400 font-bold">แก้ไข</button><button onclick="deleteProduct(${idx})" class="text-rose-400 font-bold">ลบ</button></div>`;
+    }).join('');
+    const pag = document.getElementById('pagination'); if(!pag) return; pag.innerHTML = "";
+    for(let i=1; i<=total; i++) pag.innerHTML += `<button onclick="currentAdminPage=${i}; renderAdminProductList()" class="page-btn ${i===currentAdminPage?'active':''}">${i}</button>`;
+}
+function editProduct(idx) {
+    const p = window.db.products[idx];
+    if(document.getElementById('admName')) document.getElementById('admName').value = p.name; if(document.getElementById('admPrice')) document.getElementById('admPrice').value = p.price; if(document.getElementById('admDisc')) document.getElementById('admDisc').value = p.discount;
+    if(document.getElementById('admCat')) document.getElementById('admCat').value = p.category; if(document.getElementById('admSub')) document.getElementById('admSub').value = p.subCategory; if(document.getElementById('admBrand')) document.getElementById('admBrand').value = p.brand; if(document.getElementById('admImg')) document.getElementById('admImg').value = p.img; if(document.getElementById('admDesc')) document.getElementById('admDesc').value = p.desc || "";
+    if(document.getElementById('admDriveShare')) document.getElementById('admDriveShare').checked = p.autoDriveShare || false; if(document.getElementById('admDriveFolderId')) document.getElementById('admDriveFolderId').value = p.googleDriveFolderId || "";
+    window.db.products.splice(idx,1); if(document.getElementById('productFormPart')) document.getElementById('productFormPart').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function saveProductAdmin() {
+    const nameEl = document.getElementById('admName'); const priceEl = document.getElementById('admPrice'); if(!nameEl || !priceEl) return;
+    const p = { 
+        name: nameEl.value, price: Number(priceEl.value), discount: Number(document.getElementById('admDisc') ? document.getElementById('admDisc').value : 0), 
+        category: document.getElementById('admCat') ? document.getElementById('admCat').value : "ฟอนต์", subCategory: document.getElementById('admSub') ? document.getElementById('admSub').value : "ลายมือ", brand: document.getElementById('admBrand') ? document.getElementById('admBrand').value : "DekDec Studio", 
+        img: (document.getElementById('admImg') && document.getElementById('admImg').value) || "https://picsum.photos/400/400", desc: document.getElementById('admDesc') ? document.getElementById('admDesc').value : "", featured: document.getElementById('admFeat') ? document.getElementById('admFeat').checked : false, limitOne: document.getElementById('admLimit') ? document.getElementById('admLimit').checked : false, autoDriveShare: document.getElementById('admDriveShare') ? document.getElementById('admDriveShare').checked : false, googleDriveFolderId: document.getElementById('admDriveFolderId') ? document.getElementById('admDriveFolderId').value : "" 
+    };
+    if(!p.name || !p.price) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    window.db.products.unshift(p); window.db.saveProducts(window.db.products); renderAdminDashboard(); renderStore();
+}
+
 /* ==========================================
    👥 MEMBER PROFILE & HISTORY ZONE
    ========================================== */
@@ -609,7 +758,6 @@ function openUserMenuPage() {
     hideAllPages(); if(document.getElementById('userMenuPage')) document.getElementById('userMenuPage').classList.remove('hidden');
     renderUserMenuDetails();
 }
-
 function renderUserMenuDetails() {
     const cont = document.getElementById('userMenuPage'); if(!cont) return;
     const u = window.db.getCurrentUser();
@@ -664,7 +812,6 @@ function renderUserMenuDetails() {
     `;
     renderUserHistoryLogsContent(u);
 }
-
 function goToTopupPageDirect() {
     hideAllPages();
     if(document.getElementById('topupPage')) {
@@ -672,7 +819,6 @@ function goToTopupPageDirect() {
         renderTopupPageUI();
     }
 }
-
 function renderTopupPageUI() {
     const el = document.getElementById('topupPage'); if(!el) return;
     el.className = "page-section p-4 theme-bg-app text-main min-h-screen overflow-y-auto animate-pop";
@@ -705,13 +851,11 @@ function renderTopupPageUI() {
         </div>
     `;
 }
-
 function switchHistoryTab(tabType) {
     currentHistoryTab = tabType;
     const u = window.db.getCurrentUser();
     if(u) renderUserMenuDetails();
 }
-
 function renderUserHistoryLogsContent(u) {
     const logZone = document.getElementById('userHistoryListLogs'); if(!logZone) return;
     if(currentHistoryTab === 'order') {
@@ -735,7 +879,6 @@ function renderUserHistoryLogsContent(u) {
             </div>`).join('');
     }
 }
-
 function saveUserProfileData() {
     const emailVal = document.getElementById('usrEditEmail').value.trim();
     const u = window.db.getCurrentUser(); if(!u) return;
@@ -746,90 +889,8 @@ function saveUserProfileData() {
     alert("อัปเดตข้อมูลส่วนตัวของคุณสำเร็จแล้วค่ะ 🐰✨"); renderUserMenuDetails();
 }
 
-function deleteMemberByAdmin(idx) {
-    let members = window.db.getMembers(); const name = members[idx].username;
-    myConfirm(`คุณเกดแน่ใจไหมว่าต้องการลบบัญชีสมาชิกคุณ "${name}" ออกจากระบบถาวร?`, () => {
-        members.splice(idx, 1); window.db.saveMembers(members);
-        const u = window.db.getCurrentUser(); if(u && u.username === name) { window.db.saveCurrentUser(null); updateCreditDisplay(); }
-        alert(`ลบชื่อผู้ใช้ ${name} สำเร็จครับ`); renderAdminDashboard();
-    });
-}
-
-function deleteReviewByAdmin(reviewId) {
-    myConfirm("คุณแน่ใจนะว่าต้องการลบรีวิวชิ้นนี้ของลูกค้าออกจากระบบ?", () => {
-        reviewsData = reviewsData.filter(r => r.id !== reviewId);
-        localStorage.setItem('web_reviews', JSON.stringify(reviewsData));
-        renderAdminReviewManagementZoneList(); calculateStarCounters();
-        alert("ลบรีวิวชิ้นดังกล่าวออกจากคลังเรียบร้อยค่ะ");
-    });
-}
-
-function saveAsPresetAdmin() {
-    const name = prompt("ตั้งชื่อพรีเซ็ตสีชุดนี้:"); if(!name || !name.trim()) return;
-    if(!window.db.config.themePresets) window.db.config.themePresets = [];
-    window.db.config.themePresets.push({ id: "pre_" + Date.now(), name: name.trim(), colors: JSON.parse(JSON.stringify(window.db.config.theme)) });
-    window.db.saveConfig(window.db.config); renderAdminDashboard(); alert("บันทึกพรีเซ็ตสำเร็จแล้วค่ะ!");
-}
-
-function deletePromoData(idx) {
-    if(!window.db.config.promotions) return; window.db.config.promotions.splice(idx,1); window.db.saveConfig(window.db.config); renderAdminPromoList(); init();
-}
-
-function addNewPromoData() {
-    const tEl = document.getElementById('addPromoTitle'); const iEl = document.getElementById('addPromoImg'); const lEl = document.getElementById('addPromoLink'); if(!tEl || !iEl) return;
-    const t = tEl.value.trim(); const i = iEl.value.trim(); const l = lEl.value.trim(); if(!t || !i) return alert("กรุณากรอกข้อมูลโปรโมชั่นให้ครบ");
-    if(!window.db.config.promotions) window.db.config.promotions = [];
-    window.db.config.promotions.push({ title: t, img: i, brandLink: l || "DekDec Studio" });
-    window.db.saveConfig(window.db.config); renderAdminPromoList(); init(); tEl.value = ""; iEl.value = ""; if(lEl) lEl.value = "";
-}
-
-function addTaxonomyItem(field, inputId) {
-    const input = document.getElementById(inputId); if(!input) return; const val = input.value.trim(); if(!val) return;
-    const tax = window.db.getTaxonomy(); tax[field].push(val); window.db.saveTaxonomy(tax); input.value = ""; renderAdminDashboard();
-}
-
-function removeTaxonomyItem(field, idx) {
-    const tax = window.db.getTaxonomy(); tax[field].splice(idx,1); window.db.saveTaxonomy(tax); renderAdminDashboard();
-}
-
-function moveProduct(idx, d) { const p = window.db.products; const t = idx + d; if(t >= 0 && t < p.length) { [p[idx], p[t]] = [p[t], p[idx]]; window.db.saveProducts(p); renderAdminProductList(); renderStore(); } }
-
-function renderAdminProductList() {
-    const cont = document.getElementById('adminProductList'); if(!cont) return;
-    const pAll = window.db.products; const perPage = 10; const total = Math.ceil(pAll.length / perPage);
-    const items = pAll.slice((currentAdminPage-1)*perPage, currentAdminPage*perPage);
-    cont.innerHTML = items.map((p) => {
-        const idx = window.db.products.indexOf(p);
-        return `<div class="flex items-center gap-3 p-2 border border-main rounded-2xl text-[10px] text-main admin-inner-panel">
-            <div class="flex flex-col"><button onclick="moveProduct(${idx},-1)" class="text-main font-bold">▲</button><button onclick="moveProduct(${idx},1)" class="text-main font-bold">▼</button></div>
-            <img src="${p.img}" class="w-9 h-9 rounded object-cover border border-main"><div class="flex-1 font-bold truncate">${p.name}</div>
-            <button onclick="editProduct(${idx})" class="text-blue-400 font-bold">แก้ไข</button><button onclick="deleteProduct(${idx})" class="text-rose-400 font-bold">ลบ</button></div>`;
-    }).join('');
-    const pag = document.getElementById('pagination'); if(!pag) return; pag.innerHTML = "";
-    for(let i=1; i<=total; i++) pag.innerHTML += `<button onclick="currentAdminPage=${i}; renderAdminProductList()" class="page-btn ${i===currentAdminPage?'active':''}">${i}</button>`;
-}
-
-function editProduct(idx) {
-    const p = window.db.products[idx];
-    if(document.getElementById('admName')) document.getElementById('admName').value = p.name; if(document.getElementById('admPrice')) document.getElementById('admPrice').value = p.price; if(document.getElementById('admDisc')) document.getElementById('admDisc').value = p.discount;
-    if(document.getElementById('admCat')) document.getElementById('admCat').value = p.category; if(document.getElementById('admSub')) document.getElementById('admSub').value = p.subCategory; if(document.getElementById('admBrand')) document.getElementById('admBrand').value = p.brand; if(document.getElementById('admImg')) document.getElementById('admImg').value = p.img; if(document.getElementById('admDesc')) document.getElementById('admDesc').value = p.desc || "";
-    if(document.getElementById('admDriveShare')) document.getElementById('admDriveShare').checked = p.autoDriveShare || false; if(document.getElementById('admDriveFolderId')) document.getElementById('admDriveFolderId').value = p.googleDriveFolderId || "";
-    window.db.products.splice(idx,1); if(document.getElementById('productFormPart')) document.getElementById('productFormPart').scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function saveProductAdmin() {
-    const nameEl = document.getElementById('admName'); const priceEl = document.getElementById('admPrice'); if(!nameEl || !priceEl) return;
-    const p = { 
-        name: nameEl.value, price: Number(priceEl.value), discount: Number(document.getElementById('admDisc') ? document.getElementById('admDisc').value : 0), 
-        category: document.getElementById('admCat') ? document.getElementById('admCat').value : "ฟอนต์", subCategory: document.getElementById('admSub') ? document.getElementById('admSub').value : "ลายมือ", brand: document.getElementById('admBrand') ? document.getElementById('admBrand').value : "DekDec Studio", 
-        img: (document.getElementById('admImg') && document.getElementById('admImg').value) || "https://picsum.photos/400/400", desc: document.getElementById('admDesc') ? document.getElementById('admDesc').value : "", featured: document.getElementById('admFeat') ? document.getElementById('admFeat').checked : false, limitOne: document.getElementById('admLimit') ? document.getElementById('admLimit').checked : false, autoDriveShare: document.getElementById('admDriveShare') ? document.getElementById('admDriveShare').checked : false, googleDriveFolderId: document.getElementById('admDriveFolderId') ? document.getElementById('admDriveFolderId').value : "" 
-    };
-    if(!p.name || !p.price) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-    window.db.products.unshift(p); window.db.saveProducts(window.db.products); renderAdminDashboard(); renderStore();
-}
-
 /* ==========================================
-   📦 ระบบสรุปยอดชำระเงินและใบเสร็จ
+   🛒 ระบบสรุปยอดชำระเงินและใบเสร็จ
    ========================================== */
 function addToCartDirect(idx) {
     const p = window.db.products[idx]; if(!p) return;
@@ -837,9 +898,7 @@ function addToCartDirect(idx) {
     if(exist) { if(p.limitOne) return alert("จำกัด 1 ชิ้น"); exist.qty++; } else { cart.push({...p, qty: 1}); }
     updateCartCount(); alert("เพิ่มลงตะกร้าแล้วเรียบร้อย 🐰");
 }
-
 function openCartPage() { hideAllPages(); if(document.getElementById('cartPage')) document.getElementById('cartPage').classList.remove('hidden'); renderCart(); }
-
 function renderCart() {
     const cont = document.getElementById('cartItemsContainer'); const summary = document.getElementById('receiptSummary'); if(!cont) return;
     if(cart.length === 0) { cont.innerHTML = `<div class="text-center py-24 text-sub text-xs"><i class="fa-solid fa-basket-shopping text-3xl mb-3 block"></i>ไม่มีสินค้าในตะกร้าของคุณ</div>`; if(summary) summary.innerHTML = ""; return; }
@@ -852,7 +911,6 @@ function renderCart() {
     const total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
     if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full theme-bg-btn text-white py-4 rounded-2xl font-bold text-xs shadow-xl transition-all active:scale-95" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
 }
-
 function updateQty(idx, d) { cart[idx].qty += d; if(cart[idx].qty <= 0) cart.splice(idx,1); updateCartCount(); renderCart(); }
 function removeCartItem(idx) { myConfirm("ลบสินค้าชิ้นนี้ออกจากตะกร้า?", () => { cart.splice(idx,1); updateCartCount(); renderCart(); }); }
 
@@ -873,7 +931,6 @@ function finalizeOrder() {
     renderReceiptPage(newOrder);
     cart = []; updateCartCount();
 }
-
 function renderReceiptPage(order) {
     hideAllPages(); if(document.getElementById('receiptPage')) document.getElementById('receiptPage').classList.remove('hidden');
     const container = document.getElementById('receiptPage'); if(!container) return;
@@ -890,6 +947,36 @@ function renderReceiptPage(order) {
         </div>`;
 }
 
+/* ==========================================
+   📦 ส่วนเปิด-ปิดโครงสร้าง Layout หน้าเว็บ
+   ========================================== */
+function openProductDetail(idx) {
+    const p = window.db.products[idx]; const detail = document.getElementById('productDetailPage'); if(!detail) return;
+    hideAllPages(); detail.classList.remove('hidden');
+    detail.innerHTML = `
+        <div class="sticky top-0 theme-bg-card px-4 py-4 flex items-center justify-between border-b border-main z-10 shadow-sm">
+            <button onclick="closeProductDetail()" class="text-main font-bold text-xs"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
+            <span class="font-bold text-main text-sm">รายละเอียดสินค้า</span>
+            <div class="w-4"></div>
+        </div>
+        <div class="p-4 space-y-4 max-w-[520px] mx-auto text-xs">
+            <img src="${p.img}" class="w-full rounded-2xl border-main shadow-sm">
+            <div class="flex justify-between items-start">
+                <div><h1 class="text-base font-bold text-main">${p.name}</h1><span class="inline-block mt-1 text-[10px] theme-bg-card text-sub px-2.5 py-0.5 rounded-full border-main">สินค้าพร้อมส่ง</span></div>
+                <div class="text-right"><span class="text-lg font-black text-main">฿${p.price-p.discount}</span></div>
+            </div>
+            <div class="custom-panel-card theme-bg-card border-main"><p class="font-bold text-main mb-3">แอปพลิเคชันที่รองรับ</p>
+                <div class="space-y-2 text-sub"><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Good notes</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Canva</label><label class="flex items-center gap-2"><input type="checkbox" checked disabled> Procreate</label></div>
+            </div>
+            <div class="custom-panel-card theme-bg-card border-main"><p class="font-bold text-main mb-1.5">รายละเอียดเพิ่มเติม</p><p class="text-sub leading-relaxed">${p.desc || 'สินค้าพรีเมียมลิขสิทธิ์แท้จากทางร้าน'}</p></div>
+        </div>
+        <div class="fixed bottom-0 left-0 right-0 p-4 theme-bg-card border-t border-main flex gap-3 max-w-[768px] mx-auto z-50 shadow-lg">
+            <button onclick="addToCartDirect(${idx}); closeProductDetail();" class="flex-1 py-3.5 border border-main text-main rounded-xl font-bold text-xs theme-bg-card">เพิ่มลงตะกร้า</button>
+            <button onclick="buyNowDirect(${idx})" class="flex-1 py-3.5 theme-bg-btn text-white rounded-xl font-bold text-xs shadow-md" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">ซื้อทันที</button>
+        </div>`;
+}
+function closeProductDetail() { if(document.getElementById('productDetailPage')) document.getElementById('productDetailPage').classList.add('hidden'); showMainLayout(); }
+
 function hideAllPages() {
     ['mainPage', 'productDetailPage', 'cartPage', 'receiptPage', 'userMenuPage', 'topupPage', 'reviewPage', 'allCategoriesPage', 'adminDashboard'].forEach(id => {
         const el = document.getElementById(id); if(el) el.classList.add('hidden');
@@ -898,12 +985,10 @@ function hideAllPages() {
     if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.add('hidden');
     if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.add('hidden');
 }
-
 function showMainLayout() {
     if(document.getElementById('mainPage')) document.getElementById('mainPage').classList.remove('hidden');
     if(document.getElementById('topSearchBar')) document.getElementById('topSearchBar').classList.remove('hidden');
     if(document.getElementById('mainHeader')) document.getElementById('mainHeader').classList.remove('hidden');
     if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.remove('hidden');
 }
-
 function closeSubPage(pageId) { if(document.getElementById(pageId)) document.getElementById(pageId).classList.add('hidden'); showMainLayout(); restartMarqueeAnimation(); }
