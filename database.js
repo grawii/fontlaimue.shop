@@ -1,5 +1,5 @@
 /* ==========================================
-   💾 DEKDEC CENTRAL DATABASE CONTROLLER
+   💾 DEKDEC CENTRAL DATABASE CONTROLLER (V2)
    ========================================== */
 (function() {
     const defaultData = {
@@ -20,7 +20,7 @@
                 { id: "p4", name: "🍵 ชาเขียวมัทฉะ (Matcha Green)", colors: { bg: "#f4f7f4", card: "#ffffff", border: "#cfe2cf", text: "#2e4a2e", muted: "#6b8e6b", primary: "#557a55", secondary: "#709670", accent: "#8cb38c" } }
             ],
             promotions: [
-                { title: "🎉 สั่งซื้อฟอนต์ลายมือ DekDec วันนี้ รับส่วนลดพิเศษทันทีท้ายบิล!", img: "https://picsum.photos/600/450?random=1", brandLink: "DekDec Studio" }
+                { id: "promo_1", title: "🎉 สั่งซื้อฟอนต์ลายมือ DekDec วันนี้ รับส่วนลดพิเศษทันทีท้ายบิล!", img: "https://picsum.photos/600/450?random=1", brandLink: "DekDec Studio" }
             ]
         },
         taxonomy: {
@@ -29,7 +29,21 @@
             brands: ["DekDec Studio", "Angun Hwan", "Grawii Studio"]
         },
         products: [
-            { name: "ฟอนต์ลายมือ DekDec (Handwriting Font)", price: 159, discount: 60, category: "ฟอนต์", subCategory: "ลายมือ", brand: "DekDec Studio", img: "https://picsum.photos/400/400?random=11", desc: "ฟอนต์ลายมือน่ารักๆ หัวกลม เหมาะสำหรับตกแต่งจดสรุปน่ารักๆ บน GoodNotes, Canva, Procreate", featured: true, limitOne: true, autoDriveShare: false, googleDriveFolderId: "" }
+            { 
+                name: "ฟอนต์ลายมือ DekDec (Handwriting Font)", 
+                price: 159, 
+                discount: 60, 
+                category: "ฟอนต์", 
+                subCategory: "ลายมือ", 
+                brand: "DekDec Studio", 
+                img: "https://picsum.photos/400/400?random=11", 
+                desc: "ฟอนต์ลายมือน่ารักๆ หัวกลม เหมาะสำหรับตกแต่งจดสรุปน่ารักๆ บน GoodNotes, Canva, Procreate", 
+                apps: ["GoodNotes", "Canva", "Procreate"],
+                featured: true, 
+                limitOne: true, 
+                autoDriveShare: false, 
+                googleDriveFolderId: "https://drive.google.com" 
+            }
         ],
         members: []
     };
@@ -39,10 +53,10 @@
         localStorage.setItem('dekdec_store_db', JSON.stringify(defaultData));
     } else {
         let parsed = JSON.parse(localDB);
-        if (!parsed.taxonomy || !parsed.taxonomy.categories || parsed.taxonomy.categories.length === 0) {
-            parsed.taxonomy = defaultData.taxonomy;
-            localStorage.setItem('dekdec_store_db', JSON.stringify(parsed));
-        }
+        // ตรวจสอบและซ่อมแซมโครงสร้างหากข้อมูลบางส่วนหลุดหายไป
+        if (!parsed.taxonomy) parsed.taxonomy = defaultData.taxonomy;
+        if (!parsed.config.promotions) parsed.config.promotions = defaultData.config.promotions;
+        localStorage.setItem('dekdec_store_db', JSON.stringify(parsed));
     }
 
     const db = JSON.parse(localStorage.getItem('dekdec_store_db'));
