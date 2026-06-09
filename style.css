@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* 🪐 โครงสร้างเฉดสีระบบ Dynamic อิงตามพาเลทที่เลือก */
 :root {
     --th-bg: #202430;
     --th-card: #282d3c;
@@ -18,7 +17,6 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .theme-bg-app { background-color: var(--th-bg) !important; }
 .theme-bg-card { background-color: var(--th-card) !important; }
 .theme-bg-btn { background-color: var(--th-primary) !important; }
-
 .text-main { color: var(--th-text) !important; }
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
@@ -29,12 +27,9 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     border-color: var(--th-border) !important;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.03) !important;
 }
-.admin-inner-panel p, .admin-inner-panel span, .admin-inner-panel label {
-    color: #333333 !important;
-}
+.admin-inner-panel p, .admin-inner-panel span, .admin-inner-panel label { color: #333333 !important; }
 
-/* 🛠️ รูปที่ 3: แผงกล่องสีควบคุมย่อยเมื่อผู้ใช้รัน "ธีมมืด/โทนเข้ม" 
-   เปลี่ยนพื้นหลังสี่เหลี่ยมให้โปร่งแสงกลืนไปกับตัวเว็บ และดันสีข้อความเป็นสีขาวนวลให้อ่านง่าย */
+/* 🛠️ รูปที่ 3: เฉพาะตอนใช้พรีเซ็ตธีมมืด กล่องสี่เหลี่ยมควบคุมเปลี่ยนเป็นโทนใสกลืนพื้นเว็บทันที */
 .dark-theme-active .admin-inner-panel {
     background-color: rgba(255, 255, 255, 0.08) !important;
     border-color: var(--th-border) !important;
@@ -42,102 +37,44 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 }
 .dark-theme-active .admin-inner-panel p, 
 .dark-theme-active .admin-inner-panel span, 
-.dark-theme-active .admin-inner-panel label {
-    color: var(--th-text) !important;
-}
+.dark-theme-active .admin-inner-panel label { color: var(--th-text) !important; }
 
-.marquee-container {
-    display: flex;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-}
-#marqueeDisplay, #marqueeDisplay2 {
-    white-space: nowrap;
-    display: inline-block;
-}
+.marquee-container { display: flex; overflow: hidden; position: relative; width: 100%; }
+#marqueeDisplay, #marqueeDisplay2 { white-space: nowrap; display: inline-block; }
+@keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+@keyframes marquee2 { 0% { transform: translateX(100%); } 100% { transform: translateX(0%); } }
 
-@keyframes marquee {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-100%); }
-}
-@keyframes marquee2 {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(0%); }
-}
-
-#reviewPage .bg-white,
-.review-filter-bar-wrapper,
-#reviewPage div[class*="bg-gray-"],
-#reviewPage div[class*="bg-slate-"] {
-    background-color: var(--th-bg) !important; 
-    border-color: var(--th-border) !important;
+#reviewPage .bg-white, .review-filter-bar-wrapper, #reviewPage div[class*="bg-slate-"] {
+    background-color: var(--th-bg) !important; border-color: var(--th-border) !important;
 }
 
 .review-star-filter-btn {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
+    background-color: var(--th-card) !important; color: var(--th-text) !important; border: 1px solid var(--th-border) !important;
 }
 .review-star-filter-btn.active {
-    background-color: var(--th-primary) !important;
-    color: #ffffff !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    background-color: var(--th-primary) !important; color: #ffffff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
-#unifiedAuthModal .bg-white,
-#newReviewModal .bg-white,
-#promotionModal .bg-white,
-.modal-content-card,
-#unifiedAuthModal div[class*="bg-white"] {
-    background-color: var(--th-card) !important;
-    border: 1px solid var(--th-border) !important;
-    color: var(--th-text) !important;
+#unifiedAuthModal .bg-white, #newReviewModal .bg-white, #promotionModal .bg-white, .modal-content-card {
+    background-color: var(--th-card) !important; border: 1px solid var(--th-border) !important; color: var(--th-text) !important;
+}
+#unifiedAuthModal input, #newReviewModal textarea { background-color: #ffffff !important; color: #1c1e21 !important; border: 1px solid var(--th-border) !important; }
+
+#topSearchBar input, #topSearchBar button, .action-circle-btn {
+    background-color: var(--th-card) !important; color: var(--th-text) !important; border: 1px solid var(--th-border) !important;
 }
 
-#tabAuthAdminBtn.border-main, #tabAuthUserBtn.border-main {
-    border-bottom-color: var(--th-primary) !important;
-}
-
-#unifiedAuthModal input, #newReviewModal textarea {
-    background-color: #ffffff !important;
-    color: #1c1e21 !important;
-    border: 1px solid var(--th-border) !important;
-}
-
-#topSearchBar input {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
-}
-#topSearchBar button, .action-circle-btn {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-}
-
-#adminDashboard input, #adminDashboard select, #adminDashboard textarea {
-    border-color: var(--th-border) !important;
-    color: var(--th-text) !important;
-}
-#adminDashboard select option {
-    background-color: var(--th-card) !important;
-    color: var(--th-text) !important;
-}
+#adminDashboard input, #adminDashboard select, #adminDashboard textarea { border-color: var(--th-border) !important; color: var(--th-text) !important; }
+#adminDashboard select option { background-color: var(--th-card) !important; color: var(--th-text) !important; }
 
 .app-container { width: 100%; max-width: 100%; margin: 0 auto; min-height: 100vh; position: relative; }
 @media (min-width: 640px) { .app-container { max-width: 640px; } }
 @media (min-width: 1024px) { .app-container { max-width: 768px; } }
-
 .page-section { position: relative; width: 100%; min-height: calc(100vh - 120px); }
-.product-card { border-radius: 24px; padding: 12px; transition: all 0.25s ease; }
+.product-card { border-radius: 24px; padding: 12px; transition: all 0.25s ease; border: 1px solid var(--th-border); }
 .product-card:hover { transform: translateY(-4px); }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-.page-btn {
-    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--th-border);
-    background: var(--th-card); color: var(--th-text); cursor: pointer;
-}
-.page-btn.active { background: var(--th-primary); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+.page-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--th-border); background: var(--th-card); color: var(--th-text); cursor: pointer; }
+.page-btn.active { background: var(--th-primary) !important; color: #ffffff !important; }
