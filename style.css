@@ -23,7 +23,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
 
-/* 🧼 ส่วนหน้าระบบแอดมินอินเนอร์สีขาวละมุนตา */
+/* 🧼 ส่วนหน้าระบบแอดมิน (พรีเซ็ตโทนสว่างทั่วไป) */
 .admin-inner-panel {
     background-color: #ffffff !important;
     border-color: var(--th-border) !important;
@@ -31,6 +31,19 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 }
 .admin-inner-panel p, .admin-inner-panel span, .admin-inner-panel label {
     color: #333333 !important;
+}
+
+/* 🛠️ รูปที่ 3: แผงกล่องสีควบคุมย่อยเมื่อผู้ใช้รัน "ธีมมืด/โทนเข้ม" 
+   เปลี่ยนพื้นหลังสี่เหลี่ยมให้โปร่งแสงกลืนไปกับตัวเว็บ และดันสีข้อความเป็นสีขาวนวลให้อ่านง่าย */
+.dark-theme-active .admin-inner-panel {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--th-border) !important;
+    box-shadow: none !important;
+}
+.dark-theme-active .admin-inner-panel p, 
+.dark-theme-active .admin-inner-panel span, 
+.dark-theme-active .admin-inner-panel label {
+    color: var(--th-text) !important;
 }
 
 .marquee-container {
@@ -72,7 +85,6 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
-/* นำระบบพรีเซ็ตสวมเข้าสู่กล่องป็อปอัพทั้งหมด */
 #unifiedAuthModal .bg-white,
 #newReviewModal .bg-white,
 #promotionModal .bg-white,
@@ -101,7 +113,6 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 #topSearchBar button, .action-circle-btn {
     background-color: var(--th-card) !important;
     color: var(--th-text) !important;
-    border: 1px solid var(--th-border) !important;
 }
 
 #adminDashboard input, #adminDashboard select, #adminDashboard textarea {
