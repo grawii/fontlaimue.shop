@@ -21,7 +21,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .text-sub { color: var(--th-muted) !important; }
 .border-main { border-color: var(--th-border) !important; }
 
-/* 🧼 ส่วนหน้าระบบแอดมิน (พรีเซ็ตโทนสว่างทั่วไป) */
+/* 🧼 ส่วนหน้าระบบแอดมินพรีเซ็ตปกติ */
 .admin-inner-panel {
     background-color: #ffffff !important;
     border-color: var(--th-border) !important;
@@ -29,7 +29,7 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 }
 .admin-inner-panel p, .admin-inner-panel span, .admin-inner-panel label { color: #333333 !important; }
 
-/* 🛠️ รูปที่ 3: เฉพาะตอนใช้พรีเซ็ตธีมมืด กล่องสี่เหลี่ยมควบคุมเปลี่ยนเป็นโทนใสกลืนพื้นเว็บทันที */
+/* 🛠️ แก้ไขรูปที่ 3: เฉพาะตอนใช้พรีเซ็ตธีมมืด กล่องสี่เหลี่ยมควบคุมจะย้อมโปร่งแสงสวยนวลตากลืนพื้นเว็บทันที */
 .dark-theme-active .admin-inner-panel {
     background-color: rgba(255, 255, 255, 0.08) !important;
     border-color: var(--th-border) !important;
@@ -39,14 +39,17 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .dark-theme-active .admin-inner-panel span, 
 .dark-theme-active .admin-inner-panel label { color: var(--th-text) !important; }
 
+/* 🛠️ บังคับให้ปุ่มส่งข้อมูลเข้าสู่ระบบ ไม่ทำสีกระบอกสีขาวเอ๋อค้าง ดึงค่าตามธีมสีเฉดหลักเสมอ */
+#mainUserAuthBtn, #adminAuthSubmitBtn {
+    background-color: var(--th-primary) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+}
+
 .marquee-container { display: flex; overflow: hidden; position: relative; width: 100%; }
 #marqueeDisplay, #marqueeDisplay2 { white-space: nowrap; display: inline-block; }
 @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
 @keyframes marquee2 { 0% { transform: translateX(100%); } 100% { transform: translateX(0%); } }
-
-#reviewPage .bg-white, .review-filter-bar-wrapper, #reviewPage div[class*="bg-slate-"] {
-    background-color: var(--th-bg) !important; border-color: var(--th-border) !important;
-}
 
 .review-star-filter-btn {
     background-color: var(--th-card) !important; color: var(--th-text) !important; border: 1px solid var(--th-border) !important;
@@ -55,12 +58,12 @@ body { margin: 0; padding: 0; min-height: 100vh; }
     background-color: var(--th-primary) !important; color: #ffffff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
-#unifiedAuthModal .bg-white, #newReviewModal .bg-white, #promotionModal .bg-white, .modal-content-card {
+#unifiedAuthModal .bg-white, .modal-content-card {
     background-color: var(--th-card) !important; border: 1px solid var(--th-border) !important; color: var(--th-text) !important;
 }
-#unifiedAuthModal input, #newReviewModal textarea { background-color: #ffffff !important; color: #1c1e21 !important; border: 1px solid var(--th-border) !important; }
+#unifiedAuthModal input { background-color: #ffffff !important; color: #1c1e21 !important; border: 1px solid var(--th-border) !important; }
 
-#topSearchBar input, #topSearchBar button, .action-circle-btn {
+#topSearchBar input, #topSearchBar button {
     background-color: var(--th-card) !important; color: var(--th-text) !important; border: 1px solid var(--th-border) !important;
 }
 
@@ -74,7 +77,3 @@ body { margin: 0; padding: 0; min-height: 100vh; }
 .product-card { border-radius: 24px; padding: 12px; transition: all 0.25s ease; border: 1px solid var(--th-border); }
 .product-card:hover { transform: translateY(-4px); }
 .no-scrollbar::-webkit-scrollbar { display: none; }
-.animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-@keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.page-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 11px; font-weight: 600; border: 1px solid var(--th-border); background: var(--th-card); color: var(--th-text); cursor: pointer; }
-.page-btn.active { background: var(--th-primary) !important; color: #ffffff !important; }
