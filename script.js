@@ -67,51 +67,22 @@ function updateCreditDisplay() {
     if (!userArea) return;
     
     if (u) {
+        // ดึงการคลิกเข้าหน้าเพจจัดการข้อมูลตรงๆ ไม่ใช้ Dropdown ค้างแบบรูปที่ 2
         userArea.innerHTML = `
-            <div onclick="toggleUserDropdownMenu()" class="cursor-pointer select-none text-right">
+            <div onclick="openUserMenuPage()" class="cursor-pointer select-none text-right">
                 <span class="text-main block font-bold max-w-[110px] truncate">👤 ${u.username}</span>
                 <span class="text-green-500 block font-bold mt-0.5">฿${u.credit}</span>
             </div>
         `;
         if (arrow) arrow.classList.remove('hidden');
-        renderUserDropdownItems(u);
     } else {
         userArea.innerHTML = `
-            <button onclick="openUnifiedAuthModal()" class="theme-bg-btn text-white px-3 py-1.5 rounded-xl text-[10px] font-bold shadow-sm transition-all active:scale-95" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+            <button onclick="openUnifiedAuthModal()" class="theme-bg-btn text-white px-3 py-1.5 rounded-xl text-[10px] font-bold shadow-sm transition-all active:scale-95" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
                 ลงชื่อเข้าใช้
             </button>
         `;
         if (arrow) arrow.classList.add('hidden');
-        const menu = document.getElementById('userDropdownMenu');
-        if (menu) { menu.style.maxHeight = "0px"; menu.style.opacity = "0"; }
     }
-}
-
-function toggleUserDropdownMenu() {
-    const menu = document.getElementById('userDropdownMenu');
-    if (!menu) return;
-    if (menu.style.maxHeight === "0px" || !menu.style.maxHeight) {
-        menu.style.maxHeight = "250px";
-        menu.style.opacity = "1";
-    } else {
-        menu.style.maxHeight = "0px";
-        menu.style.opacity = "0";
-    }
-}
-
-function renderUserDropdownItems(u) {
-    const menu = document.getElementById('userDropdownMenu');
-    if (!menu) return;
-    menu.className = "absolute right-4 top-14 w-44 theme-bg-card border border-main rounded-2xl p-2 shadow-xl transition-all duration-300 overflow-hidden z-50 text-xs";
-    menu.innerHTML = `
-        <div class="space-y-1">
-            <button onclick="goToUserSubPage('topup')" class="w-full text-left p-2 hover:bg-black/10 rounded-xl text-main font-medium"><i class="fa-solid fa-wallet text-green-500 mr-2"></i>เติมเงินเข้าระบบ</button>
-            <button onclick="goToUserSubPage('editProfile')" class="w-full text-left p-2 hover:bg-black/10 rounded-xl text-main font-medium"><i class="fa-solid fa-user-gear text-blue-400 mr-2"></i>แก้ไขข้อมูลส่วนตัว</button>
-            <button onclick="openUserMenuPage()" class="w-full text-left p-2 hover:bg-black/10 rounded-xl text-main font-medium"><i class="fa-solid fa-clock-history text-amber-400 mr-2"></i>ประวัติใช้งาน</button>
-            <div class="border-t border-main my-1"></div>
-            <button onclick="logoutUser()" class="w-full text-left p-2 hover:bg-rose-500/10 rounded-xl text-red-400 font-bold"><i class="fa-solid fa-right-from-bracket mr-2"></i>ออกจากระบบ</button>
-        </div>
-    `;
 }
 
 function backToStoreHome() {
@@ -141,10 +112,27 @@ function applyTheme() {
     root.style.setProperty(`--th-secondary`, t.secondary || t.primary);
     root.style.setProperty(`--th-accent`, t.accent || t.primary);
     
+    // ตรวจสอบความสว่างของพื้นหลังเว็บ เพื่อปรับสไตล์คลาสธีมมืด/สว่างแบบอัตโนมัติ
+    const isDark = !isHexColorLight(t.bg || "#202430");
+    if(isDark) {
+        document.documentElement.classList.add('dark-theme-active');
+    } else {
+        document.documentElement.classList.remove('dark-theme-active');
+    }
+
     renderCategoryFilter(); 
     if(document.getElementById('adminDashboard') && !document.getElementById('adminDashboard').classList.contains('hidden')) {
         renderPresets();
     }
+}
+
+function isHexColorLight(color) {
+    const hex = color.replace('#', '');
+    const cr = parseInt(hex.substr(0, 2), 16);
+    const cg = parseInt(hex.substr(2, 2), 16);
+    const cb = parseInt(hex.substr(4, 2), 16);
+    const brightness = (cr * 299 + cg * 587 + cb * 114) / 1000;
+    return brightness > 155;
 }
 
 function updateColor(key, val) {
@@ -164,7 +152,7 @@ function openPromotionModal() {
             <div class="promo-slide-card text-center space-y-3">
                 <h4 class="text-xs font-bold text-main line-clamp-1 px-2">${p.title}</h4>
                 <img src="${p.img}" class="w-full rounded-2xl aspect-[4/3] object-cover border border-main shadow-inner">
-                <button onclick="linkToPromoProducts('${p.brandLink}')" class="w-[90%] mx-auto py-2 theme-bg-btn text-white font-bold rounded-xl text-[10px] shadow-sm flex items-center justify-center gap-1" style="background-color:var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                <button onclick="linkToPromoProducts('${p.brandLink}')" class="w-[90%] mx-auto py-2 theme-bg-btn text-white font-bold rounded-xl text-[10px] shadow-sm flex items-center justify-center gap-1" style="background-color:var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
                     <i class="fa-solid fa-basket-shopping"></i> ดูสินค้าโปรโมชั่นเครือ ${p.brandLink}
                 </button>
             </div>
@@ -175,7 +163,7 @@ function openPromotionModal() {
 function closePromotionModal() { if(document.getElementById('promotionModal')) document.getElementById('promotionModal').classList.add('hidden'); }
 
 /* ==========================================
-   3. UNIFIED LOGIN CONTROLLER (บังคับสีปุ่มแอดมินให้เปลี่ยนตาม Preset ไม่เป็นสีขาว)
+   3. UNIFIED LOGIN CONTROLLER (รูปที่ 1: บังคับสีปุ่มแอดมินตามพรีเซ็ตหลักตัวเดียวกับสมาชิก)
    ========================================== */
 function openUnifiedAuthModal() {
     if(document.getElementById('unifiedAuthModal')) {
@@ -203,10 +191,10 @@ function switchUnifiedTab(type) {
             
             if(userSubmitBtn) {
                 userSubmitBtn.innerText = "ลงชื่อเข้าใช้งาน";
-                userSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md text-white";
-                userSubmitBtn.style.backgroundColor = "var(--th-primary)";
-                userSubmitBtn.style.color = "#ffffff";
-                userSubmitBtn.style.textShadow = "0 1px 3px rgba(0,0,0,0.4)";
+                userSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md text-white cursor-pointer block text-center";
+                userSubmitBtn.style.setProperty('background-color', 'var(--th-primary)', 'important');
+                userSubmitBtn.style.setProperty('color', '#ffffff', 'important');
+                userSubmitBtn.style.setProperty('text-shadow', '0 1px 3px rgba(0,0,0,0.4)', 'important');
             }
             if(document.getElementById('toggleRegBtn')) document.getElementById('toggleRegBtn').classList.remove('hidden');
         } else {
@@ -216,11 +204,11 @@ function switchUnifiedTab(type) {
             
             if(adminSubmitBtn) {
                 adminSubmitBtn.innerText = "เข้าสู่ระบบผู้ดูแลระบบ";
-                // 🎨 แก้ไขบั๊กปุ่มขาว: บังคับให้ปุ่มแอดมินดึงสีหลักมาใช้และล้างสไตล์สีขาวแปลกปลอมออก
-                adminSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md text-white";
-                adminSubmitBtn.style.backgroundColor = "var(--th-primary)";
-                adminSubmitBtn.style.color = "#ffffff";
-                adminSubmitBtn.style.textShadow = "0 1px 3px rgba(0,0,0,0.4)";
+                // 🛠️ รูปที่ 1: บังคับแก้ไขพิกัดความสว่างปุ่มแอดมินให้ทับซ้อนสีตาม Palette ไดนามิก และอัดเงาคมชัด
+                adminSubmitBtn.className = "w-full py-3 rounded-xl font-bold transition-all active:scale-95 shadow-md text-white cursor-pointer block text-center";
+                adminSubmitBtn.style.setProperty('background-color', 'var(--th-primary)', 'important');
+                adminSubmitBtn.style.setProperty('color', '#ffffff', 'important');
+                adminSubmitBtn.style.setProperty('text-shadow', '0 1px 3px rgba(0,0,0,0.4)', 'important');
             }
         }
     }
@@ -230,9 +218,9 @@ function toggleRegisterMode() {
     if(document.getElementById('mainUserAuthBtn')) {
         const btn = document.getElementById('mainUserAuthBtn');
         btn.innerText = isRegisterMode ? "ยืนยันการสมัครสมาชิก" : "ลงชื่อเข้าใช้งาน";
-        btn.style.backgroundColor = "var(--th-primary)";
-        btn.style.color = "#ffffff";
-        btn.style.textShadow = "0 1px 3px rgba(0,0,0,0.4)";
+        btn.style.setProperty('background-color', 'var(--th-primary)', 'important');
+        btn.style.setProperty('color', '#ffffff', 'important');
+        btn.style.setProperty('text-shadow', '0 1px 3px rgba(0,0,0,0.4)', 'important');
     }
     if(document.getElementById('toggleRegBtn')) document.getElementById('toggleRegBtn').innerText = isRegisterMode ? "มีบัญชีอยู่แล้ว? สลับกลับไปเข้าสู่ระบบ" : "ยังไม่มีบัญชี? สมัครสมาชิกใหม่ที่นี่";
 }
@@ -246,14 +234,13 @@ function processUserAuth() {
         members.push(newMem); window.db.saveMembers(members); window.db.saveCurrentUser(newMem); alert("สมัครสมาชิกเรียบร้อยค่ะ");
     } else {
         const mem = members.find(m => m.username === user && m.password === pass); if(!mem) return alert("ข้อมูลไม่ถูกต้อง");
-        window.db.saveCurrentUser(mem); alert(`ยินดีต้อนรับคุณ ${user} ค่ะ`);
+        window.db.saveCurrentUser(mem); alert(`ยินดีตือนรับคุณ ${user} ค่ะ`);
     }
     uInput.value = ""; pInput.value = "";
     closeUnifiedAuthModal(); updateCreditDisplay();
 }
 function logoutUser() { 
     window.db.saveCurrentUser(null); closeSubPage('userMenuPage'); closeSubPage('topupPage');
-    const dropdown = document.getElementById('userDropdownMenu'); if (dropdown) { dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0"; }
     updateCreditDisplay(); alert("ออกจากระบบแล้ว"); 
 }
 
@@ -309,7 +296,7 @@ function renderStoreCards(products) {
                 <h4 class="text-[11px] font-bold text-main line-clamp-2 leading-tight h-8">${p.name}</h4>
                 <div class="text-[12px] font-black mt-1 text-main">฿${p.price - p.discount}</div>
             </div>
-            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-white py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">➕ ใส่ตะกร้า</button>
+            <button onclick="addToCartDirect(${realIdx})" class="w-full mt-3 theme-bg-btn text-white py-1.5 text-[10px] font-bold rounded-lg shadow-sm active:scale-95 transition-all" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">➕ ใส่ตะกร้า</button>
         </div>`;
     }).join('');
 }
@@ -376,7 +363,7 @@ function openEditReviewModal(reviewId) {
 }
 
 /* ==========================================
-   6. ADMIN DASHBOARD & ADVANCED CONTROLS
+   6. ADMIN DASHBOARD & ADVANCED CONTROLS (รูปที่ 4: เพิ่มปุ่มจานสีเลือกพรีเซ็ต และฟังก์ชันแอดมินจัดการสมาชิก)
    ========================================== */
 function checkAdminPassword() { 
     if(document.getElementById('adminPasswordInput').value === window.db.config.adminPass) {
@@ -412,11 +399,20 @@ function renderAdminDashboard() {
                 <textarea id="cfgMarqueeText" class="w-full p-3 border border-main rounded-xl mb-2 h-16 text-main bg-transparent">${cfg.marqueeText || ""}</textarea>
                 <input type="text" id="cfgGasUrl" value="${cfg.googleAppsScriptUrl || ''}" class="w-full p-3 border border-main rounded-xl mb-3 text-main bg-transparent" placeholder="URL ระบบแชร์ไฟล์ในกูเกิลไดร์ฟ">
                 <input type="password" id="cfgAdminPass" value="${cfg.adminPass}" class="w-full p-3 border border-main rounded-xl mb-3 text-main bg-transparent">
-                <button onclick="saveShopInfo()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold shadow-sm" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">บันทึกข้อมูลหลัก</button>
+                <button onclick="saveShopInfo()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold shadow-sm" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">บันทึกข้อมูลหลัก</button>
             </div>
 
-            <div class="theme-bg-card p-4 rounded-3xl border-main">
-                <h3 class="font-bold text-main mb-1">2. ศูนย์ปรับแต่งโทนสีแกนหลัก (8 แกนควบคุมเสถียรทุกหน้าเว็บ)</h3>
+            <div class="theme-bg-card p-4 rounded-3xl border-main relative">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-main">2. ศูนย์ปรับแต่งโทนสีแกนหลัก (รูปที่ 3: แผงกล่องสีขาว/มืดแบบโปร่งแสงตามพรีเซ็ต)</h3>
+                    <button onclick="togglePresetExpandedGrid()" class="bg-amber-400 text-slate-900 w-8 h-8 rounded-full shadow-md font-bold flex items-center justify-center text-sm active:scale-90 transition-all" title="ดูพรีเซ็ตทั้งหมด">🎨</button>
+                </div>
+
+                <div id="expandedPresetGridModal" class="hidden my-2 p-3 bg-black/10 border border-main rounded-2xl animate-pop">
+                    <p class="font-bold text-[10px] text-main mb-2">📋 รายชื่อพรีเซ็ตสีทั้งหมดในคลังระบบ:</p>
+                    <div id="presetGridContainer" class="flex flex-wrap gap-2"></div>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] mb-4">
                     ${Object.keys(paletteLabels).map(k => `
                         <div class="admin-inner-panel p-2 rounded-xl border border-main shadow-inner">
@@ -429,7 +425,7 @@ function renderAdminDashboard() {
                     `).join('')}
                 </div>
                 <div class="flex gap-2 mb-3">
-                    <button onclick="saveAsPresetAdmin()" class="flex-1 py-3 theme-bg-btn text-white rounded-xl font-bold shadow-md" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">✨ บันทึกเป็นพรีเซ็ตใหม่</button>
+                    <button onclick="saveAsPresetAdmin()" class="flex-1 py-3 theme-bg-btn text-white rounded-xl font-bold shadow-md" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">✨ บันทึกเป็นพรีเซ็ตใหม่</button>
                     <button onclick="location.reload()" class="flex-1 py-3 bg-zinc-500 text-white rounded-xl font-bold shadow-md">❌ ยกเลิกการแก้ไข</button>
                 </div>
                 <div id="presetList" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar"></div>
@@ -448,7 +444,7 @@ function renderAdminDashboard() {
                     <input type="text" id="addPromoTitle" placeholder="ข้อความหัวข้อโปรโมชั่น" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
                     <input type="text" id="addPromoImg" placeholder="URL รูปภาพโปรโมชั่น" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
                     <input type="text" id="addPromoLink" placeholder="ชื่อแบรนด์สินค้าที่เชื่อมโยง" class="w-full p-2 border border-main rounded-lg text-main bg-transparent">
-                    <button onclick="addNewPromoData()" class="w-full py-2 theme-bg-btn text-white font-bold rounded-xl text-[10px]" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">เพิ่มสไลด์โปรโมชั่น</button>
+                    <button onclick="addNewPromoData()" class="w-full py-2 theme-bg-btn text-white font-bold rounded-xl text-[10px]" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">เพิ่มสไลด์โปรโมชั่น</button>
                 </div>
             </div>
 
@@ -486,7 +482,7 @@ function renderAdminDashboard() {
                     <input type="text" id="admDriveFolderId" placeholder="Google Drive Folder ID" class="w-full p-2.5 border border-main rounded-lg bg-transparent text-main">
                 </div>
                 <div class="flex gap-4 p-2 admin-inner-panel rounded-xl mb-3 text-main"><label><input type="checkbox" id="admFeat"> แนะนำ</label><label><input type="checkbox" id="admLimit"> จำกัด 1 ชิ้น</label></div>
-                <button onclick="saveProductAdmin()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">บันทึกสินค้าลงคลัง</button>
+                <button onclick="saveProductAdmin()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">บันทึกสินค้าลงคลัง</button>
             </div>
             
             <div class="theme-bg-card p-4 rounded-3xl border-main">
@@ -494,8 +490,67 @@ function renderAdminDashboard() {
                 <div id="adminProductList" class="space-y-2"></div>
                 <div id="pagination" class="flex gap-1 justify-center mt-4"></div>
             </div>
+
+            <div class="theme-bg-card p-4 rounded-3xl border-main">
+                <h3 class="font-bold text-main mb-3">8. ระบบจัดการฐานข้อมูลสมาชิก (Member Database Control)</h3>
+                <div id="adminMemberListDatabaseZone" class="space-y-2 max-h-72 overflow-y-auto no-scrollbar"></div>
+            </div>
         </div>`;
-    renderAdminProductList(); renderPresets(); renderAdminPromoList(); renderAdminTaxonomyLists(); renderAdminReviewManagementZoneList();
+    renderAdminProductList(); renderPresets(); renderAdminPromoList(); renderAdminTaxonomyLists(); renderAdminReviewManagementZoneList(); renderAdminMemberListDatabase();
+}
+
+// ฟังก์ชันเปิด/ปิดกล่องตารางพรีเซ็ตสีรวม (รูปที่ 4)
+function togglePresetExpandedGrid() {
+    const modal = document.getElementById('expandedPresetGridModal'); if(!modal) return;
+    modal.classList.toggle('hidden');
+    if(!modal.classList.contains('hidden')) {
+        const container = document.getElementById('presetGridContainer'); if(!container) return;
+        container.innerHTML = (window.db.config.themePresets || []).map((p) => `
+            <div class="flex items-center bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm">
+                <button type="button" onclick="applyPresetAdmin('${p.id}')" class="px-3 py-2 text-[10px] font-bold flex items-center gap-1 text-slate-800 bg-white">
+                    <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:${p.colors.primary || '#7082a6'}"></span> ${p.name}
+                </button>
+                <button type="button" onclick="editPresetColorsDirect('${p.id}')" class="bg-amber-100 text-amber-700 px-2 py-2 border-l border-gray-200 text-[10px]">✏️</button>
+                <button type="button" onclick="removePresetAdmin('${p.id}')" class="bg-red-50 text-red-500 px-2.5 py-2 border-l border-gray-200 text-[10px] font-bold">×</button>
+            </div>`).join('');
+    }
+}
+
+// ฟังก์ชันเรนเดอร์รายชื่อระบบสมาชิกหลังบ้านให้แอดมินแก้ไขเงิน/ลบผู้ใช้ได้
+function renderAdminMemberListDatabase() {
+    const zone = document.getElementById('adminMemberListDatabaseZone'); if(!zone) return;
+    const members = window.db.getMembers() || [];
+    if(members.length === 0) { zone.innerHTML = `<p class="text-sub text-[11px]">ยังไม่มีข้อมูลผู้สมัครสมาชิกในแอปพลิเคชัน</p>`; return; }
+    zone.innerHTML = members.map((m, idx) => `
+        <div class="p-3 border border-main rounded-xl admin-inner-panel flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-[11px]">
+            <div>
+                <p class="font-bold text-slate-800">👤 บัญชี: ${m.username} <span class="text-green-600 ml-1 font-black">คงเหลือ ฿${m.credit}</span></p>
+                <p class="text-gray-500 text-[10px] mt-0.5">📧 อีเมล: ${m.email || 'ไม่มีข้อมูล'}</p>
+            </div>
+            <div class="flex gap-2 justify-end">
+                <button onclick="adjustMemberCreditDirect(${idx})" class="bg-emerald-600 text-white px-2 py-1 rounded-md text-[10px] font-bold shadow-sm">⚙️ ปรับเครดิต</button>
+                <button onclick="deleteMemberByAdmin(${idx})" class="bg-rose-500 text-white px-2 py-1 rounded-md text-[10px] font-bold shadow-sm">ลบบัญชี</button>
+            </div>
+        </div>`).join('');
+}
+
+function adjustMemberCreditDirect(idx) {
+    let members = window.db.getMembers(); const m = members[idx];
+    const newAmount = prompt(`ระบุจำนวนยอดเครดิตกระเป๋าเงินใหม่ของคุณ ${m.username} 💰:`, m.credit);
+    if(newAmount === null) return;
+    if(isNaN(newAmount) || newAmount.trim() === "") return alert("กรุณากรอกเฉพาะตัวเลขที่ถูกต้องค่ะ");
+    m.credit = Number(newAmount); window.db.saveMembers(members);
+    const u = window.db.getCurrentUser(); if(u && u.username === m.username) { window.db.saveCurrentUser(m); updateCreditDisplay(); }
+    alert(`ปรับยอดเงินของบัญชีคุณ ${m.username} เป็น ฿${newAmount} เรียบร้อยครับ`); renderAdminDashboard();
+}
+
+function deleteMemberByAdmin(idx) {
+    let members = window.db.getMembers(); const name = members[idx].username;
+    myConfirm(`คุณเกดแน่ใจไหมว่าต้องการลบบัญชีสมาชิกคุณ "${name}" ออกจากระบบถาวร?`, () => {
+        members.splice(idx, 1); window.db.saveMembers(members);
+        const u = window.db.getCurrentUser(); if(u && u.username === name) { window.db.saveCurrentUser(null); updateCreditDisplay(); }
+        alert(`ลบชื่อผู้ใช้ ${name} สำเร็จครับ`); renderAdminDashboard();
+    });
 }
 
 function renderAdminReviewManagementZoneList() {
@@ -665,7 +720,7 @@ function openProductDetail(idx) {
         </div>
         <div class="fixed bottom-0 left-0 right-0 p-4 theme-bg-card border-t border-main flex gap-3 max-w-[768px] mx-auto z-50 shadow-lg">
             <button onclick="addToCartDirect(${idx}); closeProductDetail();" class="flex-1 py-3.5 border border-main text-main rounded-xl font-bold text-xs theme-bg-card">เพิ่มลงตะกร้า</button>
-            <button onclick="buyNowDirect(${idx})" class="flex-1 py-3.5 theme-bg-btn text-white rounded-xl font-bold text-xs shadow-md" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">ซื้อทันที</button>
+            <button onclick="buyNowDirect(${idx})" class="flex-1 py-3.5 theme-bg-btn text-white rounded-xl font-bold text-xs shadow-md" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">ซื้อทันที</button>
         </div>`;
 }
 function buyNowDirect(idx) { addToCartDirect(idx); closeProductDetail(); openCartPage(); }
@@ -692,7 +747,7 @@ function renderCart() {
             <button onclick="removeCartItem(${idx})" class="text-rose-400 px-1 font-bold text-base">×</button>
         </div>`).join('');
     const total = cart.reduce((s, i) => s + (i.price-i.discount)*i.qty, 0);
-    if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full theme-bg-btn text-white py-4 rounded-2xl font-bold text-xs shadow-xl transition-all active:scale-95" style="background-color: var(--th-primary); text-shadow: 0 1px 3px rgba(0,0,0,0.4);">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
+    if(summary) summary.innerHTML = `<button onclick="finalizeOrder()" class="w-full theme-bg-btn text-white py-4 rounded-2xl font-bold text-xs shadow-xl transition-all active:scale-95" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">สรุปยอดสั่งซื้อทั้งหมด ฿${total}</button>`;
 }
 function updateQty(idx, d) { cart[idx].qty += d; if(cart[idx].qty <= 0) cart.splice(idx,1); updateCartCount(); renderCart(); }
 function removeCartItem(idx) { myConfirm("ลบสินค้าชิ้นนี้ออกจากตะกร้า?", () => { cart.splice(idx,1); updateCartCount(); renderCart(); }); }
@@ -727,12 +782,12 @@ function renderReceiptPage(order) {
                 ${order.items.map(i => `<div class="flex justify-between"><span>${i.name} (x${i.qty})</span><span>฿${(i.price-i.discount)*i.qty}</span></div>`).join('')}
                 <div class="border-t border-main pt-2 flex justify-between font-bold text-sm"><span>ยอดรวมทั้งสิ้น</span><span>฿${order.total}</span></div>
             </div>
-            <button onclick="backToStoreHome()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">กลับสู่หน้าร้านค้าหลัก</button>
+            <button onclick="backToStoreHome()" class="w-full py-3 theme-bg-btn text-white rounded-xl font-bold" style="background-color: var(--th-primary) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">กลับสู่หน้าร้านค้าหลัก</button>
         </div>`;
 }
 
 /* ==========================================
-   👥 MEMBER PROFILE & HISTORY ZONE (ปรับโครงสร้างการ์ดตามรูปภาพอ้างอิง + คืนชีพไอคอน Log out)
+   👥 MEMBER PROFILE & HISTORY ZONE (รูปที่ 2: ดึงการ์ดโปรไฟล์ตารางขาวกลับมาเต็มรูปแบบ แกะตามไฟล์รูปภาพอ้างอิง)
    ========================================== */
 function openUserMenuPage() {
     hideAllPages(); if(document.getElementById('userMenuPage')) document.getElementById('userMenuPage').classList.remove('hidden');
@@ -749,33 +804,35 @@ function renderUserMenuDetails() {
         <div class="sticky top-0 theme-bg-card p-4 rounded-2xl border border-main flex items-center justify-between mb-4 shadow-sm">
             <button onclick="backToStoreHome()" class="text-main font-bold"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
             <span class="font-bold text-sm">แผงควบคุมสมาชิก</span>
-            <button onclick="logoutUser()" class="text-red-400 font-black text-sm flex items-center gap-1 active:scale-95 transition-all">
+            <button onclick="logoutUser()" class="text-rose-400 font-black text-sm flex items-center gap-1 active:scale-95 transition-all">
                 <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
             </button>
         </div>
 
         <div class="space-y-5 text-xs pb-24">
-            <div class="theme-bg-card p-4 rounded-2xl border border-main space-y-1">
-                <h3 class="font-bold text-main text-[12px] opacity-90 mb-3"><i class="fa-solid fa-id-card mr-1 text-blue-400"></i> โปรไฟล์สมาชิก</h3>
-                
-                <div class="profile-info-row flex justify-between items-center py-2.5 border-b border-main/40">
-                    <span class="text-sub font-medium">ชื่อผู้ใช้งาน (Username)</span>
-                    <span class="text-main font-bold">👤 ${u.username}</span>
+            
+            <div class="bg-white border border-gray-200 rounded-[28px] overflow-hidden shadow-md text-slate-800">
+                <div class="p-5 space-y-3">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-2.5">
+                        <span class="text-gray-400 font-medium text-[11px]">ชื่อผู้ใช้งาน (Username)</span>
+                        <span class="font-bold text-slate-800 text-[12px]">👤 ${u.username}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-2.5">
+                        <span class="text-gray-400 font-medium text-[11px]">เครดิตคงเหลือ (Balance)</span>
+                        <span class="font-black text-green-600 text-[13px]">฿${u.credit}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400 font-medium text-[11px]">อีเมลติดต่อ (Email)</span>
+                        <input type="email" id="usrEditEmail" value="${u.email || ''}" placeholder="ระบุอีเมลสำหรับรับฟอนต์" class="text-right bg-transparent border-0 outline-none p-0 focus:ring-0 text-slate-800 font-bold placeholder-gray-400 text-[11px] w-[55%]">
+                    </div>
                 </div>
                 
-                <div class="profile-info-row flex justify-between items-center py-2.5 border-b border-main/40">
-                    <span class="text-sub font-medium">ระดับสมาชิก (Status)</span>
-                    <span class="text-amber-400 font-bold"><i class="fa-solid fa-crown mr-0.5"></i> เมมเบอร์ทั่วไป</span>
-                </div>
-
-                <div class="profile-info-row flex justify-between items-center py-2.5 border-b border-main/40">
-                    <span class="text-sub font-medium">อีเมลติดต่อ (Email)</span>
-                    <input type="email" id="usrEditEmail" value="${u.email || ''}" placeholder="ระบุอีเมลสำหรับรับไฟล์" class="text-right bg-transparent border-0 outline-none p-0 focus:ring-0 text-main font-bold placeholder-gray-500 w-[60%]">
-                </div>
-
-                <div class="pt-3">
-                    <button onclick="saveUserProfileData()" class="w-full py-2.5 theme-bg-btn text-white font-bold rounded-xl shadow-md transition-all active:scale-95" style="background-color: var(--th-primary); text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
-                        💾 บันทึกการแก้ไขอีเมล
+                <div class="flex border-t border-gray-100 bg-gray-50/50 text-[11px] font-bold text-slate-700">
+                    <button onclick="goToTopupPageDirect()" class="flex-1 py-3.5 text-center hover:bg-gray-100/70 border-r border-gray-100 transition-all flex items-center justify-center gap-1">
+                        <span>+ เติมเครดิต</span>
+                    </button>
+                    <button onclick="saveUserProfileData()" class="flex-1 py-3.5 text-center hover:bg-gray-100/70 transition-all flex items-center justify-center gap-1">
+                        <span>💾 บันทึกข้อมูลส่วนตัว</span>
                     </button>
                 </div>
             </div>
@@ -791,6 +848,11 @@ function renderUserMenuDetails() {
         </div>
     `;
     renderUserHistoryLogsContent(u);
+}
+
+function goToTopupPageDirect() {
+    hideAllPages();
+    if(document.getElementById('topupPage')) document.getElementById('topupPage').classList.remove('hidden');
 }
 
 function switchHistoryTab(tabType) {
@@ -855,12 +917,3 @@ function showMainLayout() {
     if(document.getElementById('floatingBottomNav')) document.getElementById('floatingBottomNav').classList.remove('hidden');
 }
 function closeSubPage(pageId) { if(document.getElementById(pageId)) document.getElementById(pageId).classList.add('hidden'); showMainLayout(); restartMarqueeAnimation(); }
-function goToUserSubPage(section) {
-    const dropdown = document.getElementById('userDropdownMenu'); if (dropdown) { dropdown.style.maxHeight = "0px"; dropdown.style.opacity = "0"; }
-    hideAllPages();
-    if (section === 'topup') {
-        if(document.getElementById('topupPage')) document.getElementById('topupPage').classList.remove('hidden');
-    } else if (section === 'editProfile') {
-        openUserMenuPage();
-    }
-}
